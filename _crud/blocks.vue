@@ -10,7 +10,7 @@ export default {
     crudData() {
       return {
         crudId: this.crudId,
-        apiRoute: 'apiRoutes.qsite.blocks',
+        apiRoute: 'apiRoutes.qbuilder.blocks',
         permission: 'ibuilder.blocks',
         extraFormFields: 'ibuilder.crud-fields.blocks',
         create: {

@@ -15,7 +15,7 @@ export default {
         extraFormFields: 'ibuilder.crud-fields.blocks',
         create: {
           title: this.$tr('ibuilder.cms.newBlock'),
-          to: {name: 'qsite.admin.blocks.create'}
+          to: {name: 'qbuilder.admin.blocks.create'}
         },
         read: {
           columns: [

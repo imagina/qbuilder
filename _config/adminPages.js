@@ -9,7 +9,7 @@ export default {
     page: () => import('@imagina/qcrud/_pages/admin/crudPage'),
     layout: () => import('@imagina/qsite/_layouts/master.vue'),
     title: 'ibuilder.cms.sidebar.adminBlocks',
-    icon: 'fa-light fa-square-pen',
+    icon: 'fa-light fa-puzzle-piece',
     authenticated: true,
     subHeader: {
       refresh: true
@@ -24,7 +24,7 @@ export default {
     page: () => import('@imagina/qcrud/_pages/admin/crudPage'),
     layout: () => import('@imagina/qsite/_layouts/master.vue'),
     title: 'ibuilder.cms.sidebar.adminTemplates',
-    icon: 'fa-light fa-square-pen',
+    icon: 'fa-light fa-memo-pad',
     authenticated: true,
     subHeader: {
       refresh: true

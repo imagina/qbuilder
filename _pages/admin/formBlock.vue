@@ -1,5 +1,5 @@
 <template>
-  <div id="pageId">
+  <div id="formBlockPage">
     <!--Page Actions-->
     <div class="box box-auto-height q-mb-md">
       <page-actions :title="useLegacyStructure ? $tr($route.meta.title) : $route.meta.title"/>
@@ -7,7 +7,7 @@
     <!--Content-->
     <div class="relative-position">
       <div class="row q-col-gutter-md">
-        <div class="col" v-if="selectedBlock">
+        <div class="col" v-if="showFormAttributes">
           <iframe
               :src="iframePreviewUrl"
               frameborder="0"
@@ -17,44 +17,54 @@
           />
         </div>
         <div class="col">
-          <!--Choose block-->
-          <dynamic-form v-model="form" :blocks="formFields.systemName" ref="mainForm" formType="grid"
-                        @submit="submitData" no-actions/>
-          <!--Config the attributes of the block-->
-          <div v-if="selectedBlock">
-            <!--Elements-->
-            <div class="box box-auto-height q-mb-md">
-              <!--Title-->
-              <div class="box-title text-center q-mb-md text-primary">
-                {{ $trp("isite.cms.label.item") }}
+          <q-form autocorrect="off" autocomplete="off" ref="formContent" @submit="submitData"
+                  @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
+            <!--Form block-->
+            <dynamic-form v-model="formBlock" :blocks="formFields.block" ref="mainForm" formType="grid" no-actions/>
+            <!--Form Entity-->
+            <pre>{{ formEntity }}</pre>
+            <div v-if="selectedBlock && selectedBlock.block.content.length" class="box box-auto-height q-mb-md">
+              <div class="row q-col-gutter-x-md">
+                <!--Title-->
+                <div class="box-title text-primary q-mb-md">
+                  {{ formFields.entity.title }}
+                </div>
+                <div v-for="(field, key) in formFields.entity.fields" :key="key"
+                     :class="field.colClass || field.columns || 'col-12 col-md-6'">
+                  <dynamic-field v-model="formEntity[field.name || key]" :key="key" :field="field"/>
+                </div>
               </div>
-              <!--Actions-->
-              <q-btn-toggle
-                  v-model="elementSelected"
-                  unelevated
-                  spread
-                  color="grey-3"
-                  toggle-color="primary"
-                  text-color="primary"
-                  :options="selectedBlock.elementsOptions"
-              />
             </div>
-            <!--Form attributes-->
-            <div v-if="elementSelected" class="q-mb-md">
-              <q-tab-panels v-model="elementSelected" animated>
-                <q-tab-panel v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
-                             :name="element.systemName" class="q-pa-none">
-                  <dynamic-form v-model="attributes[element.name]" :blocks="element.sections"
-                                formType="collapsible"/>
-                </q-tab-panel>
-              </q-tab-panels>
+            <!--Form Attributes-->
+            <div v-if="showFormAttributes" class="box box-auto-height no-child-box q-mb-md">
+              <!--Form attributes-->
+              <div v-if="elementSelected" class="q-mb-md">
+                <!--Title-->
+                <div class="box-title text-primary q-mb-md">
+                  {{ $trp("isite.cms.label.attribute") }}
+                </div>
+                <!--Tabs elements-->
+                <q-tabs v-model="elementSelected" dense class="bg-grey-2 text-grey-8 q-mb-md" align="justify"
+                        active-bg-color="info" indicator-color="grey-2" active-color="white">
+                  <q-tab v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
+                         :name="element.systemName" :label="element.title"/>
+                </q-tabs>
+                <!-- Tab Panel elements-->
+                <q-tab-panels v-model="elementSelected" animated>
+                  <q-tab-panel v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
+                               :name="element.systemName" class="q-pa-none">
+                    <dynamic-form v-model="formAttributes[element.name]" :blocks="element.attributes"
+                                  formType="collapsible"/>
+                  </q-tab-panel>
+                </q-tab-panels>
+              </div>
             </div>
             <!--Actions-->
             <div class="box box-auto-height text-right">
-              <q-btn unelevated rounded no-caps @click="submitData" type="button" :label="$tr('isite.cms.label.save')"
+              <q-btn unelevated rounded no-caps type="submit" :label="$tr('isite.cms.label.save')"
                      color="primary"/>
             </div>
-          </div>
+          </q-form>
         </div>
       </div>
       <!--Inner loading-->
@@ -70,11 +80,15 @@ export default {
   props: {},
   components: {},
   watch: {
-    'form.systemName'() {
+    'formBlock.systemName'() {
       //Reset Values
-      this.attributes = {}
+      this.formEntity = {}
+      this.formAttributes = {}
       this.elementSelected = null
-    }
+    },
+    'formEntity.entityType'() {
+      this.$set(this.formEntity, "entityId", null)
+    },
   },
   mounted() {
     this.$nextTick(function () {
@@ -87,8 +101,9 @@ export default {
       blockId: this.$route.params.id,
       configData: {},
       elementSelected: null,
-      form: {},
-      attributes: {}
+      formBlock: {},
+      formEntity: {},
+      formAttributes: {}
     }
   },
   computed: {
@@ -99,14 +114,14 @@ export default {
     //Main fields
     formFields() {
       return {
-        systemName: [{
+        block: [{
           name: "main",
           fields: {
             helpText: {
               type: "banner",
               colClass: "col-12",
               props: {
-                message: "Here you can choose the blocks used in your web site and has the avility of the customise it..."
+                message: "Here you can choose the component for this block and customise it..."
               }
             },
             title: {
@@ -114,7 +129,7 @@ export default {
               type: "input",
               required: true,
               props: {
-                label: this.$tr("isite.cms.form.title")
+                label: this.$tr("isite.cms.form.title") + "*"
               }
             },
             systemName: {
@@ -129,7 +144,56 @@ export default {
               }
             }
           }
-        }]
+        }],
+        entity: {
+          title: this.$trp("isite.cms.label.content"),
+          fields: {
+            helpText: {
+              type: "banner",
+              colClass: "col-12",
+              props: {
+                message: "Choose the record for the content in the block..."
+              }
+            },
+            entityType: {
+              type: "select",
+              require: true,
+              props: {
+                label: `${this.$tr('isite.cms.label.entity')}*`,
+                rules: [
+                  val => !!val || this.$tr('isite.cms.message.fieldRequired')
+                ],
+                options: this.selectedBlock?.block.content || []
+              }
+            },
+            entityIdSelect: {
+              name: "entityId",
+              type: "select",
+              require: true,
+              props: {
+                label: `${this.$tr('isite.cms.label.record')}*`,
+                vIf: this.loadOptionsContent ? true : false,
+                rules: [
+                  val => !!val || this.$tr('isite.cms.message.fieldRequired')
+                ]
+              },
+              loadOptions: this.loadOptionsContent
+            },
+            entityIdJson: {
+              name: "entityId",
+              value: {},
+              type: "json",
+              require: true,
+              colClass: "col-12",
+              props: {
+                vIf: (this.formEntity.entityType && !this.loadOptionsContent) ? true : false,
+                rules: [
+                  val => !!val || this.$tr('isite.cms.message.fieldRequired')
+                ]
+              }
+            },
+          }
+        }
       }
     },
     //Blocks
@@ -138,52 +202,52 @@ export default {
       //Validate if the module has blocks and map it
       Object.values(this.configData).filter(item => item).forEach(mBlocks => {
         if (!Array.isArray(mBlocks)) Object.keys(mBlocks).forEach(blockName => {
-          //Map sections
-          var sectionsAsblockstoForm = []
-          sectionsAsblockstoForm = Object.values(mBlocks[blockName].sections).map((item, index) => {
+          //Map attributes
+          var attributesAsblockstoForm = []
+          attributesAsblockstoForm = Object.values(mBlocks[blockName].attributes).map((item, index) => {
             return {...item, name: index}
           })
           //Replace values of the block
           response[blockName] = {
             ...mBlocks[blockName],
-            sections: sectionsAsblockstoForm
+            content: mBlocks[blockName].content || [],
+            attributes: attributesAsblockstoForm
           }
         })
       })
       //Config the childBlocks
       Object.values(response).forEach(block => {
         //instance the block elements
-        var blockElements = {
-          mainAttributes: {
+        var blockElements = [
+          {
             name: "mainAttributes",
             systemName: block.systemName,
             title: block.title,
-            sections: block.sections
+            attributes: block.attributes
           }
-        }
+        ]
         //Obtain the data of the child elements
         if (block.childBlocks) {
           Object.keys(block.childBlocks).forEach(childName => {
             var childBlock = Object.values(response).find(item => item.systemName == block.childBlocks[childName])
-            if (childBlock) blockElements[childName] = {
+            if (childBlock) blockElements.push({
               name: childName,
               systemName: block.childBlocks[childName],
               title: childBlock.title,
-              sections: childBlock.sections
-            }
+              attributes: childBlock.attributes
+            })
           })
         }
         //Set elements of the component
         block.elements = this.$clone(blockElements)
       })
-
       //response
       return response
     },
     //Selected block
     selectedBlock() {
       //Find the block
-      const block = Object.values(this.blocks).find(block => block.systemName == this.form.systemName)
+      const block = Object.values(this.blocks).find(block => block.systemName == this.formBlock.systemName)
       var response = null
       //order response
       if (block) {
@@ -200,10 +264,23 @@ export default {
       //response
       return response
     },
+    //Return the apiRoute for the content
+    loadOptionsContent() {
+      let response = null
+      if (this.selectedBlock) response = this.selectedBlock.block.content.find(item => {
+        if (item.value == this.formEntity.entityType) return item
+      })
+      return response?.loadOptions || null
+    },
+    //Validate if show the form attributes and the preview
+    showFormAttributes() {
+      if (!this.selectedBlock) return false
+      return !this.selectedBlock.block?.content.length || this.formEntity.entityId
+    },
     //Url to iframe preview
     iframePreviewUrl() {
       var baseUrl = this.$store.state.qsiteApp.baseUrl
-      var attributes = encodeURIComponent(JSON.stringify(this.attributes))
+      var attributes = encodeURIComponent(JSON.stringify(this.formAttributes))
       return `${baseUrl}/blocks/preview?systemName=${this.elementSelected}&attributes=${attributes}`
     }
   },
@@ -251,7 +328,7 @@ export default {
         }
         //Request
         this.$crud.show('apiRoutes.qbuilder.blocks', this.blockId, requestParams).then(response => {
-          this.form = response.data
+          this.formBlock = response.data
           setTimeout(() => {
             var attributes = {}
             Object.keys(response.data.attributes).forEach(elementName => {
@@ -261,7 +338,7 @@ export default {
                 attributes[elmntName][this.$helper.snakeToCamelCase(attributeName)] = response.data.attributes[elementName][attributeName]
               })
             })
-            this.attributes = attributes
+            this.formAttributes = attributes
           }, 1000)
           resolve(response.data)
         }).catch(error => {
@@ -273,9 +350,11 @@ export default {
     submitData() {
       //Instance the request data
       const requestData = {
-        ...this.form,
-        attributes: this.attributes
+        ...this.formBlock,
+        entity: this.formEntity,
+        attributes: this.formAttributes
       }
+      return console.warn(requestData)
       //Request
       this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
     },
@@ -309,4 +388,11 @@ export default {
 }
 </script>
 <style lang="stylus">
+#formBlockPage
+  .no-child-box
+    padding-bottom 0
+
+    .box
+      box-shadow none
+      padding 0
 </style>

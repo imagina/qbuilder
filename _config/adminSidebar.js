@@ -4,7 +4,7 @@ const pages = config('pages') // Get Pages from config
 export default [
   {
     title: 'ibuilder.cms.sidebar.adminGroup',
-    icon: 'fab fa-blogger',
+    icon: 'fa-light fa-puzzle',
     children: [
       pages.qbuilder.blocks,
       pages.qbuilder.templates

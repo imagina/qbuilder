@@ -88,6 +88,7 @@ export default {
     },
     'formEntity.entityType'() {
       this.$set(this.formEntity, "entityId", null)
+      this.$set(this.formEntity, "entityParams", {"filter": {}, "take": 12})
     },
   },
   mounted() {
@@ -180,7 +181,6 @@ export default {
               loadOptions: this.loadOptionsContent
             },
             entityParams: {
-              value: {"filter": {}, "take": 12},
               type: "json",
               require: true,
               colClass: "col-12",

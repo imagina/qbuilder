@@ -22,7 +22,6 @@
             <!--Form block-->
             <dynamic-form v-model="formBlock" :blocks="formFields.block" ref="mainForm" formType="grid" no-actions/>
             <!--Form Entity-->
-            <pre>{{ formEntity }}</pre>
             <div v-if="selectedBlock && selectedBlock.block.content.length" class="box box-auto-height q-mb-md">
               <div class="row q-col-gutter-x-md">
                 <!--Title-->
@@ -31,7 +30,8 @@
                 </div>
                 <div v-for="(field, key) in formFields.entity.fields" :key="key"
                      :class="field.colClass || field.columns || 'col-12 col-md-6'">
-                  <dynamic-field v-model="formEntity[field.name || key]" :key="key" :field="field"/>
+                  <dynamic-field v-model="formEntity[field.name || key]" :key="key" :field="field"
+                                 v-if="field.vIf !== undefined ? field.vIf : true"/>
                 </div>
               </div>
             </div>
@@ -158,6 +158,7 @@ export default {
             entityType: {
               type: "select",
               require: true,
+              colClass: (this.formEntity.entityType && !this.loadOptionsContent) ? "col-12" : null,
               props: {
                 label: `${this.$tr('isite.cms.label.entity')}*`,
                 rules: [
@@ -166,27 +167,25 @@ export default {
                 options: this.selectedBlock?.block.content || []
               }
             },
-            entityIdSelect: {
-              name: "entityId",
+            entityId: {
               type: "select",
               require: true,
+              vIf: this.loadOptionsContent ? true : false,
               props: {
                 label: `${this.$tr('isite.cms.label.record')}*`,
-                vIf: this.loadOptionsContent ? true : false,
                 rules: [
                   val => !!val || this.$tr('isite.cms.message.fieldRequired')
                 ]
               },
               loadOptions: this.loadOptionsContent
             },
-            entityIdJson: {
-              name: "entityId",
-              value: {},
+            entityParams: {
+              value: {"filter": {}, "take": 12},
               type: "json",
               require: true,
               colClass: "col-12",
+              vIf: (this.formEntity.entityType && !this.loadOptionsContent) ? true : false,
               props: {
-                vIf: (this.formEntity.entityType && !this.loadOptionsContent) ? true : false,
                 rules: [
                   val => !!val || this.$tr('isite.cms.message.fieldRequired')
                 ]
@@ -274,8 +273,17 @@ export default {
     },
     //Validate if show the form attributes and the preview
     showFormAttributes() {
-      if (!this.selectedBlock) return false
-      return !this.selectedBlock.block?.content.length || this.formEntity.entityId
+      let response = true
+      if (!this.selectedBlock) response = false
+      //Validate the content
+      const content = this.selectedBlock?.block.content || []
+      if (content.length) {
+        const selectedContent = content.find(item => item.value == this.formEntity.entityType)
+        if (!selectedContent) response = false
+        if (selectedContent && selectedContent.loadOptions && !this.formEntity.entityId) response = false
+      }
+      //Response
+      return response
     },
     //Url to iframe preview
     iframePreviewUrl() {
@@ -351,7 +359,12 @@ export default {
       //Instance the request data
       const requestData = {
         ...this.formBlock,
-        entity: this.formEntity,
+        entity: {
+          entityType: null,
+          entityId: null,
+          entityParams: {},
+          ...this.formEntity
+        },
         attributes: this.formAttributes
       }
       return console.warn(requestData)

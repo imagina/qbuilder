@@ -22,6 +22,7 @@ export default {
             {name: 'id', label: this.$tr('isite.cms.form.id'), field: 'id', style: 'width: 50px'},
             {name: 'title', label: this.$tr('isite.cms.form.title'), field: 'title', align: 'left'},
             {name: 'systemName', label: this.$tr('isite.cms.form.systemName'), field: 'systemName', align: 'left'},
+            {name: 'componentName', label: this.$tr('isite.cms.label.component'), field: 'componentName', align: 'left'},
             {
               name: 'created_at', label: this.$tr('isite.cms.form.createdAt'), field: 'createdAt', align: 'left',
               format: val => val ? this.$trd(val) : '-',
@@ -31,7 +32,7 @@ export default {
         },
         update: {
           title: this.$tr('isite.cms.updateBlock'),
-          to: 'qsite.admin.blocks.update'
+          to: 'qbuilder.admin.blocks.update'
         },
         delete: true,
         formLeft: {}

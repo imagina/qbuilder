@@ -80,15 +80,15 @@ export default {
   props: {},
   components: {},
   watch: {
-    'formBlock.systemName'() {
+    'formBlock.componentName'() {
       //Reset Values
       this.formEntity = {}
       this.formAttributes = {}
       this.elementSelected = null
     },
-    'formEntity.entityType'() {
-      this.$set(this.formEntity, "entityId", null)
-      this.$set(this.formEntity, "entityParams", {"filter": {}, "take": 12})
+    'formEntity.type'() {
+      this.$set(this.formEntity, "id", null)
+      this.$set(this.formEntity, "params", {"filter": {}, "take": 12})
     },
   },
   mounted() {
@@ -129,13 +129,23 @@ export default {
               isTranslatable: true,
               type: "input",
               required: true,
+              colClass: "col-12 col-md-4",
               props: {
                 label: this.$tr("isite.cms.form.title") + "*"
               }
             },
             systemName: {
+              type: "input",
+              required: true,
+              colClass: "col-12 col-md-4",
+              props: {
+                label: this.$tr("isite.cms.form.systemName") + "*"
+              }
+            },
+            componentName: {
               type: "select",
               required: true,
+              colClass: "col-12 col-md-4",
               props: {
                 label: this.$tr("isite.cms.label.block"),
                 options: Object.values(this.blocks).map(item => {
@@ -156,10 +166,10 @@ export default {
                 message: "Choose the record for the content in the block..."
               }
             },
-            entityType: {
+            type: {
               type: "select",
               require: true,
-              colClass: (this.formEntity.entityType && !this.loadOptionsContent) ? "col-12" : null,
+              colClass: (this.formEntity.type && !this.loadOptionsContent) ? "col-12" : null,
               props: {
                 label: `${this.$tr('isite.cms.label.entity')}*`,
                 rules: [
@@ -168,7 +178,7 @@ export default {
                 options: this.selectedBlock?.block.content || []
               }
             },
-            entityId: {
+            id: {
               type: "select",
               require: true,
               vIf: this.loadOptionsContent ? true : false,
@@ -180,11 +190,11 @@ export default {
               },
               loadOptions: this.loadOptionsContent
             },
-            entityParams: {
+            params: {
               type: "json",
               require: true,
               colClass: "col-12",
-              vIf: (this.formEntity.entityType && !this.loadOptionsContent) ? true : false,
+              vIf: (this.formEntity.type && !this.loadOptionsContent) ? true : false,
               props: {
                 rules: [
                   val => !!val || this.$tr('isite.cms.message.fieldRequired')
@@ -246,7 +256,7 @@ export default {
     //Selected block
     selectedBlock() {
       //Find the block
-      const block = Object.values(this.blocks).find(block => block.systemName == this.formBlock.systemName)
+      const block = Object.values(this.blocks).find(block => block.systemName == this.formBlock.componentName)
       var response = null
       //order response
       if (block) {
@@ -267,7 +277,7 @@ export default {
     loadOptionsContent() {
       let response = null
       if (this.selectedBlock) response = this.selectedBlock.block.content.find(item => {
-        if (item.value == this.formEntity.entityType) return item
+        if (item.value == this.formEntity.type) return item
       })
       return response?.loadOptions || null
     },
@@ -278,9 +288,9 @@ export default {
       //Validate the content
       const content = this.selectedBlock?.block.content || []
       if (content.length) {
-        const selectedContent = content.find(item => item.value == this.formEntity.entityType)
+        const selectedContent = content.find(item => item.value == this.formEntity.type)
         if (!selectedContent) response = false
-        if (selectedContent && selectedContent.loadOptions && !this.formEntity.entityId) response = false
+        if (selectedContent && selectedContent.loadOptions && !this.formEntity.id) response = false
       }
       //Response
       return response
@@ -288,14 +298,18 @@ export default {
     //Url to iframe preview
     iframePreviewUrl() {
       var baseUrl = this.$store.state.qsiteApp.baseUrl
-      var attributes = encodeURIComponent(JSON.stringify(this.formAttributes))
-      return `${baseUrl}/blocks/preview?systemName=${this.elementSelected}&attributes=${attributes}`
+      var itemComponentNamespace = encodeURIComponent(this.selectedBlock.block.nameSpace)
+      var itemComponent = encodeURIComponent(this.formBlock.componentName)
+      var itemComponentAttributes = encodeURIComponent(JSON.stringify(this.formAttributes))
+      var itemComponentEntity = encodeURIComponent(JSON.stringify(this.formEntity))
+
+      return `${baseUrl}/blocks/preview?itemComponentNamespace=${itemComponentNamespace}&itemComponent=${itemComponent}&itemComponentAttributes=${itemComponentAttributes}&itemComponentEntity=${itemComponentEntity}`
     }
   },
   methods: {
     init() {
       this.getData()
-      this.$root.$on('page.data.refresh', () => this.getData())//Listen refresh event
+      this.$root.$on('page.data.refresh', this.getData)//Listen refresh event
     },
     //Get data
     async getData() {
@@ -336,8 +350,12 @@ export default {
         }
         //Request
         this.$crud.show('apiRoutes.qbuilder.blocks', this.blockId, requestParams).then(response => {
-          this.formBlock = response.data
+          this.formBlock = this.$clone(response.data)
           setTimeout(() => {
+            //Set formEntity
+            this.formEntity = this.$clone(response.data.entity)
+            setTimeout(() => this.$set(this.formEntity, "params", response.data.entity.params), 500)
+            //Set formAttributes
             var attributes = {}
             Object.keys(response.data.attributes).forEach(elementName => {
               var elmntName = this.$helper.snakeToCamelCase(elementName)
@@ -347,7 +365,7 @@ export default {
               })
             })
             this.formAttributes = attributes
-          }, 1000)
+          }, 500)
           resolve(response.data)
         }).catch(error => {
           resolve(null)
@@ -359,15 +377,9 @@ export default {
       //Instance the request data
       const requestData = {
         ...this.formBlock,
-        entity: {
-          entityType: null,
-          entityId: null,
-          entityParams: {},
-          ...this.formEntity
-        },
+        entity: {type: null, id: null, params: {}, ...this.formEntity},
         attributes: this.formAttributes
       }
-      return console.warn(requestData)
       //Request
       this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
     },
@@ -377,7 +389,7 @@ export default {
         this.loading = true
         //request
         this.$crud.create("apiRoutes.qbuilder.blocks", data).then(response => {
-          this.$router.push({name: "qsite.admin.blocks.index"})
+          this.$router.push({name: "qbuilder.admin.blocks.index"})
           this.loading = false
         }).catch(error => {
           this.loading = false
@@ -390,7 +402,7 @@ export default {
         this.loading = true
         //request
         this.$crud.update("apiRoutes.qbuilder.blocks", this.blockId, data).then(response => {
-          this.$router.push({name: "qsite.admin.blocks.index"})
+          this.$router.push({name: "qbuilder.admin.blocks.index"})
           this.loading = false
         }).catch(error => {
           this.loading = false

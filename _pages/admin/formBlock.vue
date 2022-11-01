@@ -50,13 +50,11 @@
                          :name="element.systemName" :label="element.title"/>
                 </q-tabs>
                 <!-- Tab Panel elements-->
-                <q-tab-panels v-model="elementSelected" animated>
-                  <q-tab-panel v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
-                               :name="element.systemName" class="q-pa-none">
-                    <dynamic-form v-model="formAttributes[element.name]" :blocks="element.attributes"
-                                  formType="collapsible"/>
-                  </q-tab-panel>
-                </q-tab-panels>
+                <div v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
+                     v-show="elementSelected == element.systemName" class="q-pa-none">
+                  <dynamic-form v-model="formAttributes[element.name]" :blocks="element.attributes"
+                                formType="collapsible"/>
+                </div>
               </div>
             </div>
             <!--Actions-->
@@ -104,7 +102,8 @@ export default {
       elementSelected: null,
       formBlock: {},
       formEntity: {},
-      formAttributes: {}
+      formAttributes: {},
+      notToSnakeCase: ["component", "entity", "attributes"]
     }
   },
   computed: {
@@ -147,7 +146,7 @@ export default {
               required: true,
               colClass: "col-12 col-md-4",
               props: {
-                label: this.$tr("isite.cms.label.block"),
+                label: this.$tr("isite.cms.label.block") + "*",
                 options: Object.values(this.blocks).map(item => {
                   return {label: item.title, value: item.systemName}
                 }),
@@ -350,22 +349,19 @@ export default {
         }
         //Request
         this.$crud.show('apiRoutes.qbuilder.blocks', this.blockId, requestParams).then(response => {
-          this.formBlock = this.$clone(response.data)
+          //Set the form block data
+          this.formBlock = this.$clone({...response.data, componentName: response.data.component.systemName})
           setTimeout(() => {
-            //Set formEntity
+            //Set the formEntity data
             this.formEntity = this.$clone(response.data.entity)
-            setTimeout(() => this.$set(this.formEntity, "params", response.data.entity.params), 500)
-            //Set formAttributes
-            var attributes = {}
-            Object.keys(response.data.attributes).forEach(elementName => {
-              var elmntName = this.$helper.snakeToCamelCase(elementName)
-              attributes[elmntName] = {}
-              Object.keys(response.data.attributes[elementName]).forEach(attributeName => {
-                attributes[elmntName][this.$helper.snakeToCamelCase(attributeName)] = response.data.attributes[elementName][attributeName]
-              })
-            })
-            this.formAttributes = attributes
+            setTimeout(() => {
+              this.$set(this.formEntity, "params", response.data.entity.params)
+              this.$set(this.formEntity, "id", response.data.entity.id)
+            }, 500)
+            //Set the formAttributes data
+            this.formAttributes = this.$clone(response.data.attributes)
           }, 500)
+          //Resolve
           resolve(response.data)
         }).catch(error => {
           resolve(null)
@@ -377,6 +373,10 @@ export default {
       //Instance the request data
       const requestData = {
         ...this.formBlock,
+        component: {
+          nameSpace: this.selectedBlock.block.nameSpace,
+          systemName: this.selectedBlock.block.systemName
+        },
         entity: {type: null, id: null, params: {}, ...this.formEntity},
         attributes: this.formAttributes
       }
@@ -387,8 +387,10 @@ export default {
     createBlock(data) {
       return new Promise(resolve => {
         this.loading = true
+        //Request params
+        const requestParams = {notToSnakeCase: this.notToSnakeCase}
         //request
-        this.$crud.create("apiRoutes.qbuilder.blocks", data).then(response => {
+        this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(response => {
           this.$router.push({name: "qbuilder.admin.blocks.index"})
           this.loading = false
         }).catch(error => {
@@ -400,11 +402,14 @@ export default {
     updateBlock(data) {
       return new Promise(resolve => {
         this.loading = true
+        //Request params
+        const requestParams = {notToSnakeCase: this.notToSnakeCase}
         //request
-        this.$crud.update("apiRoutes.qbuilder.blocks", this.blockId, data).then(response => {
+        this.$crud.update("apiRoutes.qbuilder.blocks", this.blockId, data, requestParams).then(response => {
           this.$router.push({name: "qbuilder.admin.blocks.index"})
           this.loading = false
         }).catch(error => {
+          console.warn(">>> Error", error)
           this.loading = false
         })
       })

@@ -7,62 +7,78 @@
     <!--Content-->
     <div class="relative-position">
       <div class="row q-col-gutter-md">
-        <div class="col" v-if="showFormAttributes">
-          <iframe
-              :src="iframePreviewUrl"
-              frameborder="0"
-              class="box"
-              width="100%"
-              height="600px"
-          />
+        <div :class="colClassContent" v-if="showFormAttributes">
+          <div class="box">
+            <div class="row justify-between items-center">
+              <!--Title-->
+              <div class="box-title text-primary">
+                {{ $tr("isite.cms.message.preview") }}
+              </div>
+              <!--Actions-->
+              <div>
+                <q-btn :icon="colClassContent == 'col' ? 'fa-thin fa-maximize' : 'fa-thin fa-minimize'"
+                       @click="colClassContent = colClassContent == 'col' ? 'col-12' : 'col'"
+                       unelevated outline color="grey-8" size="sm" padding="10px" rounded/>
+              </div>
+            </div>
+            <!--Iframe-->
+            <iframe
+                :src="iframePreviewUrl"
+                frameborder="0"
+                width="100%"
+                :height="`${windowHeigh - 320}px`"
+            />
+          </div>
         </div>
-        <div class="col">
-          <q-form autocorrect="off" autocomplete="off" ref="formContent" @submit="submitData"
-                  @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
-            <!--Form block-->
-            <dynamic-form v-model="formBlock" :blocks="formFields.block" ref="mainForm" formType="grid" no-actions/>
-            <!--Form Entity-->
-            <div v-if="selectedBlock && selectedBlock.block.content.length" class="box box-auto-height q-mb-md">
-              <div class="row q-col-gutter-x-md">
-                <!--Title-->
-                <div class="box-title text-primary q-mb-md">
-                  {{ formFields.entity.title }}
-                </div>
-                <div v-for="(field, key) in formFields.entity.fields" :key="key"
-                     :class="field.colClass || field.columns || 'col-12 col-md-6'">
-                  <dynamic-field v-model="formEntity[field.name || key]" :key="key" :field="field"
-                                 v-if="field.vIf !== undefined ? field.vIf : true"/>
-                </div>
-              </div>
-            </div>
-            <!--Form Attributes-->
-            <div v-if="showFormAttributes" class="box box-auto-height no-child-box q-mb-md">
-              <!--Form attributes-->
-              <div v-if="elementSelected" class="q-mb-md">
-                <!--Title-->
-                <div class="box-title text-primary q-mb-md">
-                  {{ $trp("isite.cms.label.attribute") }}
-                </div>
-                <!--Tabs elements-->
-                <q-tabs v-model="elementSelected" dense class="bg-grey-2 text-grey-8 q-mb-md" align="justify"
-                        active-bg-color="info" indicator-color="grey-2" active-color="white">
-                  <q-tab v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
-                         :name="element.systemName" :label="element.title"/>
-                </q-tabs>
-                <!-- Tab Panel elements-->
-                <div v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
-                     v-show="elementSelected == element.systemName" class="q-pa-none">
-                  <dynamic-form v-model="formAttributes[element.name]" :blocks="element.attributes"
-                                formType="collapsible"/>
+        <div :class="colClassContent">
+          <q-scroll-area :style="`height: ${windowHeigh - 253}px; width: 100%;`">
+            <q-form autocorrect="off" autocomplete="off" ref="formContent" @submit="submitData"
+                    @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
+              <!--Form block-->
+              <dynamic-form v-model="formBlock" :blocks="formFields.block" ref="mainForm" formType="grid" no-actions/>
+              <!--Form Entity-->
+              <div v-if="selectedBlock && selectedBlock.block.content.length" class="box box-auto-height q-mb-md">
+                <div class="row q-col-gutter-x-md">
+                  <!--Title-->
+                  <div class="box-title text-primary q-mb-md">
+                    {{ formFields.entity.title }}
+                  </div>
+                  <div v-for="(field, key) in formFields.entity.fields" :key="key"
+                       :class="field.colClass || field.columns || 'col-12 col-md-6'">
+                    <dynamic-field v-model="formEntity[field.name || key]" :key="key" :field="field"
+                                   v-if="field.vIf !== undefined ? field.vIf : true"/>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!--Actions-->
-            <div class="box box-auto-height text-right">
-              <q-btn unelevated rounded no-caps type="submit" :label="$tr('isite.cms.label.save')"
-                     color="primary"/>
-            </div>
-          </q-form>
+              <!--Form Attributes-->
+              <div v-if="showFormAttributes" class="box box-auto-height no-child-box q-mb-md">
+                <!--Form attributes-->
+                <div v-if="elementSelected" class="q-mb-md">
+                  <!--Title-->
+                  <div class="box-title text-primary q-mb-md">
+                    {{ $trp("isite.cms.label.attribute") }}
+                  </div>
+                  <!--Tabs elements-->
+                  <q-tabs v-model="elementSelected" dense class="bg-grey-2 text-grey-8 q-mb-md" align="justify"
+                          active-bg-color="info" indicator-color="grey-2" active-color="white">
+                    <q-tab v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
+                           :name="element.systemName" :label="element.title"/>
+                  </q-tabs>
+                  <!-- Tab Panel elements-->
+                  <div v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
+                       v-show="elementSelected == element.systemName" class="q-pa-none">
+                    <dynamic-form v-model="formAttributes[element.name]" :blocks="element.attributes"
+                                  formType="collapsible"/>
+                  </div>
+                </div>
+              </div>
+              <!--Actions-->
+              <div class="box box-auto-height text-right">
+                <q-btn unelevated rounded no-caps type="submit" :label="$tr('isite.cms.label.save')"
+                       color="primary"/>
+              </div>
+            </q-form>
+          </q-scroll-area>
         </div>
       </div>
       <!--Inner loading-->
@@ -103,7 +119,9 @@ export default {
       formBlock: {},
       formEntity: {},
       formAttributes: {},
-      notToSnakeCase: ["component", "entity", "attributes"]
+      notToSnakeCase: ["component", "entity", "attributes"],
+      colClassContent: "col",
+      windowHeigh: window.innerHeight
     }
   },
   computed: {
@@ -228,7 +246,7 @@ export default {
         //instance the block elements
         var blockElements = [
           {
-            name: "mainAttributes",
+            name: "componentAttributes",
             systemName: block.systemName,
             title: block.title,
             attributes: block.attributes
@@ -297,12 +315,14 @@ export default {
     //Url to iframe preview
     iframePreviewUrl() {
       var baseUrl = this.$store.state.qsiteApp.baseUrl
-      var itemComponentNamespace = encodeURIComponent(this.selectedBlock.block.nameSpace)
-      var itemComponent = encodeURIComponent(this.formBlock.componentName)
-      var itemComponentAttributes = encodeURIComponent(JSON.stringify(this.formAttributes))
-      var itemComponentEntity = encodeURIComponent(JSON.stringify(this.formEntity))
+      var component = encodeURIComponent(JSON.stringify({
+        systemName: this.formBlock.componentName,
+        nameSpace: this.selectedBlock.block.nameSpace
+      }))
+      var entity = encodeURIComponent(JSON.stringify(this.formEntity))
+      var attributes = encodeURIComponent(JSON.stringify(this.formAttributes))
 
-      return `${baseUrl}/blocks/preview?itemComponentNamespace=${itemComponentNamespace}&itemComponent=${itemComponent}&itemComponentAttributes=${itemComponentAttributes}&itemComponentEntity=${itemComponentEntity}`
+      return `${baseUrl}/blocks/preview?component=${component}&entity=${entity}&attributes=${attributes}`
     }
   },
   methods: {

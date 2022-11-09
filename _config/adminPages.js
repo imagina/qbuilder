@@ -1,5 +1,4 @@
 export default {
-  //Blocks
   blocks: {
     permission: 'ibuilder.blocks.manage',
     activated: true,
@@ -10,21 +9,6 @@ export default {
     layout: () => import('@imagina/qsite/_layouts/master.vue'),
     title: 'ibuilder.cms.sidebar.adminBlocks',
     icon: 'fa-light fa-puzzle-piece',
-    authenticated: true,
-    subHeader: {
-      refresh: true
-    }
-  },
-  templates: {
-    permission: 'ibuilder.templates.manage',
-    activated: true,
-    path: '/builder/templates',
-    name: 'qbuilder.admin.templates.index',
-    crud: import('@imagina/qbuilder/_crud/templates'),
-    page: () => import('@imagina/qcrud/_pages/admin/crudPage'),
-    layout: () => import('@imagina/qsite/_layouts/master.vue'),
-    title: 'ibuilder.cms.sidebar.adminTemplates',
-    icon: 'fa-light fa-memo-pad',
     authenticated: true,
     subHeader: {
       refresh: true
@@ -59,5 +43,5 @@ export default {
       refresh: true,
       breadcrumb: ['qbuilder.blocks']
     }
-  },
+  }
 }

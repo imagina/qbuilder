@@ -139,7 +139,7 @@ export default {
               type: "banner",
               colClass: "col-12",
               props: {
-                message: "Here you can choose the component for this block and customise it..."
+                message: "Selecciona un 'Nombre de Sistema' unico que identifique el bloque y luego el componente que quieres perzonalizar..."
               }
             },
             title: {
@@ -165,7 +165,7 @@ export default {
               colClass: "col-12 col-md-4",
               props: {
                 label: this.$tr("isite.cms.label.block") + "*",
-                options: Object.values(this.blocks).map(item => {
+                options: Object.values(this.blocks).filter(item => !item.internal).map(item => {
                   return {label: item.title, value: item.systemName}
                 }),
                 readonly: this.blockId ? true : false
@@ -180,7 +180,7 @@ export default {
               type: "banner",
               colClass: "col-12",
               props: {
-                message: "Choose the record for the content in the block..."
+                message: "Configura aquí la forma en que el componente cargará la información..."
               }
             },
             type: {
@@ -253,17 +253,19 @@ export default {
           }
         ]
         //Obtain the data of the child elements
-        if (block.childBlocks) {
-          Object.keys(block.childBlocks).forEach(childName => {
-            var childBlock = Object.values(response).find(item => item.systemName == block.childBlocks[childName])
-            if (childBlock) blockElements.push({
-              name: childName,
-              systemName: block.childBlocks[childName],
-              title: childBlock.title,
-              attributes: childBlock.attributes
-            })
-          })
+        var childBlocks = block.childBlocks || {}
+        if ((block.systemName != "x-isite::block") && !childBlocks.mainBlock) {
+          childBlocks = {mainblock: "x-isite::block", ...childBlocks}
         }
+        Object.keys(childBlocks).forEach(childName => {
+          var childBlock = Object.values(response).find(item => item.systemName == childBlocks[childName])
+          if (childBlock) blockElements.push({
+            name: childName,
+            systemName: childBlocks[childName],
+            title: childBlock.title,
+            attributes: childBlock.attributes
+          })
+        })
         //Set elements of the component
         block.elements = this.$clone(blockElements)
       })

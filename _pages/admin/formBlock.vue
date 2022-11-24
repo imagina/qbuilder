@@ -2,7 +2,7 @@
   <div id="formBlockPage">
     <!--Page Actions-->
     <div class="box box-auto-height q-mb-md">
-      <page-actions :title="useLegacyStructure ? $tr($route.meta.title) : $route.meta.title"/>
+      <page-actions :title="settings.useLegacyStructure ? $tr($route.meta.title) : $route.meta.title"/>
     </div>
     <!--Content-->
     <div class="relative-position">
@@ -35,7 +35,8 @@
             <q-form autocorrect="off" autocomplete="off" ref="formContent" @submit="submitData"
                     @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
               <!--Form block-->
-              <dynamic-form v-model="formBlock" :blocks="formFields.block" ref="mainForm" formType="grid" no-actions/>
+              <dynamic-form v-model="formBlock" :blocks="formFields.block" ref="mainForm" formType="grid"
+                            no-actions no-reset-with-blocks-update/>
               <!--Form Entity-->
               <div v-if="selectedBlock && selectedBlock.block.content.length" class="box box-auto-height q-mb-md">
                 <div class="row q-col-gutter-x-md">
@@ -121,13 +122,17 @@ export default {
       formAttributes: {},
       notToSnakeCase: ["component", "entity", "attributes"],
       colClassContent: "col",
-      windowHeigh: window.innerHeight
+      windowHeigh: window.innerHeight,
+      templates: []
     }
   },
   computed: {
     // Validate the setting about the use the legacy structure of the CMS
-    useLegacyStructure() {
-      return parseInt(this.$store.getters['qsiteApp/getSettingValueByName']('isite::legacyStructureCMS') || 0)
+    settings() {
+      return {
+        useLegacyStructure: parseInt(this.$store.getters['qsiteApp/getSettingValueByName']('isite::legacyStructureCMS') || 0),
+        templatesBaseUrl: this.$store.getters['qsiteApp/getSettingValueByName']('ibuilder::blockTemplatesUrl')
+      }
     },
     //Main fields
     formFields() {
@@ -170,7 +175,17 @@ export default {
                 }),
                 readonly: this.blockId ? true : false
               }
-            }
+            },
+            template: {
+              type: "select",
+              props: {
+                vIf: false,
+                label: this.$tr("isite.cms.label.template"),
+                options: this.templatesByComponent.map(item => {
+                  return {label: item.title, value: item.systemName}
+                })
+              }
+            },
           }
         }],
         entity: {
@@ -213,6 +228,7 @@ export default {
               colClass: "col-12",
               vIf: (this.formEntity.type && !this.loadOptionsContent) ? true : false,
               props: {
+                label: this.$trp('isite.cms.label.filter'),
                 rules: [
                   val => !!val || this.$tr('isite.cms.message.fieldRequired')
                 ]
@@ -325,6 +341,12 @@ export default {
       var attributes = encodeURIComponent(JSON.stringify(this.formAttributes))
 
       return `${baseUrl}/blocks/preview?component=${component}&entity=${entity}&attributes=${attributes}`
+    },
+    //Return the templates by component
+    templatesByComponent() {
+      return this.templates.filter(item => {
+        if (item.component.systemName == (this.selectedBlock?.block?.systemName || null)) return item
+      })
     }
   },
   methods: {
@@ -335,7 +357,10 @@ export default {
     //Get data
     async getData() {
       this.loading = true
-      await this.getModuleBlocks()
+      await Promise.all([
+        this.getModuleBlocks(),
+        this.getTemplates()
+      ])
       await this.getBlockData()
       this.loading = false
     },
@@ -355,6 +380,28 @@ export default {
           resolve(response.data)
         }).catch(error => {
           resolve(null)
+        })
+      })
+    },
+    //Get templates
+    getTemplates() {
+      return new Promise((resolve, reject) => {
+        if (!this.settings.templatesBaseUrl) return resolve(true)
+        //Params
+        let requestParams = {
+          refresh: true,
+          params: {
+            filter: {allTranslations: true, configNameByModule: 'blocks'}
+          }
+        }
+        //Instance the full API for get the blocks(template)
+        const templateBaseUrl = `${this.settings.templatesBaseUrl}/api${config('apiRoutes.qbuilder.blocks')}`
+        //Request
+        this.$axios.get(templateBaseUrl).then(response => {
+          this.templates = this.$clone(response.data.data)
+          resolve(response)
+        }).catch(error => {
+          reject(error.response)
         })
       })
     },

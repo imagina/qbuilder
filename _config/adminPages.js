@@ -30,7 +30,7 @@ export default {
     }
   },
   formUpdateBlock: {
-    permission: 'ibuilder.blocks.create',
+    permission: 'ibuilder.blocks.edit',
     activated: true,
     path: '/builder/blocks/:id',
     name: 'qbuilder.admin.blocks.update',
@@ -43,5 +43,19 @@ export default {
       refresh: true,
       breadcrumb: ['qbuilder.blocks']
     }
-  }
+  },
+  formUpdateBlockTemplate: {
+    permission: 'ibuilder.blocks.edit',
+    activated: true,
+    path: '/builder/blocks/template/:id',
+    name: 'qbuilder.admin.blocks.update.template',
+    page: () => import('@imagina/qbuilder/_pages/admin/formBlock'),
+    layout: () => import('@imagina/qsite/_layouts/master.vue'),
+    title: 'ibuilder.cms.updateBlock',
+    icon: 'fa-light fa-square-pen',
+    authenticated: true,
+    subHeader: {
+      refresh: true
+    }
+  },
 }

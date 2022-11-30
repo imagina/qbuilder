@@ -56,8 +56,14 @@
                 <!--Form attributes-->
                 <div v-if="elementSelected" class="q-mb-md">
                   <!--Title-->
-                  <div class="box-title text-primary q-mb-md">
-                    {{ $trp("isite.cms.label.attribute") }}
+                  <div class="text-primary q-mb-md">
+                    <div class="row justify-between items-center">
+                      <b>{{ $trp("isite.cms.label.attribute") }}</b>
+                      <q-btn icon="fa-light fa-code-compare" color="green" round class="btn-middle"
+                             unelevated outline @click="getTemplates">
+                        <q-tooltip>{{ $trp('isite.cms.label.template') }}</q-tooltip>
+                      </q-btn>
+                    </div>
                   </div>
                   <!--Tabs elements-->
                   <q-tabs v-model="elementSelected" dense class="bg-grey-2 text-grey-8 q-mb-md" align="justify"
@@ -85,15 +91,22 @@
       <!--Inner loading-->
       <inner-loading :visible="loading"/>
     </div>
+    <!-- Modal Clone -->
+    <master-modal v-model="modalTemplates.show" v-bind="modalTemplatesAttributes">
+      <file-list-component v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6 col-md-3"
+                           @selected="value => modalTemplates.selected = (value[0] || null)"/>
+    </master-modal>
   </div>
 </template>
 <script>
+import fileListComponent from '@imagina/qsite/_components/master/fileList'
+
 export default {
   beforeDestroy() {
     this.$root.$off('page.data.refresh')
   },
   props: {},
-  components: {},
+  components: {fileListComponent},
   watch: {
     'formBlock.componentName'() {
       //Reset Values
@@ -123,7 +136,13 @@ export default {
       notToSnakeCase: ["component", "entity", "attributes"],
       colClassContent: "col",
       windowHeigh: window.innerHeight,
-      templates: []
+      modalTemplates: {
+        show: false,
+        loading: false,
+        selected: null
+      },
+      templates: [],
+      templatesAsFiles: []
     }
   },
   computed: {
@@ -175,17 +194,7 @@ export default {
                 }),
                 readonly: this.blockId ? true : false
               }
-            },
-            template: {
-              type: "select",
-              props: {
-                vIf: false,
-                label: this.$tr("isite.cms.label.template"),
-                options: this.templatesByComponent.map(item => {
-                  return {label: item.title, value: item.systemName}
-                })
-              }
-            },
+            }
           }
         }],
         entity: {
@@ -342,11 +351,28 @@ export default {
 
       return `${baseUrl}/blocks/preview?component=${component}&entity=${entity}&attributes=${attributes}`
     },
-    //Return the templates by component
-    templatesByComponent() {
-      return this.templates.filter(item => {
-        if (item.component.systemName == (this.selectedBlock?.block?.systemName || null)) return item
-      })
+    //Modal Templates attributes
+    modalTemplatesAttributes() {
+      return {
+        loading: this.modalTemplates.loading,
+        customPosition: true,
+        title: `${this.$trp('isite.cms.label.template')} | ${this.selectedBlock ? this.selectedBlock.block.title : ''}`,
+        actions: [
+          {
+            props: {
+              label: `${this.$tr("isite.cms.label.apply")}: ${this.modalTemplates.selected?.filename || ""}`,
+              color: "green",
+              rounded: true,
+              icon: 'fal fa-fill-drip',
+              disable: this.modalTemplates.selected ? false : true
+            },
+            action: () => {
+              this.formAttributes = this.$clone(this.modalTemplates.selected.attributes)
+              this.modalTemplates.show = false
+            }
+          }
+        ]
+      }
     }
   },
   methods: {
@@ -358,8 +384,7 @@ export default {
     async getData() {
       this.loading = true
       await Promise.all([
-        this.getModuleBlocks(),
-        this.getTemplates()
+        this.getModuleBlocks()
       ])
       await this.getBlockData()
       this.loading = false
@@ -387,20 +412,40 @@ export default {
     getTemplates() {
       return new Promise((resolve, reject) => {
         if (!this.settings.templatesBaseUrl) return resolve(true)
+        this.modalTemplates = {
+          show: true,
+          loading: true,
+          selected: null
+        }
+        this.templates = []
+        this.templatesAsFiles = []
         //Params
         let requestParams = {
           refresh: true,
           params: {
-            filter: {allTranslations: true, configNameByModule: 'blocks'}
+            filter: {allTranslations: true}
           }
         }
         //Instance the full API for get the blocks(template)
         const templateBaseUrl = `${this.settings.templatesBaseUrl}/api${config('apiRoutes.qbuilder.blocks')}`
         //Request
         this.$axios.get(templateBaseUrl).then(response => {
-          this.templates = this.$clone(response.data.data)
+          //Set templates
+          this.templates = this.$clone(response.data.data.filter(block => {
+            if (block.component.systemName == this.selectedBlock.block.systemName) return block
+          }))
+          //Set templates as files
+          this.templatesAsFiles = this.$clone(this.templates.map(template => ({
+            ...template.mediaFiles.mainimage,
+            isImage: true,
+            filename: template.title,
+            id: template.id,
+            attributes: template.attributes
+          })))
+          this.modalTemplates.loading = false
           resolve(response)
         }).catch(error => {
+          this.modalTemplates.loading = false
           reject(error.response)
         })
       })

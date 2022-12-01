@@ -37,17 +37,26 @@
               <!--Form block-->
               <dynamic-form v-model="formBlock" :blocks="formFields.block" ref="mainForm" formType="grid"
                             no-actions no-reset-with-blocks-update/>
-              <!--Form Entity-->
-              <div v-if="selectedBlock && selectedBlock.block.content.length" class="box box-auto-height q-mb-md">
+              <!--Form Content-->
+              <div v-if="contentfieldsconfig.show" class="box box-auto-height q-mb-md">
                 <div class="row q-col-gutter-x-md">
                   <!--Title-->
                   <div class="box-title text-primary q-mb-md">
                     {{ formFields.entity.title }}
                   </div>
-                  <div v-for="(field, key) in formFields.entity.fields" :key="key"
-                       :class="field.colClass || field.columns || 'col-12 col-md-6'">
-                    <dynamic-field v-model="formEntity[field.name || key]" :key="key" :field="field"
-                                   v-if="field.vIf !== undefined ? field.vIf : true"/>
+                  <!-- Entity Content -->
+                  <div v-if="contentfieldsconfig.content.length" class="col-12">
+                    <div v-for="(field, key) in formFields.entity.fields" :key="key"
+                         :class="field.colClass || field.columns || 'col-12 col-md-6'">
+                      <dynamic-field v-model="formEntity[field.name || key]" :key="key" :field="field"
+                                     v-if="field.vIf !== undefined ? field.vIf : true"/>
+                    </div>
+                  </div>
+                  <!-- Form Content Fields -->
+                  <div class="col-12 no-child-box">
+                    <dynamic-form v-if="contentfieldsconfig.contentFields.length" :box-style="false"
+                                  v-model="formContentFields" :blocks="contentfieldsconfig.contentFields"
+                                  ref="formContentFields" formType="grid" no-actions/>
                   </div>
                 </div>
               </div>
@@ -132,6 +141,7 @@ export default {
       elementSelected: null,
       formBlock: {},
       formEntity: {},
+      formContentFields: {},
       formAttributes: {},
       notToSnakeCase: ["component", "entity", "attributes"],
       colClassContent: "col",
@@ -199,7 +209,7 @@ export default {
               value: {},
               type: 'media',
               colClass: "col-12",
-              fieldItemId : this.blockId || null,
+              fieldItemId: this.blockId || null,
               props: {
                 label: this.$tr('isite.cms.message.preview'),
                 zone: 'mainimage',
@@ -216,7 +226,7 @@ export default {
               type: "banner",
               colClass: "col-12",
               props: {
-                message: "Configura aquí la forma en que el componente cargará la información..."
+                message: "Configura aquí el contenido del componente..."
               }
             },
             type: {
@@ -336,6 +346,32 @@ export default {
         if (item.value == this.formEntity.type) return item
       })
       return response?.loadOptions || null
+    },
+    //Return the form content
+    contentfieldsconfig() {
+      //Instance the response
+      let response = {
+        show: false,
+        content: [],
+        contentFields: []
+      }
+      //instance the selected block
+      const block = {
+        content: [],
+        contentFields: {},
+        ...(this.selectedBlock?.block || {}),
+      }
+
+      //Validate if there is content for this form
+      if (block.content.length || Object.keys(block.contentFields).length)
+        response = {
+          show: true,
+          content: block.content,
+          contentFields: Object.keys(block.contentFields).length ? [{fields: block.contentFields}] : []
+        }
+
+      //Response
+      return response
     },
     //Validate if show the form attributes and the preview
     showFormAttributes() {
@@ -470,7 +506,8 @@ export default {
         let requestParams = {
           refresh: true,
           params: {
-            filter: {allTranslations: true}
+            filter: {allTranslations: true},
+            include: 'fields'
           }
         }
         //Request
@@ -483,6 +520,7 @@ export default {
             setTimeout(() => {
               this.$set(this.formEntity, "params", response.data.entity.params)
               this.$set(this.formEntity, "id", response.data.entity.id)
+              this.formContentFields = this.$clone(response.data)
             }, 500)
             //Set the formAttributes data
             this.formAttributes = this.$clone(response.data.attributes)
@@ -504,8 +542,13 @@ export default {
           systemName: this.selectedBlock.block.systemName
         },
         entity: {type: null, id: null, params: {}, ...this.formEntity},
-        attributes: this.formAttributes
+        ...this.formContentFields,
+        attributes: this.formAttributes,
       }
+      //Remove extra data
+      delete requestData.componentName
+      delete requestData.helpText
+      delete requestData.systemName
       //Request
       this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
     },

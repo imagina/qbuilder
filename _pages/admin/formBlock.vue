@@ -194,6 +194,18 @@ export default {
                 }),
                 readonly: this.blockId ? true : false
               }
+            },
+            mediasSingle: {
+              value: {},
+              type: 'media',
+              colClass: "col-12",
+              fieldItemId : this.blockId || null,
+              props: {
+                label: this.$tr('isite.cms.message.preview'),
+                zone: 'mainimage',
+                entity: "Modules\\Ibuilder\\Entities\\Block",
+                entityId: null
+              }
             }
           }
         }],

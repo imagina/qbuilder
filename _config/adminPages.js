@@ -47,7 +47,7 @@ export default {
   formUpdateBlockTemplate: {
     permission: 'ibuilder.blocks.edit',
     activated: true,
-    path: '/builder/blocks/template/:id',
+    path: '/builder/blocks/template/id',
     name: 'qbuilder.admin.blocks.update.template',
     page: () => import('@imagina/qbuilder/_pages/admin/formBlock'),
     layout: () => import('@imagina/qsite/_layouts/master.vue'),

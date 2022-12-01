@@ -395,9 +395,17 @@ export default {
         nameSpace: this.selectedBlock.block.nameSpace
       }))
       var entity = encodeURIComponent(JSON.stringify(this.formEntity))
-      var attributes = encodeURIComponent(JSON.stringify(this.formAttributes))
+      //Merge attributes with block field
+      var attributes = encodeURIComponent(JSON.stringify({
+        ...this.formAttributes,
+        componentAttributes: {
+          ...(this.formAttributes.componentAttributes || {}),
+          ...this.formContentFields,
+          ...(this.formContentFields[this.$store.state.qsiteApp.defaultLocale] || {})
+        }
+      }))
 
-      return `${baseUrl}/blocks/preview?component=${component}&entity=${entity}&attributes=${attributes}`
+      return `${baseUrl}/ibuilder/block/preview?component=${component}&entity=${entity}&attributes=${attributes}`
     },
     //Modal Templates attributes
     modalTemplatesAttributes() {

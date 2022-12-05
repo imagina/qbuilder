@@ -20,7 +20,7 @@ export default {
         read: {
           columns: [
             {name: 'id', label: this.$tr('isite.cms.form.id'), field: 'id', style: 'width: 50px'},
-            {name: 'title', label: this.$tr('isite.cms.form.title'), field: 'title', align: 'left'},
+            {name: 'title', label: this.$tr('isite.cms.form.title'), field: 'internalTitle', align: 'left'},
             {name: 'systemName', label: this.$tr('isite.cms.form.systemName'), field: 'systemName', align: 'left'},
             {
               name: 'componentName', label: this.$tr('isite.cms.label.component'), field: 'component', align: 'left',

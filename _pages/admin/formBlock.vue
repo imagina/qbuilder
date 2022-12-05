@@ -176,7 +176,7 @@ export default {
                 message: "Selecciona un 'Nombre de Sistema' unico que identifique el bloque y luego el componente que quieres perzonalizar..."
               }
             },
-            title: {
+            internalTitle: {
               isTranslatable: true,
               type: "input",
               required: true,
@@ -494,7 +494,7 @@ export default {
           this.templatesAsFiles = this.$clone(this.templates.map(template => ({
             ...template.mediaFiles.mainimage,
             isImage: true,
-            filename: template.title,
+            filename: template.internalTitle,
             id: template.id,
             attributes: template.attributes
           })))
@@ -556,7 +556,6 @@ export default {
       //Remove extra data
       delete requestData.componentName
       delete requestData.helpText
-      delete requestData.systemName
       //Request
       this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
     },

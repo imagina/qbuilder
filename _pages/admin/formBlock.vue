@@ -9,13 +9,16 @@
       <div class="row q-col-gutter-md">
         <div :class="colClassContent" v-if="showFormAttributes">
           <div class="box">
-            <div class="row justify-between items-center">
+            <div class="row justify-between items-center q-mb-md">
               <!--Title-->
               <div class="box-title text-primary">
                 {{ $tr("isite.cms.message.preview") }}
               </div>
               <!--Actions-->
-              <div>
+              <div class="row q-gutter-x-sm">
+                <q-btn icon="fa-light fa-up-right-from-square"
+                       @click="() => $helper.openExternalURL(iframePreviewUrl)"
+                       unelevated outline color="grey-8" size="sm" padding="10px" rounded/>
                 <q-btn :icon="colClassContent == 'col' ? 'fa-thin fa-maximize' : 'fa-thin fa-minimize'"
                        @click="colClassContent = colClassContent == 'col' ? 'col-12' : 'col'"
                        unelevated outline color="grey-8" size="sm" padding="10px" rounded/>
@@ -212,7 +215,7 @@ export default {
               fieldItemId: this.blockId || null,
               props: {
                 label: this.$tr('isite.cms.message.preview'),
-                zone: 'mainimage',
+                zone: 'internalimage',
                 entity: "Modules\\Ibuilder\\Entities\\Block",
                 entityId: null
               }
@@ -492,7 +495,7 @@ export default {
           }))
           //Set templates as files
           this.templatesAsFiles = this.$clone(this.templates.map(template => ({
-            ...template.mediaFiles.mainimage,
+            ...template.mediaFiles.internalimage,
             isImage: true,
             filename: template.internalTitle,
             id: template.id,
@@ -585,7 +588,6 @@ export default {
           this.$router.push({name: "qbuilder.admin.blocks.index"})
           this.loading = false
         }).catch(error => {
-          console.warn(">>> Error", error)
           this.loading = false
         })
       })

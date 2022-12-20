@@ -77,17 +77,31 @@
                       </q-btn>
                     </div>
                   </div>
-                  <!--Tabs elements-->
+                  <!-- Tabs elements -->
                   <q-tabs v-model="elementSelected" dense class="bg-grey-2 text-grey-8 q-mb-md" align="justify"
                           active-bg-color="info" indicator-color="grey-2" active-color="white">
                     <q-tab v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
                            :name="element.systemName" :label="element.title"/>
                   </q-tabs>
-                  <!-- Tab Panel elements-->
+                  <!-- Tab Panel elements -->
                   <div v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
                        v-show="elementSelected == element.systemName" class="q-pa-none">
-                    <dynamic-form v-model="formAttributes[element.name]" :blocks="element.attributes"
-                                  formType="collapsible"/>
+                    <!-- status-->
+                    <div class="text-center q-mb-md">
+                      <q-btn-toggle v-model="statusChildBlocks[element.name]"
+                                    class="my-custom-toggle" no-caps rounded unelevated toggle-color="green"
+                                    color="grey-3" text-color="green" :options="[
+                              {label: `${element.title} (On)`, value: true},
+                              {label: `${element.title} (Off)`, value: false}
+                            ]"
+                      />
+                    </div>
+                    <!-- forms -->
+                    <div v-show="statusChildBlocks[element.name]">
+                      <q-separator class="q-mb-md"/>
+                      <dynamic-form v-model="formAttributes[element.name]" :blocks="element.attributes"
+                                    formType="collapsible"/>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -125,6 +139,7 @@ export default {
       this.formEntity = {}
       this.formAttributes = {}
       this.elementSelected = null
+      this.statusChildBlocks = {}
     },
     'formEntity.type'() {
       this.$set(this.formEntity, "id", null)
@@ -155,7 +170,8 @@ export default {
         selected: null
       },
       templates: [],
-      templatesAsFiles: []
+      templatesAsFiles: [],
+      statusChildBlocks: {}
     }
   },
   computed: {
@@ -336,8 +352,15 @@ export default {
             value: element.systemName
           }))
         }
-        //set defaule element id
-        setTimeout(() => this.elementSelected = Object.values(block.elements)[0].systemName, 100)
+        //Timeout to set values
+        setTimeout(() => {
+          //set defaule element id
+          this.elementSelected = Object.values(block.elements)[0].systemName
+          //Set blocks status
+          Object.values(response.block.elements).forEach(element => {
+            this.$set(this.statusChildBlocks, element.name, true)
+          })
+        }, 100)
       }
       //response
       return response
@@ -532,9 +555,16 @@ export default {
               this.$set(this.formEntity, "params", response.data.entity.params)
               this.$set(this.formEntity, "id", response.data.entity.id)
               this.formContentFields = this.$clone(response.data)
+              //Set the formAttributes data
+              const blockAttr = response.data.attributes
+              Object.keys(this.formAttributes).forEach(attrName => {
+                if ((blockAttr[attrName] != undefined) && !Array.isArray(blockAttr[attrName])) {
+                  this.$set(this.formAttributes, attrName, blockAttr[attrName])
+                } else {
+                  this.$set(this.statusChildBlocks, attrName, false)
+                }
+              })
             }, 500)
-            //Set the formAttributes data
-            this.formAttributes = this.$clone(response.data.attributes)
           }, 500)
           //Resolve
           resolve(response.data)
@@ -543,10 +573,10 @@ export default {
         })
       })
     },
-    //Save data
-    submitData() {
+    //Get the component data
+    getBlockRequestData() {
       //Instance the request data
-      const requestData = {
+      const requestData = this.$clone({
         ...this.formBlock,
         component: {
           nameSpace: this.selectedBlock.block.nameSpace,
@@ -555,11 +585,24 @@ export default {
         entity: {type: null, id: null, params: {}, ...this.formEntity},
         ...this.formContentFields,
         attributes: this.formAttributes,
-      }
+      })
+
       //Remove extra data
       delete requestData.componentName
       delete requestData.helpText
-      //Request
+      //Validate the status component attributes
+      Object.keys(this.statusChildBlocks).forEach(blockName => {
+        if (!this.statusChildBlocks[blockName]) {
+          requestData.attributes[blockName] = {}
+        }
+      })
+
+      //Response
+      return requestData
+    },
+    //Save data
+    submitData() {
+      const requestData = this.getBlockRequestData()
       this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
     },
     //Create Block

@@ -557,7 +557,7 @@ export default {
               this.formContentFields = this.$clone(response.data)
               //Set the formAttributes data
               const blockAttr = response.data.attributes
-              Object.keys(this.formAttributes).forEach(attrName => {
+              Object.keys(blockAttr).forEach(attrName => {
                 if ((blockAttr[attrName] != undefined) && !Array.isArray(blockAttr[attrName])) {
                   this.$set(this.formAttributes, attrName, blockAttr[attrName])
                 } else {

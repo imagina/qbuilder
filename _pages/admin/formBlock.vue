@@ -2,7 +2,7 @@
   <div id="formBlockPage">
     <!--Page Actions-->
     <div class="box box-auto-height q-mb-md">
-      <page-actions :title="settings.useLegacyStructure ? $tr($route.meta.title) : $route.meta.title"/>
+      <page-actions :title="settings.useLegacyStructure ? $tr($route.meta.title) : $route.meta.title" />
     </div>
     <!--Content-->
     <div class="relative-position">
@@ -16,30 +16,27 @@
               </div>
               <!--Actions-->
               <div class="row q-gutter-x-sm">
-                <q-btn icon="fa-light fa-up-right-from-square"
-                       @click="() => $helper.openExternalURL(iframePreviewUrl)"
-                       unelevated outline color="grey-8" size="sm" padding="10px" rounded/>
+                <q-btn icon="fa-light fa-up-right-from-square" @click="() => $helper.openExternalURL(iframePreviewUrl)"
+                  unelevated outline color="grey-8" size="sm" padding="10px" rounded />
                 <q-btn :icon="colClassContent == 'col' ? 'fa-thin fa-maximize' : 'fa-thin fa-minimize'"
-                       @click="colClassContent = colClassContent == 'col' ? 'col-12' : 'col'"
-                       unelevated outline color="grey-8" size="sm" padding="10px" rounded/>
+                  @click="colClassContent = colClassContent == 'col' ? 'col-12' : 'col'" unelevated outline
+                  color="grey-8" size="sm" padding="10px" rounded />
               </div>
             </div>
             <!--Iframe-->
-            <iframe
-                :src="iframePreviewUrl"
-                frameborder="0"
-                width="100%"
-                :height="`${windowHeigh - 320}px`"
-            />
+            <iframe :src="iframePreviewUrl" frameborder="0" width="100%" :height="`${windowHeigh - 320}px`" />
+            <div id="iframe-test">
+              <div v-for="element in elementsIframe" v-html="element.outerHTML"></div>
+            </div>
           </div>
         </div>
         <div :class="colClassContent">
           <q-scroll-area :style="`height: ${windowHeigh - 253}px; width: 100%;`">
             <q-form autocorrect="off" autocomplete="off" ref="formContent" @submit="submitData"
-                    @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
+              @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
               <!--Form block-->
-              <dynamic-form v-model="formBlock" :blocks="formFields.block" ref="mainForm" formType="grid"
-                            no-actions no-reset-with-blocks-update/>
+              <dynamic-form v-model="formBlock" :blocks="formFields.block" ref="mainForm" formType="grid" no-actions
+                no-reset-with-blocks-update />
               <!--Form Content-->
               <div v-if="contentfieldsconfig.show" class="box box-auto-height q-mb-md">
                 <div class="row q-col-gutter-x-md">
@@ -50,16 +47,16 @@
                   <!-- Entity Content -->
                   <div v-if="contentfieldsconfig.content.length" class="col-12">
                     <div v-for="(field, key) in formFields.entity.fields" :key="key"
-                         :class="field.colClass || field.columns || 'col-12 col-md-6'">
+                      :class="field.colClass || field.columns || 'col-12 col-md-6'">
                       <dynamic-field v-model="formEntity[field.name || key]" :key="key" :field="field"
-                                     v-if="field.vIf !== undefined ? field.vIf : true"/>
+                        v-if="field.vIf !== undefined ? field.vIf : true" />
                     </div>
                   </div>
                   <!-- Form Content Fields -->
                   <div class="col-12 no-child-box">
                     <dynamic-form v-if="contentfieldsconfig.contentFields.length" :box-style="false"
-                                  v-model="formContentFields" :blocks="contentfieldsconfig.contentFields"
-                                  ref="formContentFields" formType="grid" no-actions/>
+                      v-model="formContentFields" :blocks="contentfieldsconfig.contentFields" ref="formContentFields"
+                      formType="grid" no-actions />
                   </div>
                 </div>
               </div>
@@ -71,56 +68,53 @@
                   <div class="text-primary q-mb-md">
                     <div class="row justify-between items-center">
                       <b>{{ $trp("isite.cms.label.attribute") }}</b>
-                      <q-btn icon="fa-light fa-code-compare" color="green" round class="btn-middle"
-                             unelevated outline @click="getTemplates">
+                      <q-btn icon="fa-light fa-code-compare" color="green" round class="btn-middle" unelevated outline
+                        @click="getTemplates">
                         <q-tooltip>{{ $trp('isite.cms.label.template') }}</q-tooltip>
                       </q-btn>
                     </div>
                   </div>
                   <!-- Tabs elements -->
                   <q-tabs v-model="elementSelected" dense class="bg-grey-2 text-grey-8 q-mb-md" align="justify"
-                          active-bg-color="info" indicator-color="grey-2" active-color="white">
+                    active-bg-color="info" indicator-color="grey-2" active-color="white">
                     <q-tab v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
-                           :name="element.systemName" :label="element.title"/>
+                      :name="element.systemName" :label="element.title" />
                   </q-tabs>
                   <!-- Tab Panel elements -->
                   <div v-for="(element, indexFA) in selectedBlock.block.elements" :key="indexFA"
-                       v-show="elementSelected == element.systemName" class="q-pa-none">
+                    v-show="elementSelected == element.systemName" class="q-pa-none">
                     <!-- status-->
                     <div class="text-center q-mb-md">
-                      <q-btn-toggle v-model="statusChildBlocks[element.name]"
-                                    class="my-custom-toggle" no-caps rounded unelevated toggle-color="green"
-                                    color="grey-3" text-color="green" :options="[
-                              {label: `${element.title} (On)`, value: true},
-                              {label: `${element.title} (Off)`, value: false}
-                            ]"
-                      />
+                      <q-btn-toggle v-model="statusChildBlocks[element.name]" class="my-custom-toggle" no-caps rounded
+                        unelevated toggle-color="green" color="grey-3" text-color="green" :options="[
+  { label: `${element.title} (On)`, value: true },
+  { label: `${element.title} (Off)`, value: false }
+]" />
                     </div>
                     <!-- forms -->
                     <div v-show="statusChildBlocks[element.name]">
-                      <q-separator class="q-mb-md"/>
+                      <q-separator class="q-mb-md" />
                       <dynamic-form v-model="formAttributes[element.name]" :blocks="element.attributes"
-                                    formType="collapsible"/>
+                        formType="collapsible" />
                     </div>
                   </div>
                 </div>
               </div>
               <!--Actions-->
               <div class="box box-auto-height text-right">
-                <q-btn unelevated rounded no-caps type="submit" :label="$tr('isite.cms.label.save')"
-                       color="primary"/>
+                <q-btn unelevated rounded no-caps type="submit" :label="$tr('isite.cms.label.save')" color="primary" />
               </div>
             </q-form>
           </q-scroll-area>
         </div>
       </div>
       <!--Inner loading-->
-      <inner-loading :visible="loading"/>
+      <inner-loading :visible="loading" />
     </div>
     <!-- Modal Clone -->
     <master-modal v-model="modalTemplates.show" v-bind="modalTemplatesAttributes">
       <file-list-component v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6 col-md-3"
-                           @selected="value => modalTemplates.selected = (value[0] || null)"/>
+        @selected="value => modalTemplates.selected = (value[0] || null)" />
     </master-modal>
   </div>
 </template>
@@ -132,7 +126,7 @@ export default {
     this.$root.$off('page.data.refresh')
   },
   props: {},
-  components: {fileListComponent},
+  components: { fileListComponent },
   watch: {
     'formBlock.componentName'() {
       //Reset Values
@@ -143,13 +137,40 @@ export default {
     },
     'formEntity.type'() {
       this.$set(this.formEntity, "id", null)
-      this.$set(this.formEntity, "params", {"filter": {}, "take": 12})
+      this.$set(this.formEntity, "params", { "filter": {}, "take": 12 })
     },
   },
   mounted() {
     this.$nextTick(function () {
       this.init()
+      const baseUrl = this.$store.state.qsiteApp.baseUrl
+      const component = {
+        systemName: this.formBlock?.componentName,
+        nameSpace: this.selectedBlock?.block?.nameSpace
+      };
+      const form = document.createElement("form");
+      const iframe = document.createElement("iframe");
+      iframe.setAttribute("name", "test-iframe");
+      iframe.width = "300px";
+      iframe.height = "300px"
+      this.elementsIframe.push(iframe);
+      form.action = `${baseUrl}/ibuilder/block/preview`;
+      form.method = "post";
+      form.target = "test-iframe";
+      const input = document.createElement("input");
+      input.name = "component";
+      input.value = JSON.stringify(component);
+      input.type = "hidden";
+      const inputSubmit = document.createElement("input");
+      inputSubmit.value = "submit";
+      inputSubmit.type = "submit";
+      form.appendChild(input);
+      form.appendChild(inputSubmit);
+      this.elementsIframe.push(form);
+      form.submit();
     })
+  },
+  created() {
   },
   data() {
     return {
@@ -171,7 +192,8 @@ export default {
       },
       templates: [],
       templatesAsFiles: [],
-      statusChildBlocks: {}
+      statusChildBlocks: {},
+      elementsIframe: []
     }
   },
   computed: {
@@ -219,7 +241,7 @@ export default {
               props: {
                 label: this.$tr("isite.cms.label.block") + "*",
                 options: Object.values(this.blocks).filter(item => !item.internal).map(item => {
-                  return {label: item.title, value: item.systemName}
+                  return { label: item.title, value: item.systemName }
                 }),
                 readonly: this.blockId ? true : false
               }
@@ -297,7 +319,7 @@ export default {
           //Map attributes
           var attributesAsblockstoForm = []
           attributesAsblockstoForm = Object.values(mBlocks[blockName].attributes).map((item, index) => {
-            return {...item, name: index}
+            return { ...item, name: index }
           })
           //Replace values of the block
           response[blockName] = {
@@ -321,7 +343,7 @@ export default {
         //Obtain the data of the child elements
         var childBlocks = block.childBlocks || {}
         if ((block.systemName != "x-isite::block") && !childBlocks.mainBlock) {
-          childBlocks = {mainblock: "x-isite::block", ...childBlocks}
+          childBlocks = { mainblock: "x-isite::block", ...childBlocks }
         }
         Object.keys(childBlocks).forEach(childName => {
           var childBlock = Object.values(response).find(item => item.systemName == childBlocks[childName])
@@ -393,7 +415,7 @@ export default {
         response = {
           show: true,
           content: block.content,
-          contentFields: Object.keys(block.contentFields).length ? [{fields: block.contentFields}] : []
+          contentFields: Object.keys(block.contentFields).length ? [{ fields: block.contentFields }] : []
         }
 
       //Response
@@ -478,7 +500,7 @@ export default {
         let requestParams = {
           refresh: true,
           params: {
-            filter: {allTranslations: true, configNameByModule: 'blocks'}
+            filter: { allTranslations: true, configNameByModule: 'blocks' }
           }
         }
         //Request
@@ -505,7 +527,7 @@ export default {
         let requestParams = {
           refresh: true,
           params: {
-            filter: {allTranslations: true}
+            filter: { allTranslations: true }
           }
         }
         //Instance the full API for get the blocks(template)
@@ -540,14 +562,14 @@ export default {
         let requestParams = {
           refresh: true,
           params: {
-            filter: {allTranslations: true},
+            filter: { allTranslations: true },
             include: 'fields'
           }
         }
         //Request
         this.$crud.show('apiRoutes.qbuilder.blocks', this.blockId, requestParams).then(response => {
           //Set the form block data
-          this.formBlock = this.$clone({...response.data, componentName: response.data.component.systemName})
+          this.formBlock = this.$clone({ ...response.data, componentName: response.data.component.systemName })
           setTimeout(() => {
             //Set the formEntity data
             this.formEntity = this.$clone(response.data.entity)
@@ -582,7 +604,7 @@ export default {
           nameSpace: this.selectedBlock.block.nameSpace,
           systemName: this.selectedBlock.block.systemName
         },
-        entity: {type: null, id: null, params: {}, ...this.formEntity},
+        entity: { type: null, id: null, params: {}, ...this.formEntity },
         ...this.formContentFields,
         attributes: this.formAttributes,
       })
@@ -610,10 +632,10 @@ export default {
       return new Promise(resolve => {
         this.loading = true
         //Request params
-        const requestParams = {notToSnakeCase: this.notToSnakeCase}
+        const requestParams = { notToSnakeCase: this.notToSnakeCase }
         //request
         this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(response => {
-          this.$router.push({name: "qbuilder.admin.blocks.index"})
+          this.$router.push({ name: "qbuilder.admin.blocks.index" })
           this.loading = false
         }).catch(error => {
           this.loading = false
@@ -625,10 +647,10 @@ export default {
       return new Promise(resolve => {
         this.loading = true
         //Request params
-        const requestParams = {notToSnakeCase: this.notToSnakeCase}
+        const requestParams = { notToSnakeCase: this.notToSnakeCase }
         //request
         this.$crud.update("apiRoutes.qbuilder.blocks", this.blockId, data, requestParams).then(response => {
-          this.$router.push({name: "qbuilder.admin.blocks.index"})
+          this.$router.push({ name: "qbuilder.admin.blocks.index" })
           this.loading = false
         }).catch(error => {
           this.loading = false

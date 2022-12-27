@@ -7,7 +7,7 @@
     <!--Content-->
     <div class="relative-position">
       <div class="row q-col-gutter-md">
-        <div :class="colClassContent" v-if="showFormAttributes">
+        <div :class="colClassContent" v-show="showFormAttributes">
           <div class="box">
             <div class="row justify-between items-center q-mb-md">
               <!--Title-->
@@ -25,8 +25,12 @@
             </div>
             <!--Iframe-->
             <iframe :src="iframePreviewUrl" frameborder="0" width="100%" :height="`${windowHeigh - 320}px`" />
-            <div id="iframe-test">
-              <div v-for="element in elementsIframe" v-html="element.outerHTML"></div>
+            <div id="iframe-container">
+              <iframe name="sample-iframe" class="iframe-test"></iframe>
+              <form id="formIframe" method="post" target="sample-iframe" :action="`${baseUrl}/api/ibuilder/v1/block/preview`">
+                <div v-for="input in inputsForm" v-html="input.outerHTML"/>
+                <input type="submit" name="submit" value="submit" id="submit-form">
+              </form>
             </div>
           </div>
         </div>
@@ -139,38 +143,27 @@ export default {
       this.$set(this.formEntity, "id", null)
       this.$set(this.formEntity, "params", { "filter": {}, "take": 12 })
     },
+    'watchSelectedBlock.block'(newValue, prevValue){
+      this.watchSelectedBlock = newValue;
+    }
   },
   mounted() {
     this.$nextTick(function () {
-      this.init()
-      const baseUrl = this.$store.state.qsiteApp.baseUrl
-      const component = {
-        systemName: this.formBlock?.componentName,
-        nameSpace: this.selectedBlock?.block?.nameSpace
-      };
-      const form = document.createElement("form");
-      const iframe = document.createElement("iframe");
-      iframe.setAttribute("name", "test-iframe");
-      iframe.width = "300px";
-      iframe.height = "300px"
-      this.elementsIframe.push(iframe);
-      form.action = `${baseUrl}/ibuilder/block/preview`;
-      form.method = "post";
-      form.target = "test-iframe";
-      const input = document.createElement("input");
-      input.name = "component";
-      input.value = JSON.stringify(component);
-      input.type = "hidden";
-      const inputSubmit = document.createElement("input");
-      inputSubmit.value = "submit";
-      inputSubmit.type = "submit";
-      form.appendChild(input);
-      form.appendChild(inputSubmit);
-      this.elementsIframe.push(form);
-      form.submit();
+      this.init();
     })
   },
-  created() {
+  created() { 
+    const form  = document.getElementById("formIframe");
+    console.log(this.getBodyParams());
+    const bodyParams = this.getBodyParams();
+
+    Object.keys(bodyParams).forEach(field => {
+      const input = document.createElement("input");
+      input.name = field;
+      input.value = JSON.stringify(bodyParams[field]);
+      input.type = "hidden";
+      this.inputsForm.push(input);
+    });
   },
   data() {
     return {
@@ -193,7 +186,9 @@ export default {
       templates: [],
       templatesAsFiles: [],
       statusChildBlocks: {},
-      elementsIframe: []
+      inputsForm: [],
+      baseUrl: this.$store.state.qsiteApp.baseUrl,
+      watchSelectedBlock: this.selectedBlock,
     }
   },
   computed: {
@@ -455,6 +450,25 @@ export default {
 
       return `${baseUrl}/ibuilder/block/preview?component=${component}&entity=${entity}&attributes=${attributes}`
     },
+    //get body params to iframe
+    getBodyParams(){
+      var component = encodeURIComponent(JSON.stringify({
+        systemName: this.formBlock.componentName,
+        nameSpace: this.watchSelectedBlock().block.nameSpace
+      }))
+      var entity = encodeURIComponent(JSON.stringify(this.formEntity))
+      //Merge attributes with block field
+      var attributes = encodeURIComponent(JSON.stringify({
+        ...this.formAttributes,
+        componentAttributes: {
+          ...(this.formAttributes.componentAttributes || {}),
+          ...this.formContentFields,
+          ...(this.formContentFields[this.$store.state.qsiteApp.defaultLocale] || {})
+        }
+      }))
+      
+      return {component, entity, attributes}
+    },
     //Modal Templates attributes
     modalTemplatesAttributes() {
       return {
@@ -668,4 +682,8 @@ export default {
     .box
       box-shadow none
       padding 0
+.iframe-test{
+  height: 400px;
+  width: 400px;
+}
 </style>

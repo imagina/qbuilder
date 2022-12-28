@@ -143,9 +143,18 @@ export default {
       this.$set(this.formEntity, "id", null)
       this.$set(this.formEntity, "params", {"filter": {}, "take": 12})
     },
-    getBlockRequestData() {
-      this.getIframe()
-    }
+  },
+  created(){
+    this.$watch(vm => [vm.getBlockRequestData], val => {
+      if (this.timeout) clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        console.warn(">>>>>>>>>>>> DELAY", this.getBlockRequestData);
+        this.getIframe()
+      }, 500);
+    }, {
+      immediate: true,
+      deep: true,
+    });
   },
   mounted() {
     this.$nextTick(function () {
@@ -174,7 +183,9 @@ export default {
       templatesAsFiles: [],
       statusChildBlocks: {},
       inputsForm: [],
-      baseUrl: this.$store.state.qsiteApp.baseUrl
+      baseUrl: this.$store.state.qsiteApp.baseUrl,
+      timeout: setTimeout(() => {}, 0),
+      firstRender: false
     }
   },
   computed: {
@@ -609,6 +620,7 @@ export default {
         setTimeout(() => {
           this.inputsForm = []
           const bodyParams = this.getBlockRequestData;
+          console.warn("BODYPARAMS", bodyParams);
           Object.keys(bodyParams).forEach(field => {
             const input = document.createElement("input");
             input.name = field;

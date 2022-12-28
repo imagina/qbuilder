@@ -16,8 +16,6 @@
               </div>
               <!--Actions-->
               <div class="row q-gutter-x-sm">
-                <q-btn icon="fa-light fa-up-right-from-square" @click="() => $helper.openExternalURL(iframePreviewUrl)"
-                       unelevated outline color="grey-8" size="sm" padding="10px" rounded/>
                 <q-btn :icon="colClassContent == 'col' ? 'fa-thin fa-maximize' : 'fa-thin fa-minimize'"
                        @click="colClassContent = colClassContent == 'col' ? 'col-12' : 'col'" unelevated outline
                        color="grey-8" size="sm" padding="10px" rounded/>
@@ -25,7 +23,7 @@
             </div>
             <!--Iframe-->
             <div id="iframe-container">
-              <iframe name="sample-iframe" frameborder="0" width="100%" :height="`${windowHeigh - 320}px`"></iframe>
+              <iframe name="sample-iframe" frameborder="0" width="100%" :height="`${windowHeigh - 320}px`"/>
               <form name="form-iframe" id="form-iframe" method="post" target="sample-iframe"
                     :action="`${baseUrl}/api/ibuilder/v1/block/preview`">
                 <div v-for="input in inputsForm" v-html="input.outerHTML"/>
@@ -144,11 +142,10 @@ export default {
       this.$set(this.formEntity, "params", {"filter": {}, "take": 12})
     },
   },
-  created(){
+  created() {
     this.$watch(vm => [vm.getBlockRequestData], val => {
       if (this.timeout) clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
-        console.warn(">>>>>>>>>>>> DELAY", this.getBlockRequestData);
         this.getIframe()
       }, 500);
     }, {
@@ -184,7 +181,7 @@ export default {
       statusChildBlocks: {},
       inputsForm: [],
       baseUrl: this.$store.state.qsiteApp.baseUrl,
-      timeout: setTimeout(() => {}, 0),
+      timeout: null,
       firstRender: false
     }
   },
@@ -427,26 +424,6 @@ export default {
       //Response
       return response
     },
-    //Url to iframe preview
-    iframePreviewUrl() {
-      var baseUrl = this.$store.state.qsiteApp.baseUrl
-      var component = encodeURIComponent(JSON.stringify({
-        systemName: this.formBlock.componentName,
-        nameSpace: this.selectedBlock.block.nameSpace
-      }))
-      var entity = encodeURIComponent(JSON.stringify(this.formEntity))
-      //Merge attributes with block field
-      var attributes = encodeURIComponent(JSON.stringify({
-        ...this.formAttributes,
-        componentAttributes: {
-          ...(this.formAttributes.componentAttributes || {}),
-          ...this.formContentFields,
-          ...(this.formContentFields[this.$store.state.qsiteApp.defaultLocale] || {})
-        }
-      }))
-
-      return `${baseUrl}/ibuilder/block/preview?component=${component}&entity=${entity}&attributes=${attributes}`
-    },
     //get body params to iframe
     getBlockRequestData() {
       //Instance the request data
@@ -617,20 +594,21 @@ export default {
     //getIframe
     getIframe() {
       if (this.showFormAttributes) {
-        setTimeout(() => {
-          this.inputsForm = []
-          const bodyParams = this.getBlockRequestData;
-          console.warn("BODYPARAMS", bodyParams);
-          Object.keys(bodyParams).forEach(field => {
-            const input = document.createElement("input");
-            input.name = field;
-            input.value = JSON.stringify(bodyParams[field]);
-            input.type = "hidden";
-            this.inputsForm.push(input);
-          });
+        let newInputsForm = []
+        const bodyParams = this.getBlockRequestData;
+        Object.keys(bodyParams).forEach(field => {
+          const input = document.createElement("input");
+          input.name = field;
+          input.value = JSON.stringify(bodyParams[field]);
+          input.type = "hidden";
+          newInputsForm.push(input);
+        });
+        this.inputsForm = newInputsForm
+        //Submit the form
+        this.$nextTick(() => {
           const submitFormFunction = Object.getPrototypeOf(document.forms["form-iframe"]).submit;
           submitFormFunction.call(document.forms["form-iframe"]);
-        }, 500)
+        })
       }
     },
     //Save data

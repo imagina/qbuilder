@@ -24,12 +24,11 @@
               </div>
             </div>
             <!--Iframe-->
-            <iframe :src="iframePreviewUrl" frameborder="0" width="100%" :height="`${windowHeigh - 320}px`" />
             <div id="iframe-container">
-              <iframe name="sample-iframe" class="iframe-test"></iframe>
-              <form id="formIframe" method="post" target="sample-iframe" :action="`${baseUrl}/api/ibuilder/v1/block/preview`">
-                <div v-for="input in inputsForm" v-html="input.outerHTML"/>
-                <input type="submit" name="submit" value="submit" id="submit-form">
+              <iframe name="sample-iframe" frameborder="0" width="100%" :height="`${windowHeigh - 320}px`"></iframe>
+              <form name="form-iframe" id="form-iframe" method="post" target="sample-iframe"
+                :action="`${baseUrl}/api/ibuilder/v1/block/preview`">
+                <div v-for="input in inputsForm" v-html="input.outerHTML" />
               </form>
             </div>
           </div>
@@ -143,27 +142,22 @@ export default {
       this.$set(this.formEntity, "id", null)
       this.$set(this.formEntity, "params", { "filter": {}, "take": 12 })
     },
-    'watchSelectedBlock.block'(newValue, prevValue){
-      this.watchSelectedBlock = newValue;
-    }
+  },
+  created(){
+    this.$watch(vm => [vm.selectedBlock, vm.formEntity, vm.formAttributes], val => { 
+      console.log(val);
+      if (this.selectedBlock.block && this.selectedBlock.block.nameSpace && Object.keys(this.formEntity).length > 0 && Object.keys(this.formAttributes).length > 0 && this.formAttributes) {
+        this.getIframe();
+      }
+    }, {
+      immediate: true, // run immediately
+      deep: true // detects changes inside objects. not needed here, but maybe in other cases
+    }) 
   },
   mounted() {
     this.$nextTick(function () {
       this.init();
     })
-  },
-  created() { 
-    const form  = document.getElementById("formIframe");
-    console.log(this.getBodyParams());
-    const bodyParams = this.getBodyParams();
-
-    Object.keys(bodyParams).forEach(field => {
-      const input = document.createElement("input");
-      input.name = field;
-      input.value = JSON.stringify(bodyParams[field]);
-      input.type = "hidden";
-      this.inputsForm.push(input);
-    });
   },
   data() {
     return {
@@ -188,7 +182,6 @@ export default {
       statusChildBlocks: {},
       inputsForm: [],
       baseUrl: this.$store.state.qsiteApp.baseUrl,
-      watchSelectedBlock: this.selectedBlock,
     }
   },
   computed: {
@@ -451,23 +444,22 @@ export default {
       return `${baseUrl}/ibuilder/block/preview?component=${component}&entity=${entity}&attributes=${attributes}`
     },
     //get body params to iframe
-    getBodyParams(){
-      var component = encodeURIComponent(JSON.stringify({
+    getBodyParams() {
+      var component = {
         systemName: this.formBlock.componentName,
-        nameSpace: this.watchSelectedBlock().block.nameSpace
-      }))
-      var entity = encodeURIComponent(JSON.stringify(this.formEntity))
+        nameSpace: this.selectedBlock.block.nameSpace
+      }
+      var entity = this.formEntity;
       //Merge attributes with block field
-      var attributes = encodeURIComponent(JSON.stringify({
+      var attributes = {
         ...this.formAttributes,
         componentAttributes: {
           ...(this.formAttributes.componentAttributes || {}),
           ...this.formContentFields,
           ...(this.formContentFields[this.$store.state.qsiteApp.defaultLocale] || {})
         }
-      }))
-      
-      return {component, entity, attributes}
+      }
+      return { component, entity, attributes }
     },
     //Modal Templates attributes
     modalTemplatesAttributes() {
@@ -635,6 +627,19 @@ export default {
 
       //Response
       return requestData
+    },
+    //getIframe
+    getIframe() {
+      const bodyParams = this.getBodyParams;
+      Object.keys(bodyParams).forEach(field => {
+        const input = document.createElement("input");
+        input.name = field;
+        input.value = JSON.stringify(bodyParams[field]);
+        input.type = "hidden";
+        this.inputsForm.push(input);
+      });
+      const submitFormFunction = Object.getPrototypeOf(document.forms["form-iframe"]).submit;
+      submitFormFunction.call(document.forms["form-iframe"]);
     },
     //Save data
     submitData() {

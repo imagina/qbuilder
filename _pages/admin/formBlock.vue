@@ -145,7 +145,6 @@ export default {
   },
   created(){
     this.$watch(vm => [vm.selectedBlock, vm.formEntity, vm.formAttributes], val => { 
-      console.log(val);
       if (this.selectedBlock.block && this.selectedBlock.block.nameSpace && Object.keys(this.formEntity).length > 0 && Object.keys(this.formAttributes).length > 0 && this.formAttributes) {
         this.getIframe();
       }

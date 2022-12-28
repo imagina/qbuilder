@@ -7,7 +7,7 @@
     <!--Content-->
     <div class="relative-position">
       <div class="row q-col-gutter-md">
-        <div :class="colClassContent" v-show="showFormAttributes">
+        <div :class="colClassContent" v-if="showFormAttributes">
           <div class="box">
             <div class="row justify-between items-center q-mb-md">
               <!--Title-->
@@ -144,8 +144,8 @@ export default {
     },
   },
   created(){
-    this.$watch(vm => [vm.selectedBlock, vm.formEntity, vm.formAttributes], val => { 
-      if (this.selectedBlock.block && this.selectedBlock.block.nameSpace && Object.keys(this.formEntity).length > 0 && Object.keys(this.formAttributes).length > 0 && this.formAttributes) {
+    this.$watch(vm => [vm.isIframeDataLoaded, vm.getBodyParams], val => { 
+      if (this.isIframeDataLoaded) {
         this.getIframe();
       }
     }, {
@@ -181,6 +181,7 @@ export default {
       statusChildBlocks: {},
       inputsForm: [],
       baseUrl: this.$store.state.qsiteApp.baseUrl,
+      isIframeDataLoaded: false
     }
   },
   computed: {
@@ -419,6 +420,7 @@ export default {
         if (!selectedContent) response = false
         if (selectedContent && selectedContent.loadOptions && !this.formEntity.id) response = false
       }
+      this.isIframeDataLoaded = true;
       //Response
       return response
     },
@@ -445,8 +447,8 @@ export default {
     //get body params to iframe
     getBodyParams() {
       const component = {
-        systemName: this.formBlock.componentName,
-        nameSpace: this.selectedBlock.block.nameSpace
+        systemName: this.formBlock?.componentName,
+        nameSpace: this.selectedBlock?.block?.nameSpace
       }
       const entity = this.formEntity;
       //Merge attributes with block field
@@ -686,8 +688,4 @@ export default {
     .box
       box-shadow none
       padding 0
-.iframe-test{
-  height: 400px;
-  width: 400px;
-}
 </style>

@@ -445,13 +445,13 @@ export default {
     },
     //get body params to iframe
     getBodyParams() {
-      var component = {
+      const component = {
         systemName: this.formBlock.componentName,
         nameSpace: this.selectedBlock.block.nameSpace
       }
-      var entity = this.formEntity;
+      const entity = this.formEntity;
       //Merge attributes with block field
-      var attributes = {
+      const attributes = {
         ...this.formAttributes,
         componentAttributes: {
           ...(this.formAttributes.componentAttributes || {}),

@@ -141,17 +141,13 @@ export default {
       this.$set(this.formEntity, "id", null)
       this.$set(this.formEntity, "params", {"filter": {}, "take": 12})
     },
-  },
-  created() {
-    this.$watch(vm => [vm.getBlockRequestData], val => {
+    getBlockRequestData(){
       if (this.timeout) clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
         this.getIframe()
       }, 500);
-    }, {
-      immediate: true,
-      deep: true,
-    });
+      
+    }
   },
   mounted() {
     this.$nextTick(function () {
@@ -182,7 +178,7 @@ export default {
       inputsForm: [],
       baseUrl: this.$store.state.qsiteApp.baseUrl,
       timeout: null,
-      firstRender: false
+      isGetIframe: false
     }
   },
   computed: {
@@ -424,6 +420,23 @@ export default {
       //Response
       return response
     },
+    getBodyParams() {
+      const component = {
+        systemName: this.formBlock?.componentName,
+        nameSpace: this.selectedBlock?.block?.nameSpace
+      }
+      const entity = this.formEntity;
+      //Merge attributes with block field
+      const attributes = {
+        ...this.formAttributes,
+        componentAttributes: {
+          ...(this.formAttributes.componentAttributes || {}),
+          ...this.formContentFields,
+          ...(this.formContentFields[this.$store.state.qsiteApp.defaultLocale] || {})
+        }
+      }
+      return { component, entity, attributes }
+    },
     //get body params to iframe
     getBlockRequestData() {
       //Instance the request data
@@ -433,8 +446,8 @@ export default {
           nameSpace: this.selectedBlock?.block?.nameSpace || "",
           systemName: this.selectedBlock?.block?.systemName || ""
         },
-        entity: {type: null, id: null, params: {}, ...this.formEntity},
         ...this.formContentFields,
+        entity: {type: null, id: null, params: {}, ...this.formEntity},
         attributes: this.formAttributes,
       })
 
@@ -595,7 +608,7 @@ export default {
     getIframe() {
       if (this.showFormAttributes) {
         let newInputsForm = []
-        const bodyParams = this.getBlockRequestData;
+        const bodyParams = this.getBodyParams;
         Object.keys(bodyParams).forEach(field => {
           const input = document.createElement("input");
           input.name = field;

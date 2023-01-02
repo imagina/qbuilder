@@ -36,7 +36,10 @@
           <q-scroll-area :style="`height: ${windowHeigh - 253}px; width: 100%;`">
             <q-form autocorrect="off" autocomplete="off" ref="formContent" @submit="submitTemplates"
                     @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
-            <file-list-component v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6"
+              <div class="box-title text-primary q-mb-md">
+                {{ $tr('ibuilder.cms.sidebar.adminTemplates')}}
+              </div>
+              <file-list-component v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6"
                            @selected="value => modalTemplates.selected = (value[0] || null)"/>
               <!--Actions-->
               <div class="box box-auto-height text-right">
@@ -176,11 +179,6 @@ export default {
     })
   },
   created(){
-    const urlParams = window.location.href.split('?');
-    const parseParams = new URLSearchParams(urlParams);
-    for (const p of parseParams) {
-      console.log(p);
-    }
     if(this.$route.meta.viewType === 'client'){
       this.isClient = true;
     }
@@ -693,11 +691,8 @@ export default {
         //request
         this.$crud.update("apiRoutes.qbuilder.blocks", this.blockId, data, requestParams).then(response => {
           if (this.isClient) {
-            const urlParams = window.location.href.split('?');
-            const parseParams = new URLSearchParams(urlParams[1]);
-            console.log(parseParams);
-            if (this.$route.params.redirect) {
-              window.location.href = this.$route.params.redirect;
+            if (this.$route.query.redirect) {
+              window.location.href = this.$route.query.redirect;
             }
           }else{
             this.$router.push({name: "qbuilder.admin.blocks.index"})

@@ -168,7 +168,6 @@ export default {
     },
     'selectedBlock.block'(newValue){
       if (newValue && this.isClient) {
-        console.warn(this.templatesAsFiles);
         this.getTemplates();
       }
     }
@@ -553,9 +552,7 @@ export default {
     //Get templates
     getTemplates() {
       return new Promise((resolve, reject) => {
-        console.log('executing promise');
         if (!this.settings.templatesBaseUrl) return resolve(true)
-        console.log('executing call');
         if (!this.isClient) {
           this.modalTemplates = {
             show: true,

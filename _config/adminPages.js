@@ -44,6 +44,22 @@ export default {
       breadcrumb: ['qbuilder.blocks']
     }
   },
+  formUpdateClientBlock: {
+    viewType: 'client',
+    permission: 'ibuilder.blocks.edit',
+    activated: true,
+    path: '/builder/client/:id',
+    name: 'qbuilder.admin.client.update',
+    page: () => import('@imagina/qbuilder/_pages/admin/formBlock'),
+    layout: () => import('@imagina/qsite/_layouts/master.vue'),
+    title: 'ibuilder.cms.updateBlock',
+    icon: 'fa-light fa-square-pen',
+    authenticated: true,
+    subHeader: {
+      refresh: true,
+      breadcrumb: ['qbuilder.blocks']
+    }
+  },
   formUpdateBlockTemplate: {
     permission: 'ibuilder.blocks.edit',
     activated: true,

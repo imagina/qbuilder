@@ -31,7 +31,25 @@
             </div>
           </div>
         </div>
-        <div :class="colClassContent">
+        <!-- Client View -->
+        <div v-if="isClient" :class="colClassContent">
+          <q-scroll-area :style="`height: ${windowHeigh - 253}px; width: 100%;`">
+            <q-form autocorrect="off" autocomplete="off" ref="formContent" @submit="submitTemplates"
+                    @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
+              <div class="box-title text-primary q-mb-md">
+                {{ $tr('ibuilder.cms.sidebar.adminTemplates')}}
+              </div>
+              <file-list-component v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6"
+                           @selected="value => modalTemplates.selected = (value[0] || null)"/>
+              <!--Actions-->
+              <div class="box box-auto-height text-right">
+                <q-btn unelevated rounded no-caps type="submit" :disable="this.modalTemplates.selected ? false : true" :label="$tr('isite.cms.label.apply')" color="primary"/>
+              </div>
+            </q-form>
+          </q-scroll-area>
+        </div>
+        <!-- User View -->
+        <div v-else :class="colClassContent">
           <q-scroll-area :style="`height: ${windowHeigh - 253}px; width: 100%;`">
             <q-form autocorrect="off" autocomplete="off" ref="formContent" @submit="submitData"
                     @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
@@ -122,6 +140,7 @@
 </template>
 <script>
 import fileListComponent from '@imagina/qsite/_components/master/fileList'
+import { URLSearchParams } from 'url'
 
 export default {
   beforeDestroy() {
@@ -145,14 +164,23 @@ export default {
       if (this.timeout) clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
         this.getIframe()
-      }, 500);
-      
+      }, 500); 
+    },
+    'selectedBlock.block'(newValue){
+      if (newValue && this.isClient) {
+        this.getTemplates();
+      }
     }
   },
   mounted() {
     this.$nextTick(function () {
       this.init();
     })
+  },
+  created(){
+    if(this.$route.meta.viewType === 'client'){
+      this.isClient = true;
+    }
   },
   data() {
     return {
@@ -178,7 +206,7 @@ export default {
       inputsForm: [],
       baseUrl: this.$store.state.qsiteApp.baseUrl,
       timeout: null,
-      isGetIframe: false
+      isClient: false
     }
   },
   computed: {
@@ -362,7 +390,7 @@ export default {
         //Timeout to set values
         setTimeout(() => {
           //set defaule element id
-          this.elementSelected = Object.values(block.elements)[0].systemName
+          this.elementSelected = Object.values(block.elements)[0].systemName;
           //Set blocks status
           Object.values(response.block.elements).forEach(element => {
             this.$set(this.statusChildBlocks, element.name, true)
@@ -525,10 +553,12 @@ export default {
     getTemplates() {
       return new Promise((resolve, reject) => {
         if (!this.settings.templatesBaseUrl) return resolve(true)
-        this.modalTemplates = {
-          show: true,
-          loading: true,
-          selected: null
+        if (!this.isClient) {
+          this.modalTemplates = {
+            show: true,
+            loading: true,
+            selected: null
+          }
         }
         this.templates = []
         this.templatesAsFiles = []
@@ -629,6 +659,11 @@ export default {
       const requestData = this.getBlockRequestData
       this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
     },
+    //Save Templates Client
+    submitTemplates(){
+      this.formAttributes = this.$clone(this.modalTemplates.selected.attributes)
+      this.submitData();
+    },
     //Create Block
     createBlock(data) {
       return new Promise(resolve => {
@@ -652,7 +687,13 @@ export default {
         const requestParams = {notToSnakeCase: this.notToSnakeCase}
         //request
         this.$crud.update("apiRoutes.qbuilder.blocks", this.blockId, data, requestParams).then(response => {
-          this.$router.push({name: "qbuilder.admin.blocks.index"})
+          if (this.isClient) {
+            if (this.$route.query.redirect) {
+              window.location.href = this.$route.query.redirect;
+            }
+          }else{
+            this.$router.push({name: "qbuilder.admin.blocks.index"})
+          };
           this.loading = false
         }).catch(error => {
           this.loading = false

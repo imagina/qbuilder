@@ -38,6 +38,8 @@
               <div class="box-title text-primary q-mb-md">
                 {{ $tr('ibuilder.cms.sidebar.adminTemplates') }}
               </div>
+              <!-- Help text -->
+              <dynamic-field :field="formFields.client.helpText"/>
               <!-- File List -->
               <file-list-component v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6 col-md-4"
                                    @selected="value => modalTemplates.selected = (value[0] || null)"/>
@@ -322,6 +324,14 @@ export default {
                 ]
               }
             },
+          }
+        },
+        client: {
+          helpText: {
+            type: 'banner',
+            props: {
+              message: "Selecciona la plantilla que más te guste para cambiar la manera en que se ve está sección en tu sitio WEB."
+            }
           }
         }
       }

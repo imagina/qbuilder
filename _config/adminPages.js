@@ -46,9 +46,9 @@ export default {
   },
   formUpdateClientBlock: {
     viewType: 'client',
-    permission: 'ibuilder.blocks.edit',
+    permission: 'ibuilder.blocks.client',
     activated: true,
-    path: '/builder/client/:id',
+    path: '/builder/blocks/client/:id',
     name: 'qbuilder.admin.client.update',
     page: () => import('@imagina/qbuilder/_pages/admin/formBlock'),
     layout: () => import('@imagina/qsite/_layouts/master.vue'),

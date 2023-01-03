@@ -34,18 +34,22 @@
         <!-- Client View -->
         <div v-if="isClient" :class="colClassContent">
           <q-scroll-area :style="`height: ${windowHeigh - 253}px; width: 100%;`">
-            <q-form autocorrect="off" autocomplete="off" ref="formContent" @submit="submitTemplates"
-                    @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
+            <div class="box box-auto-height">
               <div class="box-title text-primary q-mb-md">
-                {{ $tr('ibuilder.cms.sidebar.adminTemplates')}}
+                {{ $tr('ibuilder.cms.sidebar.adminTemplates') }}
               </div>
-              <file-list-component v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6"
-                           @selected="value => modalTemplates.selected = (value[0] || null)"/>
+              <!-- File List -->
+              <file-list-component v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6 col-md-4"
+                                   @selected="value => modalTemplates.selected = (value[0] || null)"/>
               <!--Actions-->
-              <div class="box box-auto-height text-right">
-                <q-btn unelevated rounded no-caps type="submit" :disable="this.modalTemplates.selected ? false : true" :label="$tr('isite.cms.label.apply')" color="primary"/>
+              <div class="text-right">
+                <q-btn unelevated rounded no-caps type="submit"
+                       :disable="this.modalTemplates.selected ? false : true"
+                       :label="$tr('isite.cms.label.apply')" color="primary"
+                       @click="submitTemplates"
+                />
               </div>
-            </q-form>
+            </div>
           </q-scroll-area>
         </div>
         <!-- User View -->
@@ -140,7 +144,6 @@
 </template>
 <script>
 import fileListComponent from '@imagina/qsite/_components/master/fileList'
-import { URLSearchParams } from 'url'
 
 export default {
   beforeDestroy() {
@@ -160,13 +163,13 @@ export default {
       this.$set(this.formEntity, "id", null)
       this.$set(this.formEntity, "params", {"filter": {}, "take": 12})
     },
-    getBlockRequestData(){
+    getBlockRequestData() {
       if (this.timeout) clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
         this.getIframe()
-      }, 500); 
+      }, 500);
     },
-    'selectedBlock.block'(newValue){
+    'selectedBlock.block'(newValue) {
       if (newValue && this.isClient) {
         this.getTemplates();
       }
@@ -177,8 +180,8 @@ export default {
       this.init();
     })
   },
-  created(){
-    if(this.$route.meta.viewType === 'client'){
+  created() {
+    if (this.$route.meta.viewType === 'client') {
       this.isClient = true;
     }
   },
@@ -463,7 +466,7 @@ export default {
           ...(this.formContentFields[this.$store.state.qsiteApp.defaultLocale] || {})
         }
       }
-      return { component, entity, attributes }
+      return {component, entity, attributes}
     },
     //get body params to iframe
     getBlockRequestData() {
@@ -584,7 +587,10 @@ export default {
             filename: template.internalTitle,
             id: template.id,
             attributes: template.attributes
-          })))
+          }))).filter(template => {
+            if (this.blockId == template.id) return false
+            return true
+          })
           this.modalTemplates.loading = false
           resolve(response)
         }).catch(error => {
@@ -660,7 +666,7 @@ export default {
       this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
     },
     //Save Templates Client
-    submitTemplates(){
+    submitTemplates() {
       this.formAttributes = this.$clone(this.modalTemplates.selected.attributes)
       this.submitData();
     },
@@ -691,9 +697,9 @@ export default {
             if (this.$route.query.redirect) {
               window.location.href = this.$route.query.redirect;
             }
-          }else{
+          } else {
             this.$router.push({name: "qbuilder.admin.blocks.index"})
-          };
+          }
           this.loading = false
         }).catch(error => {
           this.loading = false

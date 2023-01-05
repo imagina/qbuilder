@@ -28,6 +28,7 @@
                     :action="`${baseUrl}/api/ibuilder/v1/block/preview`">
                 <div v-for="input in inputsForm" v-html="input.outerHTML"/>
               </form>
+              <!-- <pre>{{Object.keys(getBodyParams.attributes)}}</pre> -->
             </div>
           </div>
         </div>
@@ -41,14 +42,17 @@
               <!-- Help text -->
               <dynamic-field :field="formFields.client.helpText"/>
               <!-- File List -->
-              <file-list-component v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6 col-md-4"
-                                   @selected="value => modalTemplates.selected = (value[0] || null)"/>
+              <file-list-component :key="fileListKey" v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6 col-md-4"
+                                   @selected="value => setNewPreviewTemplate(value)"/>
               <!--Actions-->
-              <div class="text-right">
-                <q-btn unelevated rounded no-caps type="submit"
-                       :disable="this.modalTemplates.selected ? false : true"
+              <div class="text-right" v-show="modalTemplates.selected ? true : false">
+                <q-btn unelevated rounded no-caps type="submit" class="q-mr-sm"             
+                       :label="$tr('isite.cms.label.discardChanges')" color="blue-grey-3"
+                       @click="discardTemplateChanges"
+                />
+                <q-btn unelevated rounded no-caps type="submit"                
                        :label="$tr('isite.cms.label.apply')" color="primary"
-                       @click="submitTemplates"
+                       @click="() => submitTemplates(true)"
                 />
               </div>
             </div>
@@ -175,7 +179,7 @@ export default {
       if (newValue && this.isClient) {
         this.getTemplates();
       }
-    }
+    },
   },
   mounted() {
     this.$nextTick(function () {
@@ -211,7 +215,10 @@ export default {
       inputsForm: [],
       baseUrl: this.$store.state.qsiteApp.baseUrl,
       timeout: null,
-      isClient: false
+      isClient: false,
+      previusTemplateSelected: null,
+      removeSelectedFile: false,
+      fileListKey: this.$uid(),
     }
   },
   computed: {
@@ -641,6 +648,7 @@ export default {
                   this.$set(this.statusChildBlocks, attrName, false)
                 }
               })
+              this.previusTemplateSelected = this.$clone(this.formAttributes);
             }, 500)
           }, 500)
           //Resolve
@@ -670,15 +678,38 @@ export default {
         })
       }
     },
+    //new template preview
+    setNewPreviewTemplate(value){
+      if (value.length > 0) {
+        this.modalTemplates.selected = (value[0] || null);
+      }else{
+        this.modalTemplates.selected = this.$clone({
+          attributes: {
+            ...this.previusTemplateSelected
+          }
+        });
+      }
+      this.formAttributes = this.$clone(this.modalTemplates.selected.attributes)
+      this.submitTemplates();
+    },
+    //discard changes template selected
+    discardTemplateChanges(){
+      this.modalTemplates.selected = null;
+      this.fileListKey = this.$uid()
+      this.formAttributes = this.$clone(this.previusTemplateSelected);
+      this.submitTemplates();
+    },
     //Save data
     submitData() {
       const requestData = this.getBlockRequestData
       this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
     },
     //Save Templates Client
-    submitTemplates() {
-      this.formAttributes = this.$clone(this.modalTemplates.selected.attributes)
-      this.submitData();
+    submitTemplates(save = false) {
+      this.getIframe();
+      if (save) {
+        this.submitData();
+      };
     },
     //Create Block
     createBlock(data) {

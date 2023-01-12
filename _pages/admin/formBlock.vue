@@ -46,11 +46,11 @@
                                    @selected="value => setNewPreviewTemplate(value)"/>
               <!--Actions-->
               <div class="text-right" v-show="modalTemplates.selected ? true : false">
-                <q-btn unelevated rounded no-caps type="submit" class="q-mr-sm"             
+                <q-btn unelevated rounded no-caps type="submit" class="q-mr-sm"
                        :label="$tr('isite.cms.label.discardChanges')" color="blue-grey-3"
                        @click="discardTemplateChanges"
                 />
-                <q-btn unelevated rounded no-caps type="submit"                
+                <q-btn unelevated rounded no-caps type="submit"
                        :label="$tr('isite.cms.label.apply')" color="primary"
                        @click="() => submitTemplates(true)"
                 />
@@ -375,8 +375,8 @@ export default {
         ]
         //Obtain the data of the child elements
         var childBlocks = block.childBlocks || {}
-        if ((block.systemName != "x-isite::block") && !childBlocks.mainBlock) {
-          childBlocks = {mainblock: "x-isite::block", ...childBlocks}
+        if ((block.systemName != "x-ibuilder::block") && !childBlocks.mainBlock) {
+          childBlocks = {mainblock: "x-ibuilder::block", ...childBlocks}
         }
         Object.keys(childBlocks).forEach(childName => {
           var childBlock = Object.values(response).find(item => item.systemName == childBlocks[childName])

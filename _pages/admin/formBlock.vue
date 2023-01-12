@@ -28,7 +28,6 @@
                     :action="`${baseUrl}/api/ibuilder/v1/block/preview`">
                 <div v-for="input in inputsForm" v-html="input.outerHTML"/>
               </form>
-              <!-- <pre>{{Object.keys(getBodyParams.attributes)}}</pre> -->
             </div>
           </div>
         </div>
@@ -42,7 +41,8 @@
               <!-- Help text -->
               <dynamic-field :field="formFields.client.helpText"/>
               <!-- File List -->
-              <file-list-component :key="fileListKey" v-model="templatesAsFiles" :allowSelect="1" gridColClass="col-6 col-md-4"
+              <file-list-component :key="fileListKey" v-model="templatesAsFiles" :allowSelect="1"
+                                   gridColClass="col-6 col-md-4"
                                    @selected="value => setNewPreviewTemplate(value)"/>
               <!--Actions-->
               <div class="text-right" v-show="modalTemplates.selected ? true : false">
@@ -193,6 +193,7 @@ export default {
   },
   data() {
     return {
+      languageOptions: this.$store.getters['qsiteApp/getSelectedLocalesSelect'],
       loading: false,
       blockId: this.$route.params.id,
       configData: {},
@@ -499,6 +500,14 @@ export default {
         attributes: this.formAttributes,
       })
 
+      //Merge translations
+      this.languageOptions.forEach(lang => {
+        response[lang.value] = {
+          ...this.formContentFields[lang.value],
+          ...this.formBlock[lang.value],
+        }
+      })
+
       //Remove extra data
       delete response.componentName
       delete response.helpText
@@ -638,6 +647,7 @@ export default {
             setTimeout(() => {
               this.$set(this.formEntity, "params", response.data.entity.params)
               this.$set(this.formEntity, "id", response.data.entity.id)
+              //Set fields
               this.formContentFields = this.$clone(response.data)
               //Set the formAttributes data
               const blockAttr = response.data.attributes
@@ -679,10 +689,10 @@ export default {
       }
     },
     //new template preview
-    setNewPreviewTemplate(value){
+    setNewPreviewTemplate(value) {
       if (value.length > 0) {
         this.modalTemplates.selected = (value[0] || null);
-      }else{
+      } else {
         this.modalTemplates.selected = this.$clone({
           attributes: {
             ...this.previusTemplateSelected
@@ -693,7 +703,7 @@ export default {
       this.submitTemplates();
     },
     //discard changes template selected
-    discardTemplateChanges(){
+    discardTemplateChanges() {
       this.modalTemplates.selected = null;
       this.fileListKey = this.$uid()
       this.formAttributes = this.$clone(this.previusTemplateSelected);
@@ -709,7 +719,7 @@ export default {
       this.getIframe();
       if (save) {
         this.submitData();
-      };
+      }
     },
     //Create Block
     createBlock(data) {

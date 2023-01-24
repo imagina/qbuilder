@@ -503,8 +503,8 @@ export default {
       //Merge translations
       this.languageOptions.forEach(lang => {
         response[lang.value] = {
-          ...this.formContentFields[lang.value],
           ...this.formBlock[lang.value],
+          ...this.formContentFields[lang.value],
         }
       })
 

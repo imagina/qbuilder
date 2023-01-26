@@ -65,7 +65,7 @@
                     @validation-error="$alert.error($tr('isite.cms.message.formInvalid'))">
               <!--Form block-->
               <dynamic-form v-model="formBlock" :blocks="formFields.block" ref="mainForm" formType="grid" no-actions
-                            no-reset-with-blocks-update/>
+                            no-reset-with-blocks-update @validated="val => isValidForm = val"/>
               <!--Form Content-->
               <div v-if="contentfieldsconfig.show" class="box box-auto-height q-mb-md">
                 <div class="row q-col-gutter-x-md">
@@ -193,6 +193,7 @@ export default {
   },
   data() {
     return {
+      isValidForm: null,
       languageOptions: this.$store.getters['qsiteApp/getSelectedLocalesSelect'],
       loading: false,
       blockId: this.$route.params.id,
@@ -244,12 +245,16 @@ export default {
               }
             },
             internalTitle: {
+              value: '',
               isTranslatable: true,
               type: "input",
               required: true,
               colClass: "col-12 col-md-4",
               props: {
-                label: this.$tr("isite.cms.form.title") + "*"
+                label: this.$tr("isite.cms.form.title") + "*",
+                rules: [
+                  val => !!val || this.$tr('isite.cms.message.fieldRequired')
+                ],
               }
             },
             systemName: {
@@ -503,8 +508,8 @@ export default {
       //Merge translations
       this.languageOptions.forEach(lang => {
         response[lang.value] = {
-          ...this.formBlock[lang.value],
           ...this.formContentFields[lang.value],
+          internalTitle: this.formBlock[lang.value]?.internalTitle,
         }
       })
 
@@ -711,8 +716,16 @@ export default {
     },
     //Save data
     submitData() {
-      const requestData = this.getBlockRequestData
-      this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
+      if (this.$refs.mainForm) this.$refs.mainForm.validateCompleteForm();
+      //Send data if form is valid
+      setTimeout(() => {
+        if (this.isValidForm) {
+          const requestData = this.getBlockRequestData
+          this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
+        }else{
+          this.$alert.error(this.$tr('isite.cms.message.formInvalid'))
+        }
+      }, 200)
     },
     //Save Templates Client
     submitTemplates(save = false) {

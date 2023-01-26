@@ -245,6 +245,7 @@ export default {
               }
             },
             internalTitle: {
+              value: '',
               isTranslatable: true,
               type: "input",
               required: true,

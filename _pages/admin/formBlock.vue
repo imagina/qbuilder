@@ -193,6 +193,7 @@ export default {
   },
   data() {
     return {
+      isValidForm: null,
       languageOptions: this.$store.getters['qsiteApp/getSelectedLocalesSelect'],
       loading: false,
       blockId: this.$route.params.id,
@@ -249,7 +250,10 @@ export default {
               required: true,
               colClass: "col-12 col-md-4",
               props: {
-                label: this.$tr("isite.cms.form.title") + "*"
+                label: this.$tr("isite.cms.form.title") + "*",
+                rules: [
+                  val => !!val || this.$tr('isite.cms.message.fieldRequired')
+                ],
               }
             },
             systemName: {
@@ -503,8 +507,8 @@ export default {
       //Merge translations
       this.languageOptions.forEach(lang => {
         response[lang.value] = {
-          ...this.formBlock[lang.value],
           ...this.formContentFields[lang.value],
+          internalTitle: this.formBlock[lang.value]?.internalTitle,
         }
       })
 
@@ -710,9 +714,17 @@ export default {
       this.submitTemplates();
     },
     //Save data
-    submitData() {
-      const requestData = this.getBlockRequestData
-      this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
+    async submitData() {
+      if (this.$refs.mainForm) {
+        this.isValidForm = await this.$refs.mainForm.validateCompleteForm();
+      };
+      //Send data if form is valid
+      if (this.isValidForm) {
+        const requestData = this.getBlockRequestData
+        this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
+      }else{
+        this.$alert.error(this.$tr('isite.cms.message.formInvalid'))
+      }
     },
     //Save Templates Client
     submitTemplates(save = false) {

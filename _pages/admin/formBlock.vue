@@ -78,15 +78,14 @@
                     <div v-for="(field, key) in formFields.entity.fields" :key="key"
                          :class="field.colClass || field.columns || 'col-12 col-md-6'">
                       <dynamic-field v-model="formEntity[field.name || key]" :key="key" :field="field"
-                                     v-if="field.vIf !== undefined ? field.vIf : true"/>
+                                     v-if="field.vIf !== undefined ? field.vIf : true" :item-id="blockId"/>
                     </div>
                   </div>
                   <!-- Form Content Fields -->
                   <div class="col-12 no-child-box">
                     <dynamic-form v-if="contentfieldsconfig.contentFields.length" :box-style="false"
                                   v-model="formContentFields" :blocks="contentfieldsconfig.contentFields"
-                                  ref="formContentFields"
-                                  formType="grid" no-actions/>
+                                  ref="formContentFields" formType="grid" no-actions/>
                   </div>
                 </div>
               </div>
@@ -449,12 +448,15 @@ export default {
       }
 
       //Validate if there is content for this form
-      if (block.content.length || Object.keys(block.contentFields).length)
-        response = {
-          show: true,
-          content: block.content,
-          contentFields: Object.keys(block.contentFields).length ? [{fields: block.contentFields}] : []
-        }
+      if (block.content.length || Object.keys(block.contentFields).length) response = {
+        show: true,
+        content: block.content,
+        contentFields: !Object.keys(block.contentFields).length ? [] : [{
+          fields: Object.values(block.contentFields).map((field, keyField) => ({
+            ...field, fieldItemId: this.blockId, name: (field.name || keyField)
+          }))
+        }]
+      }
 
       //Response
       return response
@@ -717,12 +719,12 @@ export default {
     async submitData() {
       if (this.$refs.mainForm) {
         this.isValidForm = await this.$refs.mainForm.validateCompleteForm();
-      };
+      }
       //Send data if form is valid
       if (this.isValidForm) {
         const requestData = this.getBlockRequestData
         this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
-      }else{
+      } else {
         this.$alert.error(this.$tr('isite.cms.message.formInvalid'))
       }
     },

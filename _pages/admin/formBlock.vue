@@ -448,14 +448,33 @@ export default {
       }
 
       //Validate if there is content for this form
-      if (block.content.length || Object.keys(block.contentFields).length) response = {
-        show: true,
-        content: block.content,
-        contentFields: !Object.keys(block.contentFields).length ? [] : [{
-          fields: Object.values(block.contentFields).map((field, keyField) => ({
-            ...field, fieldItemId: this.blockId, name: (field.name || keyField)
-          }))
-        }]
+      if (block.content.length || Object.keys(block.contentFields).length) {
+        const blockContentFields = !Object.keys(block.contentFields).length ? [] : Object.values(block.contentFields)
+        response = {
+          show: true,
+          content: block.content,
+          contentFields: [{
+            fields: [
+              ...blockContentFields.map((field, keyField) => ({
+                ...field, fieldItemId: this.blockId, name: (field.name || keyField)
+              })),
+              //block bg image
+              {
+                name: 'medias_single',
+                value: {},
+                type: 'media',
+                colClass: 'col-12',
+                fieldItemId: this.blockId,
+                props: {
+                  label: this.$tr('isite.cms.label.backgroundImage'),
+                  zone: 'blockbgimage',
+                  entity: "Modules\\Ibuilder\\Entities\\Block",
+                  entityId: null
+                }
+              }
+            ]
+          }]
+        }
       }
 
       //Response

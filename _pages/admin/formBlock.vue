@@ -460,7 +460,7 @@ export default {
               })),
               //block bg image
               {
-                name: 'medias_single',
+                name: 'mediasSingle',
                 value: {},
                 type: 'media',
                 colClass: 'col-12',
@@ -523,8 +523,15 @@ export default {
         ...this.formContentFields,
         entity: {type: null, id: null, params: {}, ...this.formEntity},
         attributes: this.formAttributes,
+        mediasSingle: this.$clone({
+          ...(this.formContentFields.medias_single || this.formContentFields.mediasSingle || {}),
+          ...(this.formBlock.mediasSingle || this.formBlock.medias_ingle || {})
+        }),
+        mediasMulti: this.$clone({
+          ...(this.formContentFields.medias_multi || this.formContentFields.mediasMulti || {}),
+          ...(this.formBlock.medias_multi || this.formBlock.mediasMulti || {})
+        }),
       })
-
       //Merge translations
       this.languageOptions.forEach(lang => {
         response[lang.value] = {
@@ -532,10 +539,17 @@ export default {
           internalTitle: this.formBlock[lang.value]?.internalTitle,
         }
       })
-
+      //Add media data to attributes
+      response.attributes.componentAttributes = {
+        ...response.attributes.componentAttributes,
+        mediasSingle: response.mediasSingle,
+        mediasMulti: response.mediasMulti
+      }
       //Remove extra data
       delete response.componentName
       delete response.helpText
+      delete response.medias_single
+      delete response.medias_multi
       //Validate the status component attributes
       Object.keys(this.statusChildBlocks).forEach(blockName => {
         if (!this.statusChildBlocks[blockName]) {

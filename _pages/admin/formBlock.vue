@@ -78,15 +78,14 @@
                     <div v-for="(field, key) in formFields.entity.fields" :key="key"
                          :class="field.colClass || field.columns || 'col-12 col-md-6'">
                       <dynamic-field v-model="formEntity[field.name || key]" :key="key" :field="field"
-                                     v-if="field.vIf !== undefined ? field.vIf : true"/>
+                                     v-if="field.vIf !== undefined ? field.vIf : true" :item-id="blockId"/>
                     </div>
                   </div>
                   <!-- Form Content Fields -->
                   <div class="col-12 no-child-box">
                     <dynamic-form v-if="contentfieldsconfig.contentFields.length" :box-style="false"
                                   v-model="formContentFields" :blocks="contentfieldsconfig.contentFields"
-                                  ref="formContentFields"
-                                  formType="grid" no-actions/>
+                                  ref="formContentFields" formType="grid" no-actions/>
                   </div>
                 </div>
               </div>
@@ -449,12 +448,34 @@ export default {
       }
 
       //Validate if there is content for this form
-      if (block.content.length || Object.keys(block.contentFields).length)
+      if (block.content.length || Object.keys(block.contentFields).length) {
+        const blockContentFields = !Object.keys(block.contentFields).length ? [] : Object.values(block.contentFields)
         response = {
           show: true,
           content: block.content,
-          contentFields: Object.keys(block.contentFields).length ? [{fields: block.contentFields}] : []
+          contentFields: [{
+            fields: [
+              ...blockContentFields.map((field, keyField) => ({
+                ...field, fieldItemId: this.blockId, name: (field.name || keyField)
+              })),
+              //block bg image
+              {
+                name: 'mediasSingle',
+                value: {},
+                type: 'media',
+                colClass: 'col-12',
+                fieldItemId: this.blockId,
+                props: {
+                  label: this.$tr('isite.cms.label.backgroundImage'),
+                  zone: 'blockbgimage',
+                  entity: "Modules\\Ibuilder\\Entities\\Block",
+                  entityId: null
+                }
+              }
+            ]
+          }]
         }
+      }
 
       //Response
       return response
@@ -502,8 +523,15 @@ export default {
         ...this.formContentFields,
         entity: {type: null, id: null, params: {}, ...this.formEntity},
         attributes: this.formAttributes,
+        mediasSingle: this.$clone({
+          ...(this.formContentFields.medias_single || this.formContentFields.mediasSingle || {}),
+          ...(this.formBlock.mediasSingle || this.formBlock.medias_ingle || {})
+        }),
+        mediasMulti: this.$clone({
+          ...(this.formContentFields.medias_multi || this.formContentFields.mediasMulti || {}),
+          ...(this.formBlock.medias_multi || this.formBlock.mediasMulti || {})
+        }),
       })
-
       //Merge translations
       this.languageOptions.forEach(lang => {
         response[lang.value] = {
@@ -511,10 +539,17 @@ export default {
           internalTitle: this.formBlock[lang.value]?.internalTitle,
         }
       })
-
+      //Add media data to attributes
+      response.attributes.componentAttributes = {
+        ...response.attributes.componentAttributes,
+        mediasSingle: response.mediasSingle,
+        mediasMulti: response.mediasMulti
+      }
       //Remove extra data
       delete response.componentName
       delete response.helpText
+      delete response.medias_single
+      delete response.medias_multi
       //Validate the status component attributes
       Object.keys(this.statusChildBlocks).forEach(blockName => {
         if (!this.statusChildBlocks[blockName]) {
@@ -717,12 +752,12 @@ export default {
     async submitData() {
       if (this.$refs.mainForm) {
         this.isValidForm = await this.$refs.mainForm.validateCompleteForm();
-      };
+      }
       //Send data if form is valid
       if (this.isValidForm) {
         const requestData = this.getBlockRequestData
         this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
-      }else{
+      } else {
         this.$alert.error(this.$tr('isite.cms.message.formInvalid'))
       }
     },

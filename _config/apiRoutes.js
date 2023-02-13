@@ -6,5 +6,6 @@ const urlBase = `/${moduleName}/${moduleVersion}`
 export default {
   urlBase: urlBase,
   version: moduleVersion,
-  blocks: `${urlBase}/blocks`
+  blocks: `${urlBase}/blocks`,
+  editor: `${urlBase}/editor`,
 }

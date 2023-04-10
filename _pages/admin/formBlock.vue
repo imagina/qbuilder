@@ -613,7 +613,9 @@ export default {
           this.configData = response.data
           resolve(response.data)
         }).catch(error => {
-          resolve(null)
+          this.$apiResponse.handleError(error, () => {
+            resolve(null)
+          })
         })
       })
     },
@@ -703,7 +705,9 @@ export default {
           //Resolve
           resolve(response.data)
         }).catch(error => {
-          resolve(null)
+          this.$apiResponse.handleError(error, () => {
+            resolve(null)
+          })
         })
       })
     },

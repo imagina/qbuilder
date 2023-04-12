@@ -1,42 +1,59 @@
 <template>
-    <div id="editor-component">
-        <iframe :src="urlIframe" name="iframe-editor" class="editor-component__iframe" allowfullscreen/>
-        <!-- <form method="post" target="iframe-editor" ref="form-editor" :action="urlIframe">
-            <button type="submit">Enviar</button>
-        </form> -->
-        <Panel/>
+  <div id="pageBuilderEditor" class="bg-blue-grey-3">
+    <div id="editorContent" class="bg-white shadow-7">
+      <!--Block Preview-->
+      <block-preview />
     </div>
+  </div>
 </template>
 <script>
-    import Panel from "@imagina/qbuilder/_components/editor/panel";
-    export default {
-        name: "Editor",
-        props: {},
-        components: {
-            Panel
-        },
-        data(){
-            return {
-                urlIframe: 'https://layout-4.weygo.co/'
-            }
-        },
-        watch: {},
-        mounted(){
-            this.$nextTick(() => {
-                //this.$refs['form-editor'].submit();
-            })
-        },
-        computed: {},
-        methods: {
-            sendForm(){
-                console.log("XD");
-            },
-        }
+import Vue, {defineComponent, computed} from "vue";
+import editorStore from '@imagina/qbuilder/_store/editor'
+import blockPreview from '@imagina/qbuilder/_components/editor/blockPreview.vue'
+
+export default defineComponent({
+  setup() {
+    return {
+      blocks: computed(() => editorStore.state.blocks),
     }
+  },
+  name: "Editor",
+  props: {},
+  components: {blockPreview},
+  data() {
+    return {
+      urlIframe: 'https://www.imaginacolombia.com'
+    }
+  },
+  watch: {},
+  mounted() {
+    this.$nextTick(() => {
+      //this.$refs['form-editor'].submit();
+    })
+  },
+  computed: {},
+  methods: {
+    sendForm() {
+      console.log("XD");
+    },
+  }
+})
 </script>
 <style lang="stylus">
-    #editor-component
-        .editor-component__iframe
-            width: 100%
-            min-height: 100vh
+#pageBuilderEditor
+  padding 50px 100px
+  height 100vh
+  width 100%
+
+  #editorContent
+    width 100%
+    height 100%
+
+  #frameContent
+    width: 100%
+    height: calc(100vh - 100px)
+
+    iframe
+      min-width 100%
+      min-height 100%
 </style>

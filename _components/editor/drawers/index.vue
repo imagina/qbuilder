@@ -7,7 +7,7 @@
   </div>
 </template>
 <script>
-import blocksList from '@imagina/qbuilder/_components/drawers/block/list.vue'
+import blocksList from '@imagina/qbuilder/_components/editor/drawers/block/list.vue'
 
 export default {
   beforeDestroy() {

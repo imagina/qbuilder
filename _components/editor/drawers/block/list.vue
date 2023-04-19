@@ -9,7 +9,7 @@
     <q-scroll-area style="height: calc(100vh - 60px)">
       <div class="q-py-md q-px-lg">
         <div class="row q-gutter-y-md">
-          <div v-for="(block, blockKey) in blocks" :key="blockKey" @click="selectBlock(block)"
+          <div v-for="(block, blockKey) in blocks" :key="blockKey" @click="setSelectedBlock(block)"
                class="col-12 builder_block hover-effect-border">
             <!--Image-->
             <div class="builder_block__image img-as-bg"
@@ -17,6 +17,8 @@
             <!--Title-->
             <div class="builder_block__title text-white q-pa-sm">
               {{ block.internalTitle }} ({{ block.systemName }})
+              <br>
+              {{block.component.systemName}}
             </div>
           </div>
         </div>
@@ -32,7 +34,7 @@ export default defineComponent({
   setup() {
     return {
       blocks: computed(() => editorStore.state.blocks),
-      selectBlock: editorStore.selectBlock
+      setSelectedBlock: editorStore.setSelectedBlock
     }
   },
   beforeDestroy() {

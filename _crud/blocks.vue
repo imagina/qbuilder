@@ -22,6 +22,7 @@ export default {
             {name: 'id', label: this.$tr('isite.cms.form.id'), field: 'id', style: 'width: 50px'},
             {name: 'title', label: this.$tr('isite.cms.form.title'), field: 'internalTitle', align: 'left'},
             {name: 'systemName', label: this.$tr('isite.cms.form.systemName'), field: 'systemName', align: 'left'},
+            {name: 'status', label: this.$tr('isite.cms.form.status'), field: 'status', align: 'left'},
             {
               name: 'componentName', label: this.$tr('isite.cms.label.component'), field: 'component', align: 'left',
               format: val => val.systemName || "-"

@@ -1,13 +1,12 @@
 <template>
-  <div id="builderDrawerBlocks">
+  <div id="builderDrawerBlockList">
     <!--Title-->
-    <div class="bg-primary-builder q-py-md q-px-lg text-white text-subtitle1 row items-center">
-      <q-icon name="fa-light fa-puzzle-piece" class="q-mr-sm" size="20px"/>
+    <div class="drawer-title">
       {{ $trp('ibuilder.cms.block') }}
     </div>
     <!--List the blocks-->
     <q-scroll-area style="height: calc(100vh - 60px)">
-      <div class="q-py-md q-px-lg">
+      <div class="padding-drawer-content">
         <div class="row q-gutter-y-md">
           <div v-for="(block, blockKey) in blocks" :key="blockKey" @click="setSelectedBlock(block)"
                class="col-12 builder_block hover-effect-border">
@@ -64,7 +63,7 @@ export default defineComponent({
 })
 </script>
 <style lang="stylus">
-#builderDrawerBlocks
+#builderDrawerBlockList
   .builder_block
     position relative
 

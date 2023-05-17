@@ -4,9 +4,23 @@ import helper from '@imagina/qsite/_plugins/helper'
 
 //States
 const state = reactive({
+  loading: false,
+  drawers: {
+    blocksList: false,
+    blocksShow: false,
+  },
   blocks: [],
-  selectedBlock: null
+  selectedBlock: null,
+  formMainFields: {}
 })
+
+//Model to be able use state as v-model
+const models = {
+  formMainFields: computed({
+    get: () => state.formMainFields,
+    set: (val) => state.formMainFields = val
+  })
+}
 
 //Getters
 const getters = {
@@ -31,10 +45,12 @@ const getters = {
 
 export default {
   state,
+  models,
   getters,
   //Get blocks data
   getBlocksData(refresh = false) {
     return new Promise((resolve, reject) => {
+      state.loading = true
       //Requets params
       let requestParams = {
         refresh,
@@ -46,8 +62,11 @@ export default {
       //Request
       crud.index('apiRoutes.qbuilder.blocks', requestParams).then(response => {
         state.blocks = response.data
+        state.drawers.blocksList = true
+        state.loading = false
         resolve(response.data)
       }).catch(error => {
+        state.loading = false
         resolve([])
       })
     })
@@ -55,5 +74,11 @@ export default {
   //Set the selected block
   setSelectedBlock(block) {
     state.selectedBlock = block
+    state.drawers.blocksShow = true
+  },
+  //Finish Edit block
+  closeBlockShow() {
+    state.selectedBlock = null
+    state.drawers.blocksShow = false
   }
 }

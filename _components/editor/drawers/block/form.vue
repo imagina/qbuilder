@@ -1,5 +1,5 @@
 <template>
-  <div id="builderDrawerBlockShow">
+  <div id="builderDrawerBlockForm" v-if="selectedBlock">
     <!--Title-->
     <div class="drawer-title">
       {{ $tr('ibuilder.cms.blockDesign') }}
@@ -10,33 +10,43 @@
     </div>
     <!--Content-->
     <q-scroll-area style="height: calc(100vh - 60px)">
-      <div class="padding-drawer-content">
-        <q-tabs v-model="tabFormSection" vertical class="text-teal">
-          <q-tab name="main" icon="mail" label="Main"/>
-          <q-tab name="content" icon="alarm" label="Content"/>
-          <q-tab name="attributes" icon="movie" label="Attributes"/>
-        </q-tabs>
-        <q-tab-panels
-          v-model="tabFormSection"
-          animated
-          swipeable
-          vertical
-          keep-alive
-          transition-prev="jump-up"
-          transition-next="jump-up"
-        >
-          <q-tab-panel name="main">
-            <!--Main Fields-->
-            <dynamic-form v-model="mainFields" :blocks="formFields.block" formType="grid" no-actions
-                          no-reset-with-blocks-update/>
-          </q-tab-panel>
-          <q-tab-panel name="content">
-            Constent...
-          </q-tab-panel>
-          <q-tab-panel name="attributes">
-            Attributes...
-          </q-tab-panel>
-        </q-tab-panels>
+      <div class="padding-drawer-content row" style="height: calc(100vh - 60px)">
+        <div class="col-3">
+          <q-tabs v-model="tabFormSection" vertical
+                  class="text-primary-builder"
+                  active-bg-color="primary-builder"
+                  active-color="white" no-caps
+                  indicator-color="primary-builder"
+                  content-class="text-right"
+          >
+            <q-tab name="main" label="Main"/>
+            <q-tab name="content" label="Content"/>
+            <q-tab name="attributes" label="Attributes"/>
+          </q-tabs>
+        </div>
+        <div class="col-9">
+          <q-tab-panels
+            v-model="tabFormSection"
+            animated
+            swipeable
+            vertical
+            keep-alive
+            transition-prev="jump-up"
+            transition-next="jump-up"
+          >
+            <q-tab-panel name="main">
+              <!--Main Fields-->
+              <dynamic-form v-model="mainFields" :blocks="formFields.block" formType="grid" no-actions
+                            no-reset-with-blocks-update/>
+            </q-tab-panel>
+            <q-tab-panel name="content">
+              Constent...
+            </q-tab-panel>
+            <q-tab-panel name="attributes">
+              Attributes...
+            </q-tab-panel>
+          </q-tab-panels>
+        </div>
       </div>
     </q-scroll-area>
   </div>
@@ -64,7 +74,6 @@ export default {
   computed: {
     selectedBlock: () => editorStore.state.selectedBlock,
     blocks: () => editorStore.state.blocks,
-
     formFields() {
       return {
         block: [{
@@ -81,7 +90,7 @@ export default {
               isTranslatable: true,
               type: "input",
               required: true,
-              colClass: "col-12 col-md-6",
+              colClass: "col-12",
               props: {
                 label: this.$tr("isite.cms.form.title") + "*",
                 rules: [
@@ -92,7 +101,7 @@ export default {
             systemName: {
               type: "input",
               required: true,
-              colClass: "col-12 col-md-6",
+              colClass: "col-12",
               props: {
                 label: this.$tr("isite.cms.form.systemName") + "*"
               }
@@ -122,7 +131,55 @@ export default {
               }
             }
           }
-        }]
+        }],
+        entity: {
+          title: this.$trp("isite.cms.label.content"),
+          fields: {
+            helpText: {
+              type: "banner",
+              colClass: "col-12",
+              props: {
+                message: "Configura aquí el contenido del componente..."
+              }
+            },
+            type: {
+              type: "select",
+              require: true,
+              //colClass: (this.formEntity.type && !this.loadOptionsContent) ? "col-12" : null,
+              props: {
+                label: `${this.$tr('isite.cms.label.entity')}*`,
+                rules: [
+                  val => !!val || this.$tr('isite.cms.message.fieldRequired')
+                ],
+                options: this.selectedBlock?.block.content || []
+              }
+            },
+            id: {
+              type: "select",
+              require: true,
+              vIf: this.loadOptionsContent ? true : false,
+              props: {
+                label: `${this.$tr('isite.cms.label.record')}*`,
+                rules: [
+                  val => !!val || this.$tr('isite.cms.message.fieldRequired')
+                ]
+              },
+              loadOptions: this.loadOptionsContent
+            },
+            params: {
+              type: "json",
+              require: true,
+              colClass: "col-12",
+              vIf: (this.formEntity.type && !this.loadOptionsContent) ? true : false,
+              props: {
+                label: this.$trp('isite.cms.label.filter'),
+                rules: [
+                  val => !!val || this.$tr('isite.cms.message.fieldRequired')
+                ]
+              }
+            },
+          }
+        },
       }
     }
   },
@@ -133,4 +190,12 @@ export default {
 }
 </script>
 <style lang="stylus">
+#builderDrawerBlockForm
+  .q-tabs
+    border-right: 1px solid $grey-3
+    min-height 100%
+  .q-tab
+    width: max-content
+    float: right
+    border-radius 10px 0 0 10px
 </style>

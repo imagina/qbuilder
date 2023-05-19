@@ -10,16 +10,42 @@ const state = reactive({
     blocksShow: false,
   },
   blocks: [],
+  blocksConfiguration: [],
   selectedBlock: null,
-  formMainFields: {}
+  formMainFields: {},
+  formEntityFields: {},
+  formExtraFields: {},
 })
 
 //Model to be able use state as v-model
 const models = {
+  blocksConfiguration: computed({
+    get: () => {
+      //Reduce an instance the blocks configuration data
+      let response = Object.assign({}, ...Object.values(state.blocksConfiguration).filter(item => item))
+      //Map the blocks configurations
+      response = Object.values(response).map((block) => ({
+        ...block,
+        content: block.content || [],
+        attributes: Object.values(block.attributes).map((item, index) => ({...item, name: index}))
+      }))
+      //response
+      return response
+    },
+    set: (val) => state.blocksConfiguration = val
+  }),
   formMainFields: computed({
     get: () => state.formMainFields,
     set: (val) => state.formMainFields = val
-  })
+  }),
+  formEntityFields: computed({
+    get: () => state.formEntityFields,
+    set: (val) => state.formEntityFields = val
+  }),
+  formExtraFields: computed({
+    get: () => state.formExtraFields,
+    set: (val) => state.formExtraFields = val
+  }),
 }
 
 //Getters
@@ -43,12 +69,10 @@ const getters = {
   })
 }
 
-export default {
-  state,
-  models,
-  getters,
-  //Get blocks data
-  getBlocksData(refresh = false) {
+//Methods
+const methods = {
+  //Get blocks
+  getBlocksData: (refresh = false) => {
     return new Promise((resolve, reject) => {
       state.loading = true
       //Requets params
@@ -71,6 +95,28 @@ export default {
       })
     })
   },
+  //Get block configuration
+  getBlocksConfiguration: (refresh = false) => {
+    return new Promise((resolve, reject) => {
+      state.loading = true
+      //Params
+      let requestParams = {
+        refresh,
+        params: {
+          filter: {allTranslations: true, configNameByModule: 'blocks'}
+        }
+      }
+      //Request
+      crud.index('apiRoutes.qsite.configs', requestParams).then(response => {
+        state.blocksConfiguration = response.data
+        state.loading = false
+        resolve(response.data)
+      }).catch(error => {
+        state.loading = false
+        resolve([])
+      })
+    })
+  },
   //Set the selected block
   setSelectedBlock(block) {
     state.selectedBlock = block
@@ -81,4 +127,11 @@ export default {
     state.selectedBlock = null
     state.drawers.blocksShow = false
   }
+}
+
+export default {
+  state,
+  models,
+  getters,
+  methods,
 }

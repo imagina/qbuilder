@@ -62,11 +62,4 @@ export default defineComponent({
 
   .padding-drawer-content
     padding 16px 24px
-
-  .box
-    padding 0
-    box-shadow 0
-    margin 0
-    box-shadow none
-    border-right 0
 </style>

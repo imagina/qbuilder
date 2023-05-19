@@ -33,7 +33,7 @@ export default defineComponent({
   setup() {
     return {
       blocks: computed(() => editorStore.state.blocks),
-      setSelectedBlock: editorStore.setSelectedBlock
+      setSelectedBlock: editorStore.methods.setSelectedBlock
     }
   },
   beforeDestroy() {
@@ -56,8 +56,7 @@ export default defineComponent({
   computed: {},
   methods: {
     init() {
-      editorStore.getBlocksData(true)
-      this.$root.$on('page.data.refresh', () => editorStore.getBlocksData(true))
+      editorStore.methods.getBlocksData(true)
     },
   }
 })

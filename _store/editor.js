@@ -1,4 +1,4 @@
-import {reactive, computed} from 'vue';
+import Vue, {reactive, computed} from 'vue';
 import crud from '@imagina/qcrud/_services/baseService.js';
 import helper from '@imagina/qsite/_plugins/helper'
 
@@ -19,6 +19,7 @@ const state = reactive({
   formAttributesFields: {},
   statusChildBlocks: {},
   elementSelected: null,
+  attributesKeyTemplate: Vue.prototype.$uid()
 })
 
 //Model to be able use state as v-model
@@ -121,6 +122,8 @@ const methods = {
   createMode(){
     state.drawers.blocksList = true;
     state.drawers.blocksShow = true;
+    state.attributesKeyTemplate = Vue.prototype.$uid()
+    console.warn(">>>>>>> CreateModel", state.attributesKeyTemplate)
   },
   //Get blocks
   getBlocksData: (refresh = false) => {
@@ -170,8 +173,11 @@ const methods = {
   },
   //Set the selected block
   setSelectedBlock(block) {
-    state.selectedBlock = block 
+    state.selectedBlock = block
     state.drawers.blocksShow = true
+    console.warn(">>>>>>> UpdateModel", state.attributesKeyTemplate)
+    state.attributesKeyTemplate = Vue.prototype.$uid()
+    console.warn(">>>>>>> UpdateModel", state.attributesKeyTemplate)
   },
   //Finish Edit block
   closeBlockShow() {

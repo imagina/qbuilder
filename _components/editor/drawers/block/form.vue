@@ -1,5 +1,5 @@
 <template>
-  <div id="builderDrawerBlockForm" :key="formMainFieldsKey">
+  <div id="builderDrawerBlockForm" :key="attributeKeyTemplate">
     <!--Title-->
     <div class="drawer-title">
       {{ $tr("ibuilder.cms.blockDesign") }}
@@ -14,6 +14,7 @@
         class="padding-drawer-content row"
         style="height: calc(100vh - 60px)"
       >
+        Key -> <pre>{{attributeKeyTemplate}}</pre>
         <!--Button Tabs-->
         <div class="col-3">
           <q-tabs
@@ -66,13 +67,13 @@
                 no-reset-with-blocks-update
                 :box-style="false"
               />
-              <dynamic-form 
-                v-if="contentFieldsConfig.contentFields.length" 
-                :box-style="false"                        
-                v-model="formExtraFields" 
+              <dynamic-form
+                v-if="contentFieldsConfig.contentFields.length"
+                :box-style="false"
+                v-model="formExtraFields"
                 :blocks="contentFieldsConfig.contentFields"
-                ref="formContentFields" 
-                formType="grid" 
+                ref="formContentFields"
+                formType="grid"
                 no-actions
               />
             </q-tab-panel>
@@ -115,17 +116,17 @@
                 no-reset-with-blocks-update
                 :box-style="false"
               />
-              <dynamic-form 
-                v-if="contentFieldsConfig.contentFields.length" 
-                :box-style="false"                        
-                v-model="formExtraFields" 
+              <dynamic-form
+                v-if="contentFieldsConfig.contentFields.length"
+                :box-style="false"
+                v-model="formExtraFields"
                 :blocks="contentFieldsConfig.contentFields"
-                ref="formContentFields" 
-                formType="grid" 
+                ref="formContentFields"
+                formType="grid"
                 no-actions
               />
             </q-tab-panel>
-            
+
           </q-tab-panels>
         </div>
       </div>
@@ -144,7 +145,7 @@ export default {
       if (newValue) {
         this.setFormMainFields();
         this.setFormContentFields();
-        this.formMainFieldsKey = this.$uid();       
+        this.formMainFieldsKey = this.$uid();
       } else {
         this.resetFormMainFields();
         this.resetFormContentFields();
@@ -175,6 +176,7 @@ export default {
     };
   },
   computed: {
+    attributeKeyTemplate: () => editorStore.state.attributesKeyTemplate,
     drawers: () => editorStore.state.drawers,
     formAttributesFields: () => editorStore.models.formAttributesFields,
     elementSelected: () => editorStore.state.elementSelected,
@@ -419,7 +421,7 @@ export default {
       const { mediasSingle } = this.selectedBlock.attributes.componentAttributes;
       const componentName = this.selectedBlock.component.systemName;
       const fields = {
-        
+
         componentName,
         ...this.selectedBlock
       };

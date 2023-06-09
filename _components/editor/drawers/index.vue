@@ -3,11 +3,14 @@
     <!--Inner Loading-->
     <inner-loading :visible="loading"/>
     <!--Block drawers-->
-    <q-drawer bordered v-model="drawers.blocksList" :width="400">
+    <q-drawer bordered v-model="drawers.blocksList" :width="500">
       <blocks-list/>
     </q-drawer>
     <q-drawer bordered v-model="drawers.blocksShow" :width="500" overlay>
       <blocks-form/>
+    </q-drawer>
+    <q-drawer bordered v-model="drawers.blockAttributes" :width="500">
+      <attributesForm/>
     </q-drawer>
   </div>
 </template>
@@ -17,6 +20,7 @@ import editorStore from '@imagina/qbuilder/_store/editor'
 //Components
 import blocksList from '@imagina/qbuilder/_components/editor/drawers/block/list.vue'
 import blocksForm from '@imagina/qbuilder/_components/editor/drawers/block/form.vue'
+import attributesForm from '@imagina/qbuilder/_components/editor/drawers/block/attributes.vue'
 
 export default defineComponent({
   setup() {
@@ -28,7 +32,8 @@ export default defineComponent({
   props: {},
   components: {
     blocksList,
-    blocksForm
+    blocksForm,
+    attributesForm
   },
   watch: {},
   mounted() {
@@ -59,6 +64,10 @@ export default defineComponent({
     display flex
     align-items center
     justify-content space-between
+
+  .q-page-container{
+    padding-left 0 !important
+  }
 
   .padding-drawer-content
     padding 16px 24px

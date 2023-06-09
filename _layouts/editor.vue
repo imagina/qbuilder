@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh LpR fFf">
+  <q-layout view="lHh LpR fFf" class="layout-editor">
     <!-- Drawers -->
     <drawers/>
     <!-- Page views-->
@@ -41,3 +41,9 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+  .layout-editor
+    .q-page-container
+      padding-left 0 !important
+</style>

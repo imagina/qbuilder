@@ -476,7 +476,7 @@ export default {
           }]
         }
       }
-
+      console.log("contentfieldsconfig", response);
       //Response
       return response
     },
@@ -556,7 +556,7 @@ export default {
           response.attributes[blockName] = {}
         }
       })
-
+      console.log("response", response);
       //Response
       return response
     },
@@ -690,7 +690,10 @@ export default {
               this.$set(this.formEntity, "id", response.data.entity.id)
               //Set fields
               this.formContentFields = this.$clone(response.data)
+              console.log(this.formContentFields);
               //Set the formAttributes data
+              console.warn("esta response data");
+              console.warn(response.data);
               const blockAttr = response.data.attributes
               Object.keys(blockAttr).forEach(attrName => {
                 if ((blockAttr[attrName] != undefined) && !Array.isArray(blockAttr[attrName])) {
@@ -703,6 +706,7 @@ export default {
             }, 500)
           }, 500)
           //Resolve
+          console.log("formExtra", this.formContentFields);
           resolve(response.data)
         }).catch(error => {
           this.$apiResponse.handleError(error, () => {

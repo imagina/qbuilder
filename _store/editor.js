@@ -8,6 +8,7 @@ const state = reactive({
   drawers: {
     blocksList: false,
     blocksShow: false,
+    blockAttributes: false,
   },
   blocks: [],
   blocksConfiguration: [],
@@ -15,22 +16,56 @@ const state = reactive({
   formMainFields: {},
   formEntityFields: {},
   formExtraFields: {},
+  formAttributesFields: {},
+  statusChildBlocks: {},
+  elementSelected: null,
 })
 
 //Model to be able use state as v-model
 const models = {
   blocksConfiguration: computed({
     get: () => {
-      //Reduce an instance the blocks configuration data
-      let response = Object.assign({}, ...Object.values(state.blocksConfiguration).filter(item => item))
-      //Map the blocks configurations
-      response = Object.values(response).map((block) => ({
+      const response = Object.values(state.blocksConfiguration)
+        .filter(item => item)
+        .reduce((acc, curr) => Object.assign(acc, curr), {});
+
+      const mappedResponse = Object.values(response).map((block) => ({
         ...block,
         content: block.content || [],
         attributes: Object.values(block.attributes).map((item, index) => ({...item, name: index}))
-      }))
-      //response
-      return response
+      }));
+
+      mappedResponse.forEach(block => {
+        const blockElements = [
+          {
+            name: "componentAttributes",
+            systemName: block.systemName,
+            title: block.title,
+            attributes: block.attributes
+          }
+        ];
+
+        let childBlocks = block.childBlocks || {};
+        if ((block.systemName !== "x-ibuilder::block") && !childBlocks.mainBlock) {
+          childBlocks = { mainBlock: "x-ibuilder::block", ...childBlocks };
+        }
+
+        Object.keys(childBlocks).forEach(childName => {
+          const childBlock = mappedResponse.find(item => item.systemName === childBlocks[childName]);
+          if (childBlock) {
+            blockElements.push({
+              name: childName,
+              systemName: childBlocks[childName],
+              title: childBlock.title,
+              attributes: childBlock.attributes
+            });
+          }
+        });
+
+        block.elements = blockElements;
+      });
+
+      return mappedResponse;
     },
     set: (val) => state.blocksConfiguration = val
   }),
@@ -45,6 +80,18 @@ const models = {
   formExtraFields: computed({
     get: () => state.formExtraFields,
     set: (val) => state.formExtraFields = val
+  }),
+  formAttributesFields: computed({
+    get: () => state.formAttributesFields,
+    set: (val) => state.formAttributesFields = val
+  }),
+  statusChildBlocks: computed({
+    get: () => state.statusChildBlocks,
+    set: (val) => state.statusChildBlocks = val
+  }),
+  elementSelected: computed({
+    get: () => state.elementSelected,
+    set: (val) => state.elementSelected = val
   }),
 }
 
@@ -71,6 +118,10 @@ const getters = {
 
 //Methods
 const methods = {
+  createMode(){
+    state.drawers.blocksList = true;
+    state.drawers.blocksShow = true;
+  },
   //Get blocks
   getBlocksData: (refresh = false) => {
     return new Promise((resolve, reject) => {
@@ -108,7 +159,7 @@ const methods = {
       }
       //Request
       crud.index('apiRoutes.qsite.configs', requestParams).then(response => {
-        state.blocksConfiguration = response.data
+        state.blocksConfiguration = response.data;
         state.loading = false
         resolve(response.data)
       }).catch(error => {
@@ -119,13 +170,35 @@ const methods = {
   },
   //Set the selected block
   setSelectedBlock(block) {
-    state.selectedBlock = block
+    state.selectedBlock = block 
     state.drawers.blocksShow = true
   },
   //Finish Edit block
   closeBlockShow() {
     state.selectedBlock = null
     state.drawers.blocksShow = false
+  },
+  setBlockFormData(){
+    //Set only the main from data
+
+    //Set only the entity form data
+    //Set only the extraFields formdata
+    //Set only the attributes from data
+  },
+  setElementSelected(elementSelected){
+    state.elementSelected = elementSelected;
+    state.drawers.blocksShow = false;
+    state.drawers.blockAttributes = true;
+  },
+
+  closeAttributesDrawer(){
+    state.drawers.blockAttributes = false;
+    state.drawers.blocksShow = true;
+  },
+  setStatusChildBlock(element){
+    console.log(state.statusChildBlocks[element]);
+    state.statusChildBlocks[element] = true;
+    console.log(state.statusChildBlocks);
   }
 }
 

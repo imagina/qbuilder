@@ -19,7 +19,11 @@ const state = reactive({
   formAttributesFields: {},
   statusChildBlocks: {},
   elementSelected: null,
-  attributesKeyTemplate: Vue.prototype.$uid()
+  attributesKeyTemplate: Vue.prototype.$uid(),
+  device: 1,
+  formMobileAttributesFields: {},
+  createMode: false,
+  blockConfig: {},
 })
 
 //Model to be able use state as v-model
@@ -70,6 +74,10 @@ const models = {
     },
     set: (val) => state.blocksConfiguration = val
   }),
+  blocks: computed({
+    get: () => state.blocks,
+    set: (val) => state.blocks = val
+  }),
   formMainFields: computed({
     get: () => state.formMainFields,
     set: (val) => state.formMainFields = val
@@ -94,7 +102,40 @@ const models = {
     get: () => state.elementSelected,
     set: (val) => state.elementSelected = val
   }),
+  device: computed({
+    get: () => state.device,
+    set: (val) => state.device = val
+  }),
+  formMobileAttributesFields: computed({
+    get: () => state.formMobileAttributesFields,
+    set: (val) => state.formMobileAttributesFields = val
+  }),
 }
+
+// //Getters
+// const getters = {
+//   //Data to show the block preview
+  
+//   dataBlockPreview: computed(() => {
+//     //Instance the attributes
+//     const component = state.selectedBlock.component
+//     const entity = state.formEntityFields
+//     const attributes = {
+//       ...state.formAttributesFields,
+//       componentAttributes: {
+//         ...state.formAttributesFields.componentAttributes,
+//         //Merge all the fields into the componentAttributes
+//         ...((state.formExtraFields.content || []).map(item => ({[helper.snakeToCamelCase(item.name)]: item.value}))
+//           .reduce((result, current) => Object.assign(result, current), {}))
+//       }
+//     }
+//     //Return
+//     console.log(component);
+//     console.log(entity);
+//     console.log(attributes);
+//     return {component, entity, attributes}
+//   }),
+// }
 
 //Getters
 const getters = {
@@ -121,9 +162,10 @@ const getters = {
 const methods = {
   createMode(){
     state.drawers.blocksList = true;
+    state.createMode = true;
     state.drawers.blocksShow = true;
     state.attributesKeyTemplate = Vue.prototype.$uid()
-    console.warn(">>>>>>> CreateModel", state.attributesKeyTemplate)
+    //console.warn(">>>>>>> CreateModel", state.attributesKeyTemplate)
   },
   //Get blocks
   getBlocksData: (refresh = false) => {
@@ -175,9 +217,9 @@ const methods = {
   setSelectedBlock(block) {
     state.selectedBlock = block
     state.drawers.blocksShow = true
-    console.warn(">>>>>>> UpdateModel", state.attributesKeyTemplate)
+    //console.warn(">>>>>>> UpdateModel", state.attributesKeyTemplate)
     state.attributesKeyTemplate = Vue.prototype.$uid()
-    console.warn(">>>>>>> UpdateModel", state.attributesKeyTemplate)
+    //console.warn(">>>>>>> UpdateModel", state.attributesKeyTemplate)
   },
   //Finish Edit block
   closeBlockShow() {
@@ -202,9 +244,12 @@ const methods = {
     state.drawers.blocksShow = true;
   },
   setStatusChildBlock(element){
-    console.log(state.statusChildBlocks[element]);
+    //console.log(state.statusChildBlocks[element]);
     state.statusChildBlocks[element] = true;
-    console.log(state.statusChildBlocks);
+    //console.log(state.statusChildBlocks);
+  },
+  setBlockConfig(block){
+    state.blockConfig = block;
   }
 }
 

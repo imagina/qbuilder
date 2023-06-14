@@ -1,13 +1,14 @@
 <template>
   <div ref="pageBuilderEditor" id="pageBuilderEditor" class="bg-blue-grey-3">
     <div class="editor-options drawer-title">
-      <select v-if="selectedBlock">
-        <option value="1" selected>Escritorio</option>
-        <option value="2">Movíl</option>
-      </select>
-      <div v-else></div>
+      
+      <q-btn-toggle v-if="createMode || selectedBlock" v-model="device"
+                      class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
+                      text-color="green" :options="deviceOptions"/>
+      <div></div>
       <q-btn color="white" text-color="primary" v-if="selectedBlock" class="editor-options-save" @click="() => saveBlockInfo()">Guardar</q-btn>
-      <q-btn color="white" text-color="primary" v-else class="editor-options-create primary" @click="() => saveBlockInfo()">Crear Bloque</q-btn>
+      <q-btn color="white" text-color="primary" v-else-if="createMode" class="editor-options-create primary" @click="() => $eventBus.$emit('saveBlockInfo')">Guardar Bloque</q-btn>
+      <q-btn color="white" text-color="primary" v-else-if="!selectedBlock && !createMode" class="editor-options-create primary" @click="() => saveBlockInfo()">Crear Bloque</q-btn>
     </div>
     <div id="editorContent" class="bg-white shadow-7">
       <!--Block Preview-->
@@ -26,6 +27,8 @@ export default defineComponent({
       blocks: computed(() => editorStore.state.blocks),
       selectedBlock: computed(() => editorStore.state.selectedBlock),
       loading: computed(() => editorStore.state.loading),
+      device: editorStore.models.device,
+      createMode: computed(() => editorStore.state.createMode),
     }
   },
   name: "Editor",
@@ -37,14 +40,21 @@ export default defineComponent({
     }
   },
   watch: {
-    
+    device(newValue){
+      console.log(newValue);
+    }
   },
   mounted() {
     this.$nextTick(() => {
       //this.$refs['form-editor'].submit();
+      this.device = 1
     })
   },
-  computed: {},
+  computed: {
+    deviceOptions(){
+      return [{label: 'Mobile', value: 0}, {label: 'Desktop', value: 1}]
+    }
+  },
   methods: {
     saveBlockInfo(){
       if (this.selectedBlock) {

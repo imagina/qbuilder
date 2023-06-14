@@ -14,7 +14,7 @@
         class="padding-drawer-content row"
         style="height: calc(100vh - 60px)"
       >
-        Key -> <pre>{{attributeKeyTemplate}}</pre>
+        <!-- Key -> <pre>{{attributeKeyTemplate}}</pre> -->
         <!--Button Tabs-->
         <div class="col-3">
           <q-tabs
@@ -126,7 +126,11 @@
                 no-actions
               />
             </q-tab-panel>
-
+            <q-tab-panel name="attributes" class="column">
+              <div v-if="blockConfig && blockConfig.elements !== undefined">
+                <q-btn v-for="(element, indexFA) in blockConfig.elements" :key="indexFA" :label="element.title" color="primary-builder" class="full-width q-mb-md" @click="() => setElementSelected(element.systemName)"/>
+              </div>
+            </q-tab-panel>
           </q-tab-panels>
         </div>
       </div>
@@ -151,6 +155,9 @@ export default {
         this.resetFormContentFields();
       }
     },
+    blockConfig(){
+      this.setBlockConfig(this.blockConfig);
+    },
   },
   beforeDestroy() {
     this.$eventBus.$off('updateBlockInfo')
@@ -169,16 +176,18 @@ export default {
       formEntityFields: editorStore.models.formEntityFields,
       formExtraFields: editorStore.models.formExtraFields,
       statusChildBlocks: editorStore.models.statusChildBlocks,
+      blocks: editorStore.models.blocks,
       languageOptions: this.$store.getters["qsiteApp/getSelectedLocalesSelect"],
       formMainFieldsKey: this.$uid(),
       isValidForm: false,
-      notToSnakeCase: ["component", "entity", "attributes"],
+      notToSnakeCase: ["component", "entity", "attributes", "mobileAttributes"],
     };
   },
   computed: {
     attributeKeyTemplate: () => editorStore.state.attributesKeyTemplate,
     drawers: () => editorStore.state.drawers,
     formAttributesFields: () => editorStore.models.formAttributesFields,
+    formMobileAttributesFields: () => editorStore.models.formMobileAttributesFields,
     elementSelected: () => editorStore.state.elementSelected,
     //Return the state of selectedBlock from the editor store
     selectedBlock: () => editorStore.state.selectedBlock,
@@ -187,9 +196,12 @@ export default {
       const block = Object.values(this.blocksConfiguration).find((block) => {
         return block.systemName == this.formMainFields.componentName;
       });
-      Object.values(block.elements).forEach(element => {
-        this.setStatusChildBlock(element.name, true);
-      })
+      if(this.formMainFields.componentName){
+        Object.values(block.elements).forEach(element => {
+          this.setStatusChildBlock(element.name, true);
+        })
+        this.formMainFieldsKey = this.$uid()
+      }
       return block;
     },
     //Return the fields for Main fields section
@@ -272,6 +284,7 @@ export default {
             type: {
               type: "select",
               require: true,
+              vIf: !!this.blockConfig.content.length ? true : false,
               props: {
                 label: `${this.$tr("isite.cms.label.entity")}*`,
                 rules: [
@@ -351,7 +364,6 @@ export default {
           }]
         }
       }
-      console.log(response);
       return response
     },
   },
@@ -362,10 +374,12 @@ export default {
         this.updateBlock();
       })
       this.$eventBus.$on('saveBlockInfo', () => {
+        console.log("XD");
         this.createBlock();
       })
     },
     setStatusChildBlock: editorStore.methods.setStatusChildBlock,
+    setBlockConfig: editorStore.methods.setBlockConfig,
     async updateBlock(){
       if (this.$refs['main-form']) {
         this.isValidForm = await this.$refs['main-form'].validateCompleteForm();
@@ -373,18 +387,41 @@ export default {
           const data = this.getBlockData();
           const requestParams = {notToSnakeCase: this.notToSnakeCase}
           //await this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams);
+          //window.location.reload();      
         }
       }
     },
+    async createBlock(){
+      if (this.$refs['main-form']){
+        this.isValidForm = await this.$refs['main-form'].validateCompleteForm();
+        if (this.isValidForm) {
+          const data = this.getBlockData();
+          const requestParams = {notToSnakeCase: this.notToSnakeCase}
+          //await this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams);
+          //window.location.reload();
+        }
+      }
+    },
+    deleteExtraKeys(obj){
+      const attributesKeys = Object.keys(obj);
+      if (attributesKeys.includes('effect') && attributesKeys.includes('effect')) {
+        delete obj['effect']
+        delete obj['value']
+      }
+    },
     getBlockData(){
+      this.deleteExtraKeys(this.formAttributesFields);
+      this.deleteExtraKeys(this.formMobileAttributesFields);
       const response = {
         ...this.formMainFields,
         component: {
           nameSpace: this.blockConfig?.nameSpace || "",
           systemName: this.blockConfig?.systemName || ""
         },
+        ...this.formExtraFields,
         entity: {type: null, id: null, params: {}, ...this.formEntityFields},
-        attributes: {...this.formAttributesFields.value},
+        attributes: {...this.formAttributesFields},
+        mobileAttributes: {...this.formMobileAttributesFields},
         mediasSingle: {
           ...(this.formExtraFields.medias_single || this.formExtraFields.mediasSingle || {}),
           ...(this.formMainFields.mediasSingle || this.formMainFields.medias_ingle || {})
@@ -406,11 +443,16 @@ export default {
         mediasSingle: response.mediasSingle,
         mediasMulti: response.mediasMulti
       }
+      response.attributes.mainblock = response.attributes.mainBlock;
+      response.mobileAttributes.mainblock = response.mobileAttributes.mainBlock;
+      delete response.attributes.mainBlock;
+      delete response.mobileAttributes.mainBlock;
       //Remove extra data
       delete response.componentName
       delete response.helpText
       delete response.medias_single
       delete response.medias_multi
+      console.log(response);
       return response;
     },
     //Close the form block drawer and back to the list
@@ -436,7 +478,8 @@ export default {
         type
       }
       this.formEntityFields = fields;
-      this.formExtraFields = {...this.selectedBlock};
+      const extraFieldsBlock = this.blocks.find(block => block.systemName === this.formMainFields.systemName);
+      this.formExtraFields = {...extraFieldsBlock};
     },
 
     resetFormMainFields(){

@@ -447,6 +447,8 @@ export default {
         ...(this.selectedBlock?.block || {}),
       }
 
+      console.log("wtf", block);
+
       //Validate if there is content for this form
       if (block.content.length || Object.keys(block.contentFields).length) {
         const blockContentFields = !Object.keys(block.contentFields).length ? [] : Object.values(block.contentFields)
@@ -476,7 +478,6 @@ export default {
           }]
         }
       }
-      console.log("contentfieldsconfig", response);
       //Response
       return response
     },
@@ -556,8 +557,8 @@ export default {
           response.attributes[blockName] = {}
         }
       })
-      console.log("response", response);
       //Response
+      console.warn(response);
       return response
     },
     //Modal Templates attributes
@@ -692,8 +693,6 @@ export default {
               this.formContentFields = this.$clone(response.data)
               console.log(this.formContentFields);
               //Set the formAttributes data
-              console.warn("esta response data");
-              console.warn(response.data);
               const blockAttr = response.data.attributes
               Object.keys(blockAttr).forEach(attrName => {
                 if ((blockAttr[attrName] != undefined) && !Array.isArray(blockAttr[attrName])) {
@@ -706,7 +705,6 @@ export default {
             }, 500)
           }, 500)
           //Resolve
-          console.log("formExtra", this.formContentFields);
           resolve(response.data)
         }).catch(error => {
           this.$apiResponse.handleError(error, () => {

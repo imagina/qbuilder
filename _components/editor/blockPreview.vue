@@ -20,6 +20,12 @@ export default defineComponent({
   setup() {
     return {
       selectedBlock: computed(() => editorStore.state.selectedBlock),
+      formMainFields: computed(() => editorStore.state.formMainFields),
+      formEntityFields: computed(() => editorStore.state.formEntityFields),
+      formExtraFields: computed(() => editorStore.state.formExtraFields),
+      formAttributesFields: computed(() => editorStore.state.formAttributesFields),
+      formMobileAttributesFields: computed(() => editorStore.state.formMobileAttributesFields),
+      blockConfig: computed(() => editorStore.state.blockConfig),
     }
   },
   props: {},
@@ -27,7 +33,10 @@ export default defineComponent({
   watch: {
     selectedBlock() {
       this.loadIframe()
-    }
+    },
+    // test(){
+    //   this.loadIframe()
+    // }
   },
   mounted() {
     this.$nextTick(function () {
@@ -36,11 +45,22 @@ export default defineComponent({
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    test(){
+      return {
+        ...this.formMainFields,
+        ...this.formEntityFields,
+        ...this.formExtraFields,
+        ...this.formAttributesFields,
+      }
+    },
+    //blockConfig: editorStore.getters.blockConfig,
+  },
   methods: {
     loadIframe() {
       this.$nextTick(function () {
         if (this.selectedBlock) {
+          //console.log(editorStore.getters.dataBlockPreview.value);
           this.$refs.iframePost.loadIframe(
               `${this.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
               editorStore.getters.dataBlockPreview.value

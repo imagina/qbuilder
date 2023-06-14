@@ -1,5 +1,5 @@
 <template>
-  <div id="builderDrawerBlockAttributes" :key="attributesKey" v-if="this.selectedBlock">
+  <div id="builderDrawerBlockAttributes" :key="attributesKey" v-if="blockConfig">
     <!--Title-->
     <div class="drawer-title">
       {{ $trp('ibuilder.cms.block') }}
@@ -9,8 +9,8 @@
     </div>
     <!--List the blocks-->
     <q-scroll-area style="height: calc(100vh - 60px)">
-      <dynamic-field v-model="element" :field="elementOptions"/>
-      <div class="text-center q-mb-md">
+      <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
+      <div v-if="element" class="text-center q-mb-md">
         <q-btn-toggle @click="() => resetAttributesKey()" v-model="statusChildBlocks[featureFlagElement.name]"
                       class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
                       text-color="green" :options="[
@@ -18,7 +18,7 @@
                             { label: `${featureFlagElement.title} (Off)`, value: false }
                 ]"/>
       </div>
-      <div class="padding-drawer-content row">
+      <div v-if="element" class="padding-drawer-content row">
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
         <div class="col-3">
@@ -47,8 +47,16 @@
                  :key="`${index}-subtabs`">
               <div v-show="statusChildBlocks[featureFlagElement.name]">
                 <q-separator class="q-mb-md"/>
-                <dynamic-field v-for="(field, fieldName) in attribute" :key="fieldName" :field="field"
+                <div v-if="device.value == 0">
+                  Mobile
+                  <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
+                               v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                </div>
+                <div v-if="device.value == 1">
+                  Desktop
+                  <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
                                v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                </div>
               </div>
             </div>
           </div>
@@ -60,6 +68,7 @@
 
 <script>
 import editorStore from "@imagina/qbuilder/_store/editor";
+import Vue, { defineComponent, computed } from "vue";
 
 export default {
   name: 'attributes',
@@ -76,13 +85,21 @@ export default {
       if (newValue) {
         const blockAttributes = this.selectedBlock.attributes
         Object.keys(blockAttributes).forEach(attributeName => {
-          if ((blockAttributes[attributeName] != undefined) && !Array.isArray(blockAttributes[attributeName])) {
-            this.formAttributesFields[attributeName] = blockAttributes[attributeName]
+          if (!Array.isArray(blockAttributes[attributeName])) {    
+            this.formMobileAttributesFields[attributeName] = {...blockAttributes[attributeName]}
+            this.formAttributesFields[attributeName] = {...blockAttributes[attributeName]}
           } else {
             this.setStatusChildBlock(attributeName, false);
           }
         })
+        this.formAttributesFields['mainBlock'] = {...this.formAttributesFields['mainblock']};
+        this.formMobileAttributesFields['mainBlock'] = {...this.formMobileAttributesFields['mainblock']};
+        delete this.formAttributesFields['mainblock'];
+        delete this.formMobileAttributesFields['mainblock'];
       }
+    },
+    'device.value'(){
+      this.attributesKey = this.$uid()
     },
   },
   data() {
@@ -93,17 +110,20 @@ export default {
       attributesKey: this.$uid(),
       section: 'panel-0',
       panelNames: ['panel-0', 'panel-1', 'panel-2', 'panel-3', 'panel-4', 'panel-5', 'panel-6', 'panel-7', 'panel-8', 'panel-9', 'panel-10', 'panel-11', 'panel-12'],
+      formAttributesFields: computed(() => editorStore.state.formAttributesFields),
+      formMobileAttributesFields: computed(() => editorStore.state.formMobileAttributesFields),
     }
   },
   computed: {
     statusChildBlocks: () => editorStore.state.statusChildBlocks,
-    formAttributesFields: () => editorStore.state.formAttributesFields,
+    //formAttributesFields: () => editorStore.models.formAttributesFields,
+    //formMobileAttributesFields: () => editorStore.models.formMobileAttributesFields,
+    device: () => editorStore.models.device,
     selectedBlock: () => editorStore.state.selectedBlock,
     elementSelected: () => editorStore.state.elementSelected,
     elementSelectedAttr() {
       const attrs = this.blockConfig.elements.find(element => element.systemName === this.elementSelected)?.attributes;
-      attrs.forEach((attr, index) => attr.tabName = this.panelNames[index]);
-      console.warn(attrs);
+      //attrs.forEach((attr, index) => attr.tabName = this.panelNames[index]);
       return attrs;
     },
     featureFlagElement() {
@@ -137,7 +157,7 @@ export default {
     closeAttributesDrawer: editorStore.methods.closeAttributesDrawer,
     resetAttributesKey() {
       this.attributesKey = this.$uid()
-    }
+    },
   }
 }
 </script>

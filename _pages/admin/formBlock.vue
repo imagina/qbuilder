@@ -455,6 +455,24 @@ export default {
           content: block.content,
           contentFields: [{
             fields: [
+              {
+                name: 'blockTitle',
+                type: 'input',
+                colClass: 'col-12',
+                isTranslatable: true,
+                props : {
+                  label : this.$tr('isite.cms.form.title')
+                }
+              },
+              {
+                name: 'blockSubtitle',
+                type: 'input',
+                colClass: 'col-12',
+                isTranslatable: true,
+                props : {
+                  label : this.$tr('isite.cms.label.subtitle')
+                }
+              },
               ...blockContentFields.map((field, keyField) => ({
                 ...field, fieldItemId: this.blockId, name: (field.name || keyField)
               })),

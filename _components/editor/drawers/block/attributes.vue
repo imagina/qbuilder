@@ -110,14 +110,14 @@ export default {
       attributesKey: this.$uid(),
       section: 'panel-0',
       panelNames: ['panel-0', 'panel-1', 'panel-2', 'panel-3', 'panel-4', 'panel-5', 'panel-6', 'panel-7', 'panel-8', 'panel-9', 'panel-10', 'panel-11', 'panel-12'],
-      formAttributesFields: computed(() => editorStore.state.formAttributesFields),
-      formMobileAttributesFields: computed(() => editorStore.state.formMobileAttributesFields),
+      //formAttributesFields: computed(() => editorStore.state.formAttributesFields),
+      //formMobileAttributesFields: computed(() => editorStore.state.formMobileAttributesFields),
     }
   },
   computed: {
     statusChildBlocks: () => editorStore.state.statusChildBlocks,
-    //formAttributesFields: () => editorStore.models.formAttributesFields,
-    //formMobileAttributesFields: () => editorStore.models.formMobileAttributesFields,
+    formAttributesFields: () => editorStore.models.formAttributesFields,
+    formMobileAttributesFields: () => editorStore.models.formMobileAttributesFields,
     device: () => editorStore.models.device,
     selectedBlock: () => editorStore.state.selectedBlock,
     elementSelected: () => editorStore.state.elementSelected,

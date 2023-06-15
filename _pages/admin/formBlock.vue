@@ -132,7 +132,7 @@
               <!--Actions-->
               <div class="box box-auto-height text-right">
                 <q-btn v-if="!blockId" unelevated rounded no-caps type="submit" :label="$tr('isite.cms.label.save')" color="primary"/>
-                <div class="q-pa-md" v-else="blockId">
+                <div class="q-pa-md" v-else>
                   <q-btn-dropdown
                     split
                     color="green"

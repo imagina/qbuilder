@@ -131,7 +131,25 @@
               </div>
               <!--Actions-->
               <div class="box box-auto-height text-right">
-                <q-btn unelevated rounded no-caps type="submit" :label="$tr('isite.cms.label.save')" color="primary"/>
+                <q-btn v-if="!blockId" unelevated rounded no-caps type="submit" :label="$tr('isite.cms.label.save')" color="primary"/>
+                <div class="q-pa-md" v-else="blockId">
+                  <q-btn-dropdown
+                    split
+                    color="green"
+                    content-class="bg-green text-white"
+                    rounded
+                    :label="$tr('isite.cms.label.save')"
+                    @click="() => submitData()"
+                  >
+                    <q-list class="q-pl-sm">
+                      <q-item clickable v-close-popup>
+                        <q-item-section>
+                          <q-item-label @click="() => saveAndExit()">{{ $tr('isite.cms.message.saveAndReturn') }}</q-item-label>
+                        </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-btn-dropdown>
+                </div>
               </div>
             </q-form>
           </q-scroll-area>
@@ -771,17 +789,20 @@ export default {
       this.submitTemplates();
     },
     //Save data
-    async submitData() {
+    async submitData(saveAndReturn) {
       if (this.$refs.mainForm) {
         this.isValidForm = await this.$refs.mainForm.validateCompleteForm();
       }
       //Send data if form is valid
       if (this.isValidForm) {
         const requestData = this.getBlockRequestData
-        this.blockId ? this.updateBlock(requestData) : this.createBlock(requestData)
+        this.blockId ? this.updateBlock(requestData, saveAndReturn) : this.createBlock(requestData)
       } else {
         this.$alert.error(this.$tr('isite.cms.message.formInvalid'))
       }
+    },
+    async saveAndExit(){
+      await this.submitData(true);
     },
     //Save Templates Client
     submitTemplates(save = false) {
@@ -806,7 +827,7 @@ export default {
       })
     },
     //Update Block
-    updateBlock(data) {
+    updateBlock(data, saveAndReturn) {
       return new Promise(resolve => {
         this.loading = true
         //Request params
@@ -817,7 +838,8 @@ export default {
             if (this.$route.query.redirect) {
               window.location.href = this.$route.query.redirect;
             }
-          } else {
+          }
+          if (saveAndReturn) {
             this.$router.push({name: "qbuilder.admin.blocks.index"})
           }
           this.loading = false

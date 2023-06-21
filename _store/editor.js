@@ -110,53 +110,74 @@ const models = {
     get: () => state.formMobileAttributesFields,
     set: (val) => state.formMobileAttributesFields = val
   }),
+  blockConfig: computed({
+    get: () => state.blockConfig,
+    set: (val) => state.blockConfig = val
+  }),
 }
-
-// //Getters
-// const getters = {
-//   //Data to show the block preview
-  
-//   dataBlockPreview: computed(() => {
-//     //Instance the attributes
-//     const component = state.selectedBlock.component
-//     const entity = state.formEntityFields
-//     const attributes = {
-//       ...state.formAttributesFields,
-//       componentAttributes: {
-//         ...state.formAttributesFields.componentAttributes,
-//         //Merge all the fields into the componentAttributes
-//         ...((state.formExtraFields.content || []).map(item => ({[helper.snakeToCamelCase(item.name)]: item.value}))
-//           .reduce((result, current) => Object.assign(result, current), {}))
-//       }
-//     }
-//     //Return
-//     console.log(component);
-//     console.log(entity);
-//     console.log(attributes);
-//     return {component, entity, attributes}
-//   }),
-// }
 
 //Getters
 const getters = {
   //Data to show the block preview
+  
   dataBlockPreview: computed(() => {
     //Instance the attributes
-    const component = state.selectedBlock.component
-    const entity = state.selectedBlock.entity
-    const attributes = {
-      ...state.selectedBlock.attributes,
-      componentAttributes: {
-        ...state.selectedBlock.attributes.componentAttributes,
-        //Merge all the fields into the componentAttributes
-        ...((state.selectedBlock.fields || []).map(item => ({[helper.snakeToCamelCase(item.name)]: item.value}))
-          .reduce((result, current) => Object.assign(result, current), {}))
+    const component = {
+      nameSpace: state.blockConfig.nameSpace,
+      systemName: state.formMainFields.componentName
+    }
+    const entity = state.formEntityFields
+    let attributes
+    if (Object.keys(state.formAttributesFields).length > 0) {
+      attributes = {
+        ...state.formAttributesFields,
+        componentAttributes: {
+          ...state.formAttributesFields.componentAttributes,
+          ...state.formExtraFields['es'] || {},
+          //Merge all the fields into the componentAttributes
+          ...((state.formExtraFields.content || []).map(item => ({[helper.snakeToCamelCase(item.name)]: item.value}))
+            .reduce((result, current) => Object.assign(result, current), {}))
+        }
+      }
+    }else{
+      const blockAttributes = state.blocks.find(block => block.component.systemName === state.blockConfig.systemName).attributes || []; 
+      attributes = {
+        ...blockAttributes,
+        componentAttributes: {
+          ...blockAttributes.componentAttributes,
+          ...state.formExtraFields['es'] || {},
+          //Merge all the fields into the componentAttributes
+          ...((state.formExtraFields.content || []).map(item => ({[helper.snakeToCamelCase(item.name)]: item.value}))
+            .reduce((result, current) => Object.assign(result, current), {}))
+        }
       }
     }
     //Return
+    console.log({component, entity, attributes});
     return {component, entity, attributes}
-  })
+  }),
 }
+
+//Getters
+// const getters = {
+//   //Data to show the block preview
+//   dataBlockPreview: computed(() => {
+//     //Instance the attributes
+//     const component = state.selectedBlock.component
+//     const entity = state.selectedBlock.entity
+//     const attributes = {
+//       ...state.selectedBlock.attributes,
+//       componentAttributes: {
+//         ...state.selectedBlock.attributes.componentAttributes,
+//         //Merge all the fields into the componentAttributes
+//         ...((state.selectedBlock.fields || []).map(item => ({[helper.snakeToCamelCase(item.name)]: item.value}))
+//           .reduce((result, current) => Object.assign(result, current), {}))
+//       }
+//     }
+//     //Return
+//     return {component, entity, attributes}
+//   })
+// }
 
 //Methods
 const methods = {
@@ -165,7 +186,6 @@ const methods = {
     state.createMode = true;
     state.drawers.blocksShow = true;
     state.attributesKeyTemplate = Vue.prototype.$uid()
-    //console.warn(">>>>>>> CreateModel", state.attributesKeyTemplate)
   },
   //Get blocks
   getBlocksData: (refresh = false) => {
@@ -182,6 +202,7 @@ const methods = {
       //Request
       crud.index('apiRoutes.qbuilder.blocks', requestParams).then(response => {
         state.blocks = response.data
+        console.log("mira aquí: ", response.data);
         state.drawers.blocksList = true
         state.loading = false
         resolve(response.data)
@@ -217,14 +238,13 @@ const methods = {
   setSelectedBlock(block) {
     state.selectedBlock = block
     state.drawers.blocksShow = true
-    //console.warn(">>>>>>> UpdateModel", state.attributesKeyTemplate)
     state.attributesKeyTemplate = Vue.prototype.$uid()
-    //console.warn(">>>>>>> UpdateModel", state.attributesKeyTemplate)
   },
   //Finish Edit block
   closeBlockShow() {
     state.selectedBlock = null
     state.drawers.blocksShow = false
+    state.createMode = false;
   },
   setBlockFormData(){
     //Set only the main from data
@@ -240,13 +260,12 @@ const methods = {
   },
 
   closeAttributesDrawer(){
+    
     state.drawers.blockAttributes = false;
     state.drawers.blocksShow = true;
   },
   setStatusChildBlock(element){
-    //console.log(state.statusChildBlocks[element]);
     state.statusChildBlocks[element] = true;
-    //console.log(state.statusChildBlocks);
   },
   setBlockConfig(block){
     state.blockConfig = block;

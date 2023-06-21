@@ -510,6 +510,7 @@ export default {
           ...(this.formContentFields[this.$store.state.qsiteApp.defaultLocale] || {})
         }
       }
+      console.log({component, entity, attributes});
       return {component, entity, attributes}
     },
     //get body params to iframe
@@ -558,7 +559,6 @@ export default {
         }
       })
       //Response
-      console.warn(response);
       return response
     },
     //Modal Templates attributes

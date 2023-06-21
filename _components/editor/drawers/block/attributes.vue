@@ -83,24 +83,18 @@ export default {
     },
     selectedBlock(newValue) {
       if (newValue) {
-        const blockAttributes = this.selectedBlock.attributes
-        Object.keys(blockAttributes).forEach(attributeName => {
-          if (!Array.isArray(blockAttributes[attributeName])) {    
-            this.formMobileAttributesFields[attributeName] = {...blockAttributes[attributeName]}
-            this.formAttributesFields[attributeName] = {...blockAttributes[attributeName]}
-          } else {
-            this.setStatusChildBlock(attributeName, false);
-          }
-        })
-        this.formAttributesFields['mainBlock'] = {...this.formAttributesFields['mainblock']};
-        this.formMobileAttributesFields['mainBlock'] = {...this.formMobileAttributesFields['mainblock']};
-        delete this.formAttributesFields['mainblock'];
-        delete this.formMobileAttributesFields['mainblock'];
+        //const blockAttributes = this.selectedBlock.attributes;
+        this.setAttributes();
       }
     },
     'device.value'(){
       this.attributesKey = this.$uid()
     },
+    'blockConfig'(newValue){
+      if (!this.selectedBlock) {
+        this.setAttributes();
+      }
+    }
   },
   data() {
     return {
@@ -110,8 +104,6 @@ export default {
       attributesKey: this.$uid(),
       section: 'panel-0',
       panelNames: ['panel-0', 'panel-1', 'panel-2', 'panel-3', 'panel-4', 'panel-5', 'panel-6', 'panel-7', 'panel-8', 'panel-9', 'panel-10', 'panel-11', 'panel-12'],
-      //formAttributesFields: computed(() => editorStore.state.formAttributesFields),
-      //formMobileAttributesFields: computed(() => editorStore.state.formMobileAttributesFields),
     }
   },
   computed: {
@@ -121,6 +113,7 @@ export default {
     device: () => editorStore.models.device,
     selectedBlock: () => editorStore.state.selectedBlock,
     elementSelected: () => editorStore.state.elementSelected,
+    blocks: () => editorStore.state.blocks,
     elementSelectedAttr() {
       const attrs = this.blockConfig.elements.find(element => element.systemName === this.elementSelected)?.attributes;
       //attrs.forEach((attr, index) => attr.tabName = this.panelNames[index]);
@@ -129,12 +122,7 @@ export default {
     featureFlagElement() {
       return this.blockConfig.elements.find(element => element.systemName === this.elementSelected);
     },
-    blockConfig() {
-      const block = Object.values(this.blocksConfiguration).find((block) => {
-        return block.systemName == this.formMainFields.componentName;
-      });
-      return block;
-    },
+    blockConfig: () => editorStore.state.blockConfig,
     elementOptions() {
       return {
         type: "select",
@@ -157,6 +145,22 @@ export default {
     closeAttributesDrawer: editorStore.methods.closeAttributesDrawer,
     resetAttributesKey() {
       this.attributesKey = this.$uid()
+    },
+    setAttributes(){
+      const blockAttributes = this.blocks.find(block => block.component.systemName === this.blockConfig.systemName).attributes || [];
+      console.log(blockAttributes); 
+      Object.keys(blockAttributes).forEach(attributeName => {
+        if (!Array.isArray(blockAttributes[attributeName])) {    
+          this.formMobileAttributesFields[attributeName] = {...blockAttributes[attributeName]}
+          this.formAttributesFields[attributeName] = {...blockAttributes[attributeName]}
+        } else {
+          this.setStatusChildBlock(attributeName, false);
+        }
+      })
+      this.formAttributesFields['mainBlock'] = {...this.formAttributesFields['mainblock']};
+      this.formMobileAttributesFields['mainBlock'] = {...this.formMobileAttributesFields['mainblock']};
+      delete this.formAttributesFields['mainblock'];
+      delete this.formMobileAttributesFields['mainblock'];
     },
   }
 }

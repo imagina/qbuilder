@@ -1,7 +1,7 @@
 <template>
   <div id="builderBlockPreview">
     <!--No selected block-->
-    <div v-if="!selectedBlock" class="row full-height items-center justify-center">
+    <div v-if="!selectedBlock && !formEntityFields.type" class="row full-height items-center justify-center">
       <div class="text-center">
         <q-icon name="fa-light fa-puzzle-piece" size="60px" class="text-primary-builder"/>
         <div class="q-mt-md text-h5">{{ $tr('ibuilder.cms.chooseBlock') }}</div>
@@ -34,33 +34,20 @@ export default defineComponent({
     selectedBlock() {
       this.loadIframe()
     },
-    // test(){
-    //   this.loadIframe()
-    // }
-  },
-  mounted() {
-    this.$nextTick(function () {
-    })
-  },
-  data() {
-    return {}
+    checkingData(){
+      this.loadIframe()
+    },
   },
   computed: {
-    test(){
-      return {
-        ...this.formMainFields,
-        ...this.formEntityFields,
-        ...this.formExtraFields,
-        ...this.formAttributesFields,
-      }
+    checkingData(){
+      return { ...this.formMainFields, ...this.formEntityFields, ...this.formExtraFields, ...this.formAttributesFields }
     },
-    //blockConfig: editorStore.getters.blockConfig,
   },
   methods: {
     loadIframe() {
       this.$nextTick(function () {
-        if (this.selectedBlock) {
-          //console.log(editorStore.getters.dataBlockPreview.value);
+        if (this.selectedBlock || this.formEntityFields.type) {
+          console.log(this.$refs.iframePost);
           this.$refs.iframePost.loadIframe(
               `${this.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
               editorStore.getters.dataBlockPreview.value

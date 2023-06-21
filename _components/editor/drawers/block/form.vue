@@ -158,6 +158,9 @@ export default {
     blockConfig(){
       this.setBlockConfig(this.blockConfig);
     },
+    formAttributesFields(){
+      console.log(this.formAttributesFields);
+    }
   },
   beforeDestroy() {
     this.$eventBus.$off('updateBlockInfo')
@@ -374,7 +377,6 @@ export default {
         this.updateBlock();
       })
       this.$eventBus.$on('saveBlockInfo', () => {
-        console.log("XD");
         this.createBlock();
       })
     },
@@ -386,8 +388,7 @@ export default {
         if (this.isValidForm) {
           const data = this.getBlockData();
           const requestParams = {notToSnakeCase: this.notToSnakeCase}
-          //await this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams);
-          //window.location.reload();      
+          this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
         }
       }
     },
@@ -397,8 +398,7 @@ export default {
         if (this.isValidForm) {
           const data = this.getBlockData();
           const requestParams = {notToSnakeCase: this.notToSnakeCase}
-          //await this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams);
-          //window.location.reload();
+          this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());
         }
       }
     },
@@ -414,6 +414,7 @@ export default {
       this.deleteExtraKeys(this.formMobileAttributesFields);
       const response = {
         ...this.formMainFields,
+        internalTitle: this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle,
         component: {
           nameSpace: this.blockConfig?.nameSpace || "",
           systemName: this.blockConfig?.systemName || ""
@@ -452,6 +453,8 @@ export default {
       delete response.helpText
       delete response.medias_single
       delete response.medias_multi
+      
+      response.internalTitle = this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle;
       console.log(response);
       return response;
     },

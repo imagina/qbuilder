@@ -47,12 +47,12 @@
                  :key="`${index}-subtabs`">
               <div v-show="statusChildBlocks[featureFlagElement.name]">
                 <q-separator class="q-mb-md"/>
-                <div v-if="device.value == 0">
+                <div v-if="device == 0">
                   Mobile
                   <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
                                v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
                 </div>
-                <div v-if="device.value == 1">
+                <div v-if="device == 1">
                   Desktop
                   <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
                                v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
@@ -68,7 +68,7 @@
 
 <script>
 import editorStore from "@imagina/qbuilder/_store/editor";
-import Vue, { defineComponent, computed } from "vue";
+import Vue, { defineComponent, computed, reactive } from "vue";
 
 export default {
   name: 'attributes',
@@ -87,7 +87,7 @@ export default {
         this.setAttributes();
       }
     },
-    'device.value'(){
+    'device'(){
       this.attributesKey = this.$uid()
     },
     'blockConfig'(newValue){
@@ -100,6 +100,9 @@ export default {
     return {
       blocksConfiguration: editorStore.models.blocksConfiguration,
       formMainFields: editorStore.models.formMainFields,
+      formAttributesFields: editorStore.models.formAttributesFields,
+      formMobileAttributesFields: editorStore.models.formMobileAttributesFields,
+      device: editorStore.models.device,
       element: null,
       attributesKey: this.$uid(),
       section: 'panel-0',
@@ -108,9 +111,6 @@ export default {
   },
   computed: {
     statusChildBlocks: () => editorStore.state.statusChildBlocks,
-    formAttributesFields: () => editorStore.models.formAttributesFields,
-    formMobileAttributesFields: () => editorStore.models.formMobileAttributesFields,
-    device: () => editorStore.models.device,
     selectedBlock: () => editorStore.state.selectedBlock,
     elementSelected: () => editorStore.state.elementSelected,
     blocks: () => editorStore.state.blocks,
@@ -148,19 +148,24 @@ export default {
     },
     setAttributes(){
       const blockAttributes = this.blocks.find(block => block.component.systemName === this.blockConfig.systemName).attributes || [];
-      console.log(blockAttributes); 
+      var tmpFormAttrs = {}
       Object.keys(blockAttributes).forEach(attributeName => {
-        if (!Array.isArray(blockAttributes[attributeName])) {    
+        if (!Array.isArray(blockAttributes[attributeName])) {
           this.formMobileAttributesFields[attributeName] = {...blockAttributes[attributeName]}
-          this.formAttributesFields[attributeName] = {...blockAttributes[attributeName]}
+          tmpFormAttrs[attributeName] = {...blockAttributes[attributeName]}
+          //this.formAttributesFields[attributeName] = {...blockAttributes[attributeName]}
         } else {
           this.setStatusChildBlock(attributeName, false);
         }
       })
-      this.formAttributesFields['mainBlock'] = {...this.formAttributesFields['mainblock']};
+      tmpFormAttrs['mainBlock'] = {...tmpFormAttrs['mainblock']};
+      //this.formAttributesFields['mainBlock'] = {...this.formAttributesFields['mainblock']};
       this.formMobileAttributesFields['mainBlock'] = {...this.formMobileAttributesFields['mainblock']};
-      delete this.formAttributesFields['mainblock'];
+      delete tmpFormAttrs['mainblock'];
+      //delete this.formAttributesFields['mainblock'];
       delete this.formMobileAttributesFields['mainblock'];
+
+      this.formAttributesFields = reactive(tmpFormAttrs)
     },
   }
 }

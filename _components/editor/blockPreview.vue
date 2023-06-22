@@ -16,38 +16,44 @@ import Vue, {defineComponent, computed} from "vue";
 import editorStore from '@imagina/qbuilder/_store/editor'
 import iframePost from '@imagina/qsite/_components/master/iframePost.vue'
 
-export default defineComponent({
-  setup() {
-    return {
-      selectedBlock: computed(() => editorStore.state.selectedBlock),
-      formMainFields: computed(() => editorStore.state.formMainFields),
-      formEntityFields: computed(() => editorStore.state.formEntityFields),
-      formExtraFields: computed(() => editorStore.state.formExtraFields),
-      formAttributesFields: computed(() => editorStore.state.formAttributesFields),
-      formMobileAttributesFields: computed(() => editorStore.state.formMobileAttributesFields),
-      blockConfig: computed(() => editorStore.state.blockConfig),
-    }
-  },
+export default {
   props: {},
   components: {iframePost},
   watch: {
     selectedBlock() {
       this.loadIframe()
     },
-    checkingData(){
+    formAttributesFields:{
+      handler: function (){
+        this.loadIframe()
+      },
+      deep : true
+    },
+    'checkingData'() {
       this.loadIframe()
     },
   },
   computed: {
-    checkingData(){
-      return { ...this.formMainFields, ...this.formEntityFields, ...this.formExtraFields, ...this.formAttributesFields }
+    selectedBlock: () => editorStore.state.selectedBlock,
+    formMainFields: () => editorStore.state.formMainFields,
+    formEntityFields: () => editorStore.state.formEntityFields,
+    formExtraFields: () => editorStore.state.formExtraFields,
+    formAttributesFields: () => editorStore.state.formAttributesFields,
+    formMobileAttributesFields: () => editorStore.state.formMobileAttributesFields,
+    blockConfig: () => editorStore.state.blockConfig,
+    checkingData() {
+      return {
+        ...this.formMainFields,
+        ...this.formEntityFields,
+        ...this.formExtraFields,
+        ...this.formAttributesFields
+      }
     },
   },
   methods: {
     loadIframe() {
       this.$nextTick(function () {
         if (this.selectedBlock || this.formEntityFields.type) {
-          console.log(this.$refs.iframePost);
           this.$refs.iframePost.loadIframe(
               `${this.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
               editorStore.getters.dataBlockPreview.value
@@ -56,7 +62,7 @@ export default defineComponent({
       })
     },
   }
-})
+}
 </script>
 <style lang="stylus">
 #builderBlockPreview

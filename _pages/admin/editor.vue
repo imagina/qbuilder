@@ -39,11 +39,6 @@ export default defineComponent({
       urlIframe: 'https://www.imaginacolombia.com'
     }
   },
-  watch: {
-    device(newValue){
-      console.log(newValue);
-    }
-  },
   mounted() {
     this.$nextTick(() => {
       //this.$refs['form-editor'].submit();

@@ -83,18 +83,17 @@ export default {
     },
     selectedBlock(newValue) {
       if (newValue) {
-        //const blockAttributes = this.selectedBlock.attributes;
         this.setAttributes();
       }
     },
-    'device'(){
+    device(){
       this.attributesKey = this.$uid()
     },
-    'blockConfig'(newValue){
-      if (!this.selectedBlock) {
+    'formEntityFields.type'(newValue){
+      if (!this.selectedBlock && newValue) {
         this.setAttributes();
       }
-    }
+    },
   },
   data() {
     return {
@@ -110,14 +109,13 @@ export default {
     }
   },
   computed: {
+    formEntityFields: () => editorStore.state.formEntityFields,
     statusChildBlocks: () => editorStore.state.statusChildBlocks,
     selectedBlock: () => editorStore.state.selectedBlock,
     elementSelected: () => editorStore.state.elementSelected,
     blocks: () => editorStore.state.blocks,
     elementSelectedAttr() {
-      const attrs = this.blockConfig.elements.find(element => element.systemName === this.elementSelected)?.attributes;
-      //attrs.forEach((attr, index) => attr.tabName = this.panelNames[index]);
-      return attrs;
+      return this.blockConfig.elements.find(element => element.systemName === this.elementSelected)?.attributes;
     },
     featureFlagElement() {
       return this.blockConfig.elements.find(element => element.systemName === this.elementSelected);
@@ -147,25 +145,35 @@ export default {
       this.attributesKey = this.$uid()
     },
     setAttributes(){
-      const blockAttributes = this.blocks.find(block => block.component.systemName === this.blockConfig.systemName).attributes || [];
-      var tmpFormAttrs = {}
-      Object.keys(blockAttributes).forEach(attributeName => {
-        if (!Array.isArray(blockAttributes[attributeName])) {
-          this.formMobileAttributesFields[attributeName] = {...blockAttributes[attributeName]}
-          tmpFormAttrs[attributeName] = {...blockAttributes[attributeName]}
-          //this.formAttributesFields[attributeName] = {...blockAttributes[attributeName]}
+      const block = this.blocks.find(block => block.component.systemName === this.blockConfig.systemName);
+      const blockAttributesDesktop = block.attributes || [];
+      const blockAttributesMobile = block.mobileAttributes || [];
+      const tmpDesktopAttributes = {};
+      const tmpMobileAttributes = {};
+      console.log("All", this.blocks);
+      Object.keys(blockAttributesDesktop).forEach(attributeName => {
+        if (!Array.isArray(blockAttributesDesktop[attributeName])) {
+          if(blockAttributesMobile[attributeName]){
+            tmpMobileAttributes[attributeName] = {...blockAttributesMobile[attributeName]}
+          }else{
+            tmpMobileAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
+          }
+          tmpDesktopAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
         } else {
           this.setStatusChildBlock(attributeName, false);
         }
       })
-      tmpFormAttrs['mainBlock'] = {...tmpFormAttrs['mainblock']};
-      //this.formAttributesFields['mainBlock'] = {...this.formAttributesFields['mainblock']};
-      this.formMobileAttributesFields['mainBlock'] = {...this.formMobileAttributesFields['mainblock']};
-      delete tmpFormAttrs['mainblock'];
-      //delete this.formAttributesFields['mainblock'];
-      delete this.formMobileAttributesFields['mainblock'];
 
-      this.formAttributesFields = reactive(tmpFormAttrs)
+      tmpDesktopAttributes['mainBlock'] = {...tmpDesktopAttributes['mainblock']};
+      tmpMobileAttributes['mainBlock'] = {...tmpMobileAttributes['mainblock']};
+
+      delete tmpDesktopAttributes['mainblock'];
+      delete tmpMobileAttributes['mainblock'];
+
+      this.formAttributesFields = reactive(tmpDesktopAttributes)
+      this.formMobileAttributesFields = reactive(tmpMobileAttributes)
+
+      console.log(this.formMobileAttributesFields);
     },
   }
 }

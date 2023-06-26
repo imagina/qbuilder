@@ -128,15 +128,28 @@ const getters = {
     }
     const entity = state.formEntityFields
     let attributes
-    if (Object.keys(state.formAttributesFields).length > 0) {
-      attributes = {
-        ...state.formAttributesFields,
-        componentAttributes: {
-          ...state.formAttributesFields.componentAttributes,
-          ...state.formExtraFields['es'] || {},
-          //Merge all the fields into the componentAttributes
-          ...((state.formExtraFields.content || []).map(item => ({[helper.snakeToCamelCase(item.name)]: item.value}))
-            .reduce((result, current) => Object.assign(result, current), {}))
+    if (Object.keys(state.formAttributesFields).length > 0 && Object.keys(state.formMobileAttributesFields)) {
+      if (state.device === 0) {
+        attributes = {
+          ...state.formMobileAttributesFields,
+          componentAttributes: {
+            ...state.formMobileAttributesFields.componentAttributes,
+            ...state.formExtraFields['es'] || {},
+            //Merge all the fields into the componentAttributes
+            ...((state.formExtraFields.content || []).map(item => ({[helper.snakeToCamelCase(item.name)]: item.value}))
+              .reduce((result, current) => Object.assign(result, current), {}))
+          }
+        }
+      }else{
+        attributes = {
+          ...state.formAttributesFields,
+          componentAttributes: {
+            ...state.formAttributesFields.componentAttributes,
+            ...state.formExtraFields['es'] || {},
+            //Merge all the fields into the componentAttributes
+            ...((state.formExtraFields.content || []).map(item => ({[helper.snakeToCamelCase(item.name)]: item.value}))
+              .reduce((result, current) => Object.assign(result, current), {}))
+          }
         }
       }
     }else{
@@ -154,6 +167,10 @@ const getters = {
     }
     //Return
     console.log({component, entity, attributes});
+    if (attributes.mainBlock) {
+      attributes.mainblock = {...attributes.mainBlock};
+      delete attributes.mainBlock;
+    }
     return {component, entity, attributes}
   }),
 }
@@ -245,6 +262,11 @@ const methods = {
     state.selectedBlock = null
     state.drawers.blocksShow = false
     state.createMode = false;
+    state.formMainFields = {};
+    state.formEntityFields = {};
+    state.formExtraFields = {};
+    state.formAttributesFields = {};
+    state.formMobileAttributesFields = {};
   },
   setBlockFormData(){
     //Set only the main from data

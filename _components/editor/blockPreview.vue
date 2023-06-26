@@ -12,7 +12,6 @@
   </div>
 </template>
 <script>
-import Vue, {defineComponent, computed} from "vue";
 import editorStore from '@imagina/qbuilder/_store/editor'
 import iframePost from '@imagina/qsite/_components/master/iframePost.vue'
 
@@ -21,19 +20,35 @@ export default {
   components: {iframePost},
   watch: {
     selectedBlock() {
-      this.loadIframe()
+      this.checkDebounce();
     },
     formAttributesFields:{
       handler: function (){
-        this.loadIframe()
+        this.checkDebounce();
       },
       deep : true
     },
-    'checkingData'() {
-      this.loadIframe()
+    formMobileAttributesFields:{
+      deep: true,
+      immediate: true,
+      handler: function (){
+        this.checkDebounce();
+      }
+    },
+    checkingData() {
+      this.checkDebounce();
+    },
+    device(){
+      this.checkDebounce();;
     },
   },
+  data(){
+    return {
+      timeout: null
+    }
+  },
   computed: {
+    device: () => editorStore.state.device,
     selectedBlock: () => editorStore.state.selectedBlock,
     formMainFields: () => editorStore.state.formMainFields,
     formEntityFields: () => editorStore.state.formEntityFields,
@@ -46,7 +61,6 @@ export default {
         ...this.formMainFields,
         ...this.formEntityFields,
         ...this.formExtraFields,
-        ...this.formAttributesFields
       }
     },
   },
@@ -54,12 +68,18 @@ export default {
     loadIframe() {
       this.$nextTick(function () {
         if (this.selectedBlock || this.formEntityFields.type) {
-          this.$refs.iframePost.loadIframe(
-              `${this.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
-              editorStore.getters.dataBlockPreview.value
-          )
-        }
+            this.$refs.iframePost.loadIframe(
+                `${this.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
+                editorStore.getters.dataBlockPreview.value
+            )
+          }
       })
+    },
+    checkDebounce(){
+      if (this.timeout) clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        this.loadIframe()
+      }, 500);
     },
   }
 }

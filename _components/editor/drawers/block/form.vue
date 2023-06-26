@@ -138,7 +138,6 @@
   </div>
 </template>
 <script>
-import Vue, { defineComponent, computed } from "vue";
 import editorStore from "@imagina/qbuilder/_store/editor";
 
 export default {
@@ -158,9 +157,6 @@ export default {
     blockConfig(){
       this.setBlockConfig(this.blockConfig);
     },
-    formAttributesFields(){
-      console.log(this.formAttributesFields);
-    }
   },
   beforeDestroy() {
     this.$eventBus.$off('updateBlockInfo')
@@ -189,8 +185,8 @@ export default {
   computed: {
     attributeKeyTemplate: () => editorStore.state.attributesKeyTemplate,
     drawers: () => editorStore.state.drawers,
-    formAttributesFields: () => editorStore.models.formAttributesFields,
-    formMobileAttributesFields: () => editorStore.models.formMobileAttributesFields,
+    formAttributesFields: () => editorStore.state.formAttributesFields,
+    formMobileAttributesFields: () => editorStore.state.formMobileAttributesFields,
     elementSelected: () => editorStore.state.elementSelected,
     //Return the state of selectedBlock from the editor store
     selectedBlock: () => editorStore.state.selectedBlock,
@@ -388,7 +384,7 @@ export default {
         if (this.isValidForm) {
           const data = this.getBlockData();
           const requestParams = {notToSnakeCase: this.notToSnakeCase}
-          this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
+          //this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
         }
       }
     },
@@ -398,7 +394,7 @@ export default {
         if (this.isValidForm) {
           const data = this.getBlockData();
           const requestParams = {notToSnakeCase: this.notToSnakeCase}
-          this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());
+          //this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());
         }
       }
     },
@@ -455,6 +451,14 @@ export default {
       delete response.medias_multi
       
       response.internalTitle = this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle;
+
+      // Object.keys(this.statusChildBlocks).forEach(blockName => {
+      //   if (!this.statusChildBlocks[blockName]) {
+      //     response.attributes[blockName] = {};
+      //     response.mobileAttributes[blockName] = {};
+      //   }
+      // })
+
       console.log(response);
       return response;
     },

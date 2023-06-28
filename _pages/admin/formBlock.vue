@@ -395,6 +395,7 @@ export default {
         block.elements = this.$clone(blockElements)
       })
       //response
+      console.log("este response: ", response);
       return response
     },
     //Selected block

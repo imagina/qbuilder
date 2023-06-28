@@ -196,9 +196,9 @@ export default {
         return block.systemName == this.formMainFields.componentName;
       });
       if(this.formMainFields.componentName){
-        Object.values(block.elements).forEach(element => {
-          this.setStatusChildBlock(element.name, true);
-        })
+        // Object.values(block.elements).forEach(element => {
+        //   this.setStatusChildBlock(element.name, true);
+        // })
         this.formMainFieldsKey = this.$uid()
       }
       return block;
@@ -384,7 +384,7 @@ export default {
         if (this.isValidForm) {
           const data = this.getBlockData();
           const requestParams = {notToSnakeCase: this.notToSnakeCase}
-          //this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
+          this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
         }
       }
     },
@@ -394,7 +394,7 @@ export default {
         if (this.isValidForm) {
           const data = this.getBlockData();
           const requestParams = {notToSnakeCase: this.notToSnakeCase}
-          //this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());
+          this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());
         }
       }
     },
@@ -452,12 +452,22 @@ export default {
       
       response.internalTitle = this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle;
 
-      // Object.keys(this.statusChildBlocks).forEach(blockName => {
-      //   if (!this.statusChildBlocks[blockName]) {
-      //     response.attributes[blockName] = {};
-      //     response.mobileAttributes[blockName] = {};
-      //   }
-      // })
+      Object.keys(this.statusChildBlocks).forEach(blockName => {
+        const blockAttrStatus = this.statusChildBlocks[blockName];
+        console.log({blockAttrStatus});
+        if (blockName === 'mainBlock') blockName = 'mainblock';
+        if (!blockAttrStatus) {
+          response.attributes[blockName].propertiesStatus = false;
+          response.mobileAttributes[blockName].propertiesStatus = false;
+          console.log("false")
+        }else{
+          response.attributes[blockName].propertiesStatus = true;
+          response.mobileAttributes[blockName].propertiesStatus = true;
+          console.log("true")
+        }
+      })
+
+      console.log(this.statusChildBlocks)
 
       console.log(response);
       return response;

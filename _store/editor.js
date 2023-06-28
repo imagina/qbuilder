@@ -128,7 +128,9 @@ const getters = {
     }
     const entity = state.formEntityFields
     let attributes
-    if (Object.keys(state.formAttributesFields).length > 0 && Object.keys(state.formMobileAttributesFields)) {
+    if (Object.keys(state.formAttributesFields).length > 0 && Object.keys(state.formMobileAttributesFields).length > 0) {
+      console.log(state.formAttributesFields);
+      console.log(state.formMobileAttributesFields);
       if (state.device === 0) {
         attributes = {
           ...state.formMobileAttributesFields,
@@ -140,6 +142,8 @@ const getters = {
               .reduce((result, current) => Object.assign(result, current), {}))
           }
         }
+
+        console.log("Mobile");
       }else{
         attributes = {
           ...state.formAttributesFields,
@@ -151,6 +155,7 @@ const getters = {
               .reduce((result, current) => Object.assign(result, current), {}))
           }
         }
+        console.log("Desktop")
       }
     }else{
       const blockAttributes = state.blocks.find(block => block.component.systemName === state.blockConfig.systemName).attributes || []; 
@@ -164,6 +169,7 @@ const getters = {
             .reduce((result, current) => Object.assign(result, current), {}))
         }
       }
+      console.log(state.blocksConfiguration);
     }
     //Return
     console.log({component, entity, attributes});
@@ -286,8 +292,9 @@ const methods = {
     state.drawers.blockAttributes = false;
     state.drawers.blocksShow = true;
   },
-  setStatusChildBlock(element){
-    state.statusChildBlocks[element] = true;
+  setStatusChildBlock(element, status){
+    if (element === 'mainblock') element = 'mainBlock'; 
+    state.statusChildBlocks[element] = status;
   },
   setBlockConfig(block){
     state.blockConfig = block;

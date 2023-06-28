@@ -21,7 +21,7 @@
       <div v-if="element" class="padding-drawer-content row">
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
-        <div class="col-3">
+        <div class="col-3" v-if="statusChildBlocks[featureFlagElement.name]">
           <q-tabs
               v-model="section"
               vertical
@@ -45,7 +45,7 @@
                v-show="section == panelNames[groupIndex]" :key="groupIndex">
             <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
                  :key="`${index}-subtabs`">
-              <div v-show="statusChildBlocks[featureFlagElement.name]">
+              <div v-if="statusChildBlocks[featureFlagElement.name]">
                 <q-separator class="q-mb-md"/>
                 <div v-if="device == 0">
                   Mobile
@@ -90,6 +90,11 @@ export default {
       this.attributesKey = this.$uid()
     },
     'formEntityFields.type'(newValue){
+      if (!this.selectedBlock && newValue) {
+        this.setAttributes();
+      }
+    },
+    'formMainFields.componentName'(newValue){
       if (!this.selectedBlock && newValue) {
         this.setAttributes();
       }
@@ -150,29 +155,44 @@ export default {
       const blockAttributesMobile = block.mobileAttributes || [];
       const tmpDesktopAttributes = {};
       const tmpMobileAttributes = {};
-      console.log("All", this.blocks);
       Object.keys(blockAttributesDesktop).forEach(attributeName => {
-        if (!Array.isArray(blockAttributesDesktop[attributeName])) {
+        if ((blockAttributesDesktop[attributeName] != undefined) && !Array.isArray(blockAttributesDesktop[attributeName])) {
           if(blockAttributesMobile[attributeName]){
             tmpMobileAttributes[attributeName] = {...blockAttributesMobile[attributeName]}
           }else{
             tmpMobileAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
           }
           tmpDesktopAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
+          
+          const objAttrBlock = tmpDesktopAttributes[attributeName];
+          if (Object.hasOwn(objAttrBlock, 'propertiesStatus')) {
+            this.setStatusChildBlock(attributeName, tmpDesktopAttributes[attributeName].propertiesStatus);
+          }else{
+            tmpMobileAttributes[attributeName].propertiesStatus = true;
+            tmpDesktopAttributes[attributeName].propertiesStatus = true;
+            this.setStatusChildBlock(attributeName, true);
+          }
+          
         } else {
+          tmpMobileAttributes[attributeName].propertiesStatus = false;
+          tmpDesktopAttributes[attributeName].propertiesStatus = false;
           this.setStatusChildBlock(attributeName, false);
         }
       })
 
-      tmpDesktopAttributes['mainBlock'] = {...tmpDesktopAttributes['mainblock']};
-      tmpMobileAttributes['mainBlock'] = {...tmpMobileAttributes['mainblock']};
+      if(tmpDesktopAttributes['mainblock']){
+        tmpDesktopAttributes['mainBlock'] = {...tmpDesktopAttributes['mainblock']};
+        tmpMobileAttributes['mainBlock'] = {...tmpMobileAttributes['mainblock']};
 
-      delete tmpDesktopAttributes['mainblock'];
-      delete tmpMobileAttributes['mainblock'];
+        delete tmpDesktopAttributes['mainblock'];
+        delete tmpMobileAttributes['mainblock'];
+      }
 
       this.formAttributesFields = reactive(tmpDesktopAttributes)
       this.formMobileAttributesFields = reactive(tmpMobileAttributes)
 
+
+      console.log(this.formAttributesFields);
       console.log(this.formMobileAttributesFields);
     },
   }

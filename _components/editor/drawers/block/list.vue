@@ -41,7 +41,11 @@ export default defineComponent({
   },
   props: {},
   components: {},
-  watch: {},
+  watch: {
+    blocks(oldBlocks, newBlocks){
+      editorStore.methods.lastSelectedBlock();
+    }
+  },
   mounted() {
     this.$nextTick(function () {
       this.init()

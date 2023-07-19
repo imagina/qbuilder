@@ -13,6 +13,7 @@ const state = reactive({
   blocks: [],
   blocksConfiguration: [],
   selectedBlock: null,
+  lastSelectedBlockId: null,
   formMainFields: {},
   formEntityFields: {},
   formExtraFields: {},
@@ -113,6 +114,10 @@ const models = {
   blockConfig: computed({
     get: () => state.blockConfig,
     set: (val) => state.blockConfig = val
+  }),
+  lastSelectedBlockId: computed({
+    get: () => state.lastSelectedBlockId,
+    set: (val) => state.lastSelectedBlockId = val
   }),
 }
 
@@ -259,9 +264,23 @@ const methods = {
   },
   //Set the selected block
   setSelectedBlock(block) {
-    state.selectedBlock = block
+    state.selectedBlock = block;
+    localStorage.setItem('lastSelectedBlockId', block.id);
+    state.lastSelectedBlockId = block.id;
     state.drawers.blocksShow = true
     state.attributesKeyTemplate = Vue.prototype.$uid()
+  },
+  //last selected block before submit
+  lastSelectedBlock(){
+    state.lastSelectedBlockId =  localStorage.getItem('lastSelectedBlockId') ? localStorage.getItem('lastSelectedBlockId') : null;
+    if(state.lastSelectedBlockId){
+      console.log('last selected'+ state.lastSelectedBlockId)
+      console.log('blocks')
+      const block = state.blocks.find((element) => element.id == state.lastSelectedBlockId)
+      state.selectedBlock = {...block};
+      state.drawers.blocksShow = true
+      state.attributesKeyTemplate = Vue.prototype.$uid()
+    }
   },
   //Finish Edit block
   closeBlockShow() {
@@ -273,6 +292,9 @@ const methods = {
     state.formExtraFields = {};
     state.formAttributesFields = {};
     state.formMobileAttributesFields = {};
+    // last selected block id
+    localStorage.removeItem("lastSelectedBlockId");
+    state.lastSelectedBlockId = null;
   },
   setBlockFormData(){
     //Set only the main from data
@@ -288,7 +310,6 @@ const methods = {
   },
 
   closeAttributesDrawer(){
-    
     state.drawers.blockAttributes = false;
     state.drawers.blocksShow = true;
   },

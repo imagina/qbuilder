@@ -2,6 +2,17 @@ import Vue, {reactive, computed} from 'vue';
 import crud from '@imagina/qcrud/_services/baseService.js';
 import helper from '@imagina/qsite/_plugins/helper'
 
+//Manage the id of the last selected block before submit
+  function setLastSelectedBlock(id){
+    localStorage.setItem('lastSelectedBlockId', id);
+  }
+  function getLastSelectedBlock(){
+    return localStorage.getItem('lastSelectedBlockId') ? localStorage.getItem('lastSelectedBlockId') : null;
+  }
+  function removeLastSelectedBlock(){
+    localStorage.removeItem("lastSelectedBlockId");
+  }
+
 //States
 const state = reactive({
   loading: false,
@@ -13,7 +24,6 @@ const state = reactive({
   blocks: [],
   blocksConfiguration: [],
   selectedBlock: null,
-  lastSelectedBlockId: null,
   formMainFields: {},
   formEntityFields: {},
   formExtraFields: {},
@@ -114,10 +124,6 @@ const models = {
   blockConfig: computed({
     get: () => state.blockConfig,
     set: (val) => state.blockConfig = val
-  }),
-  lastSelectedBlockId: computed({
-    get: () => state.lastSelectedBlockId,
-    set: (val) => state.lastSelectedBlockId = val
   }),
 }
 
@@ -265,22 +271,9 @@ const methods = {
   //Set the selected block
   setSelectedBlock(block) {
     state.selectedBlock = block;
-    localStorage.setItem('lastSelectedBlockId', block.id);
-    state.lastSelectedBlockId = block.id;
+    setLastSelectedBlock(block.id);
     state.drawers.blocksShow = true
     state.attributesKeyTemplate = Vue.prototype.$uid()
-  },
-  //last selected block before submit
-  lastSelectedBlock(){
-    state.lastSelectedBlockId =  localStorage.getItem('lastSelectedBlockId') ? localStorage.getItem('lastSelectedBlockId') : null;
-    if(state.lastSelectedBlockId){
-      console.log('last selected'+ state.lastSelectedBlockId)
-      console.log('blocks')
-      const block = state.blocks.find((element) => element.id == state.lastSelectedBlockId)
-      state.selectedBlock = {...block};
-      state.drawers.blocksShow = true
-      state.attributesKeyTemplate = Vue.prototype.$uid()
-    }
   },
   //Finish Edit block
   closeBlockShow() {
@@ -292,9 +285,7 @@ const methods = {
     state.formExtraFields = {};
     state.formAttributesFields = {};
     state.formMobileAttributesFields = {};
-    // last selected block id
-    localStorage.removeItem("lastSelectedBlockId");
-    state.lastSelectedBlockId = null;
+    removeLastSelectedBlock();
   },
   setBlockFormData(){
     //Set only the main from data
@@ -327,4 +318,5 @@ export default {
   models,
   getters,
   methods,
+  getLastSelectedBlock,
 }

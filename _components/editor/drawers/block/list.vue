@@ -9,7 +9,7 @@
       <div class="padding-drawer-content">
         <div class="row q-gutter-y-md">
           <div v-for="(block, blockKey) in blocks" :key="blockKey" @click="setSelectedBlock(block)"
-               class="col-12 builder_block hover-effect-border">
+               class="col-12 builder_block hover-effect-border"  v-bind:id="`block_${block.id}`"  ref="blocks" >
             <!--Image-->
             <div class="builder_block__image img-as-bg"
                  :style="`background-image: url('${block.mediaFiles.internalimage.mediumThumb}')`"></div>
@@ -43,7 +43,7 @@ export default defineComponent({
   components: {},
   watch: {
     blocks(oldBlocks, newBlocks){
-      editorStore.methods.lastSelectedBlock();
+      this.openLastSelectedBlock();
     }
   },
   mounted() {
@@ -62,6 +62,15 @@ export default defineComponent({
     init() {
       editorStore.methods.getBlocksData(true)
     },
+    openLastSelectedBlock(){
+      const lastSelectedBlockId = editorStore.getLastSelectedBlock();
+      if (lastSelectedBlockId){
+        setTimeout(() => {
+          this.$refs.blocks.find((el) => el.id == 'block_'+lastSelectedBlockId).click()
+          //document.getElementById("block_"+lastSelectedBlockId).click()
+        }, 500);
+      }
+    }
   }
 })
 </script>

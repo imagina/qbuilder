@@ -67,7 +67,7 @@ export default defineComponent({
   padding 0px 100px 50px 100px
   height 100vh
   width calc(100% - 500px)
-  transform translateX(500px)
+  transform translateX(540px)
 
   .editor-options{
     width 100%

@@ -3,7 +3,7 @@
     <!--Title-->
     <div class="drawer-title">
       {{ $trp('ibuilder.cms.block') }}
-      <q-btn @click="closeAttributesDrawer" color="green" color-text="white" no-caps ripple :label= "$tr('isite.cms.label.ready')"/>
+      <q-btn @click="closeAttributesDrawer" color="green" color-text="white" no-caps :label= "$tr('isite.cms.label.ready')"/>
     </div>
     <!--List the blocks-->
     <q-scroll-area style="height: calc(100vh - 60px)">
@@ -19,7 +19,8 @@
                 ]"/>
       </div>
       <q-separator class="q-mb-md"/>
-      <div v-if="statusChildBlocks[featureFlagElement.name]" class="text-center q-mb-md">
+
+      <div v-if="element && statusChildBlocks[featureFlagElement.name]" class="text-center q-mb-md">
         <div class="text-h6 bg-green text-white">
           {{ device == 0 ? 'Mobile': 'Desktop'}}
         </div>

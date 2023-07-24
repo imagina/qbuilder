@@ -4,9 +4,7 @@
     <div class="drawer-title">
       {{ $tr("ibuilder.cms.blockDesign") }}
       <!--Close Button-->
-      <div @click="closeBlockShow" class="text-subtitle1 cursor-pointer">
-        {{ $tr("isite.cms.label.ready") }}
-      </div>
+      <q-btn @click="closeBlockShow" color="green" color-text="white" no-caps ripple :label= "$tr('isite.cms.label.ready')"/>
     </div>
     <!--Content-->
     <q-scroll-area style="height: calc(100vh - 60px)">

@@ -9,7 +9,9 @@
     </div>
     <!--List the blocks-->
     <q-scroll-area style="height: calc(100vh - 60px)">
-      <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
+      <div class="q-pa-md">
+        <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
+      </div>
       <div v-if="element" class="text-center q-mb-md">
         <q-btn-toggle @click="() => resetAttributesKey()" v-model="statusChildBlocks[featureFlagElement.name]"
                       class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
@@ -18,6 +20,13 @@
                             { label: `${featureFlagElement.title} (Off)`, value: false }
                 ]"/>
       </div>
+      <q-separator class="q-mb-md"/>
+      <div v-if="statusChildBlocks[featureFlagElement.name]" class="text-center q-mb-md">
+        <div class="text-h6 bg-secondary text-white">
+          {{ device == 0 ? 'Mobile': 'Desktop'}}
+        </div>
+      </div>
+
       <div v-if="element" class="padding-drawer-content row">
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
@@ -46,14 +55,11 @@
             <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
                  :key="`${index}-subtabs`">
               <div v-if="statusChildBlocks[featureFlagElement.name]">
-                <q-separator class="q-mb-md"/>
                 <div v-if="device == 0">
-                  Mobile
                   <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
                                v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
                 </div>
                 <div v-if="device == 1">
-                  Desktop
                   <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
                                v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
                 </div>

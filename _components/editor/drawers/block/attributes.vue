@@ -42,8 +42,10 @@
           >
             <div v-for="(element, index) in blockConfig.elements" :key="index">
               <q-tab v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
-                     :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
-                     :key="`${index}-maintabs`"/>
+                     :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title.length > 12 ? tab.title.slice(0, 12) + '...' : tab.title"
+                     :key="`${index}-maintabs`">
+                <q-tooltip v-if="tab.title.length > 12" :delay="900">{{tab.title}}</q-tooltip>
+              </q-tab>
             </div>
           </q-tabs>
         </div>

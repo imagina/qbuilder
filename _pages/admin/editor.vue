@@ -6,9 +6,9 @@
                       class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
                       text-color="green" :options="deviceOptions"/>
       <div></div>
-      <q-btn color="white" text-color="primary" v-if="selectedBlock" class="editor-options-save" @click="() => saveBlockInfo()">Guardar</q-btn>
-      <q-btn color="white" text-color="primary" v-else-if="createMode" class="editor-options-create primary" @click="() => $eventBus.$emit('saveBlockInfo')">Guardar Bloque</q-btn>
-      <q-btn color="white" text-color="primary" v-else-if="!selectedBlock && !createMode" class="editor-options-create primary" @click="() => saveBlockInfo()">Crear Bloque</q-btn>
+      <q-btn color="primary" text-color="white" no-caps v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
+      <q-btn color="primary" text-color="white" no-caps v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
+      <q-btn color="primary" text-color="white" no-caps v-else-if="!selectedBlock && !createMode" @click="() => saveBlockInfo()" label="Crear Bloque" />
     </div>
     <div id="editorContent" class="bg-white shadow-7">
       <!--Block Preview-->
@@ -77,10 +77,6 @@ export default defineComponent({
     justify-content space-between
     background-color #5333ed
     padding 0 50px
-  }
-
-  .editor-options-save, .editor-options-create{
-      
   }
 
   #editorContent

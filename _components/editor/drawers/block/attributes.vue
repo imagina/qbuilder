@@ -18,11 +18,15 @@
                             { label: `${featureFlagElement.title} (Off)`, value: false }
                 ]"/>
       </div>
-      <q-separator class="q-mb-md"/>
 
       <div v-if="element && statusChildBlocks[featureFlagElement.name]" class="text-center q-mb-md">
         <div class="text-h6 bg-green text-white">
-          {{ device == 0 ? 'Mobile': 'Desktop'}}
+          <div v-if="device">
+            Desktop <q-icon name="desktop_windows"/>
+          </div>
+          <div v-else>
+            Mobile <q-icon name="phone_iphone" />
+          </div>
         </div>
       </div>
 

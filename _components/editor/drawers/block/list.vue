@@ -3,7 +3,7 @@
     <!--Title-->
     <div class="drawer-title">
       {{ $trp('ibuilder.cms.block') }}
-      <q-input bottom-slots v-model="inputSearch" dark>
+      <q-input bottom-slots v-model="inputSearch" dark dense>
         <template v-slot:append>
           <q-icon v-if="inputSearch !== ''" name="close" @click="inputSearch = ''" class="cursor-pointer" />
           <q-icon name="search"></q-icon>
@@ -11,7 +11,7 @@
       </q-input>
     </div>
     <!--List the blocks-->
-    <q-scroll-area style="height: calc(100vh - 60px)">
+    <q-scroll-area style="height: calc(100vh - 116px)">
       <div class="padding-drawer-content">
         <div class="row q-gutter-y-md">
           <div v-for="(block, blockKey) in filteredBlocks" :key="blockKey" @click="setSelectedBlock(block)"

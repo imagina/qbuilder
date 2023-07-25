@@ -7,10 +7,10 @@
       <q-btn @click="closeBlockShow" color="green" color-text="white" no-caps ripple :label= "$tr('isite.cms.label.ready')"/>
     </div>
     <!--Content-->
-    <q-scroll-area style="height: calc(100vh - 60px)">
+    <q-scroll-area style="height: calc(100vh - 100px)">
       <div
         class="padding-drawer-content row"
-        style="height: calc(100vh - 60px)"
+        style="height: calc(100vh - 100px)"
       >
         <!-- Key -> <pre>{{attributeKeyTemplate}}</pre> -->
         <!--Button Tabs-->

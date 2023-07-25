@@ -6,7 +6,7 @@
       <q-btn @click="closeAttributesDrawer" color="green" color-text="white" no-caps :label= "$tr('isite.cms.label.ready')"/>
     </div>
     <!--List the blocks-->
-    <q-scroll-area style="height: calc(100vh - 60px)">
+    <q-scroll-area style="height: calc(100vh - 100px)">
       <div class="q-pa-md">
         <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
       </div>
@@ -34,7 +34,7 @@
                                 formType="collapsible"/> -->
         <div class="col-12">
 
-          <div class="row justify-center" v-for="(element, index) in blockConfig.elements" :key="index">
+          <div class="row justify-evenly" v-for="(element, index) in blockConfig.elements" :key="index">
               <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
                      :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
                      :key="`${index}-maintabs`"

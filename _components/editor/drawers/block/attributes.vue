@@ -53,7 +53,7 @@
                v-show="section == panelNames[groupIndex]" :key="groupIndex" class="col-12">
             <div class="text-h6 row q-ma-sm q-px-sm">
               <span class="col-11">{{attributes.title}}</span>
-              <q-icon name="highlight_off" @click="section=''" class="col-1" size="28px"/>
+              <q-btn class="col-1" icon="close"round  @click="section=''" />
             </div>
             <div class="row q-pb-xl">
               <div class="col-12 q-px-xl q-py-sm">

@@ -68,7 +68,12 @@ export default defineComponent({
   computed: {
     filteredBlocks(){
       if(this.inputSearch){
-        return this.blocks.filter((block) => block.internalTitle.toLowerCase().includes(this.inputSearch.toLowerCase()) )     
+        let text = this.inputSearch.toLowerCase()
+        return this.blocks.filter((block) => {
+          return block.internalTitle.toLowerCase().includes(text) ||
+                 block.systemName.toLowerCase().includes(text) ||
+                 block.component.systemName.toLowerCase().includes(text)
+        } )
       }        
       return this.blocks
     }

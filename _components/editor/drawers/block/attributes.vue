@@ -10,7 +10,7 @@
       <div class="q-pa-md">
         <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
       </div>
-      <div v-if="element" class="text-center q-mb-md">
+      <div v-if="element && featureFlagElement" class="text-center q-mb-md">
         <q-btn-toggle @click="() => resetAttributesKey()" v-model="statusChildBlocks[featureFlagElement.name]"
                       class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
                       text-color="green" :options="[
@@ -19,7 +19,7 @@
                 ]"/>
       </div>
 
-      <div v-if="element && statusChildBlocks[featureFlagElement.name]" class="text-center q-mb-md">
+      <div class="text-center q-mb-md">
         <div class="text-h6 bg-green text-white">
           <div v-if="device">
             Desktop <q-icon name="desktop_windows"/>
@@ -29,11 +29,10 @@
           </div>
         </div>
       </div>
-
       <div v-if="element" class="row">
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
-        <div class="col-12" v-if="statusChildBlocks[featureFlagElement.name]">
+        <div class="col-12">
 
           <div class="row justify-center" v-for="(element, index) in blockConfig.elements" :key="index">
               <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
@@ -48,7 +47,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div v-if="element" class="row">
           <!--Main Fields-->
           <div v-for="(attributes, groupIndex) in elementSelectedAttr"
                v-show="section == panelNames[groupIndex]" :key="groupIndex" class="col-12">

@@ -226,4 +226,8 @@ export default {
 .q-card
   &:hover
     background-color: $grey-4
+
+.q-field
+  padding-bottom: 20px
+
 </style>

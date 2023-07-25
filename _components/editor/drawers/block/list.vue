@@ -3,9 +3,10 @@
     <!--Title-->
     <div class="drawer-title">
       {{ $trp('ibuilder.cms.block') }}
-      <q-input type="search" v-model="inputSearch" color="white">
+      <q-input bottom-slots v-model="inputSearch" dark>
         <template v-slot:append>
-          <q-icon name="search" color="white" />
+          <q-icon v-if="inputSearch !== ''" name="close" @click="inputSearch = ''" class="cursor-pointer" />
+          <q-icon name="search"></q-icon>
         </template>
       </q-input>
     </div>
@@ -67,7 +68,6 @@ export default defineComponent({
   computed: {
     filteredBlocks(){
       if(this.inputSearch){
-        console.log('search: '+this.inputSearch)
         return this.blocks.filter((block) => block.internalTitle.toLowerCase().includes(this.inputSearch.toLowerCase()) )     
       }        
       return this.blocks

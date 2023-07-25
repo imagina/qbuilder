@@ -72,6 +72,7 @@
                 </div>
               </div>
             </div>
+            <q-separator />
           </div>
       </div>
     </q-scroll-area>

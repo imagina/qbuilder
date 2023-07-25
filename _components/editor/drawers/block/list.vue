@@ -3,12 +3,17 @@
     <!--Title-->
     <div class="drawer-title">
       {{ $trp('ibuilder.cms.block') }}
+      <q-input type="search" v-model="inputSearch" color="white">
+        <template v-slot:append>
+          <q-icon name="search" color="white" />
+        </template>
+      </q-input>
     </div>
     <!--List the blocks-->
     <q-scroll-area style="height: calc(100vh - 60px)">
       <div class="padding-drawer-content">
         <div class="row q-gutter-y-md">
-          <div v-for="(block, blockKey) in blocks" :key="blockKey" @click="setSelectedBlock(block)"
+          <div v-for="(block, blockKey) in filteredBlocks" :key="blockKey" @click="setSelectedBlock(block)"
                class="col-12 builder_block hover-effect-border"  v-bind:id="`block_${block.id}`"  ref="blocks" >
             <!--Image-->
             <div class="builder_block__image img-as-bg"
@@ -26,14 +31,16 @@
   </div>
 </template>
 <script>
-import Vue, {defineComponent, computed} from "vue";
+import Vue, {defineComponent, computed, ref} from "vue";
 import editorStore from '@imagina/qbuilder/_store/editor'
 
 export default defineComponent({
   setup() {
+    let inputSearch = ref("")
     return {
       blocks: computed(() => editorStore.state.blocks),
-      setSelectedBlock: editorStore.methods.setSelectedBlock
+      setSelectedBlock: editorStore.methods.setSelectedBlock,
+      inputSearch
     }
   },
   beforeDestroy() {
@@ -57,7 +64,15 @@ export default defineComponent({
       data: []
     }
   },
-  computed: {},
+  computed: {
+    filteredBlocks(){
+      if(this.inputSearch){
+        console.log('search: '+this.inputSearch)
+        return this.blocks.filter((block) => block.internalTitle.toLowerCase().includes(this.inputSearch.toLowerCase()) )     
+      }        
+      return this.blocks
+    }
+  },
   methods: {
     init() {
       editorStore.methods.getBlocksData(true)

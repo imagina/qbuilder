@@ -30,48 +30,50 @@
         </div>
       </div>
 
-      <div v-if="element" class="padding-drawer-content row">
+      <div v-if="element" class="row">
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
-        <div class="col-3" v-if="statusChildBlocks[featureFlagElement.name]">
-          <q-tabs
-              v-model="section"
-              vertical
-              class="text-primary-builder"
-              active-bg-color="primary-builder"
-              active-color="white"
-              no-caps
-              indicator-color="primary-builder"
-              content-class="text-right"
-          >
-            <div v-for="(element, index) in blockConfig.elements" :key="index">
-              <q-tab v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
-                     :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title.length > 12 ? tab.title.slice(0, 12) + '...' : tab.title"
-                     :key="`${index}-maintabs`">
-                <q-tooltip v-if="tab.title.length > 12" :delay="900">{{tab.title}}</q-tooltip>
-              </q-tab>
-            </div>
-          </q-tabs>
+        <div class="col-12" v-if="statusChildBlocks[featureFlagElement.name]">
+
+          <div class="row justify-center" v-for="(element, index) in blockConfig.elements" :key="index">
+              <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
+                     :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
+                     :key="`${index}-maintabs`"
+                     @click="section = panelNames[index]" class="col-5 q-ma-xs cursor-pointer" flat bordered v-ripple >
+                     <q-card-section>
+                      <div class="text-subtitle1">{{tab.title}}</div>
+                      <div class="text-subtitle2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</div>
+                     </q-card-section>
+              </q-card>
+          </div>
         </div>
-        <div class="col-9">
+      </div>
+      <div class="row">
           <!--Main Fields-->
           <div v-for="(attributes, groupIndex) in elementSelectedAttr"
-               v-show="section == panelNames[groupIndex]" :key="groupIndex">
-            <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
-                 :key="`${index}-subtabs`">
-              <div v-if="statusChildBlocks[featureFlagElement.name]">
-                <div v-if="device == 0">
-                  <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
-                               v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
-                </div>
-                <div v-if="device == 1">
-                  <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
-                               v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+               v-show="section == panelNames[groupIndex]" :key="groupIndex" class="col-12">
+            <div class="text-h6 row q-ma-sm q-px-sm">
+              <span class="col-11">{{attributes.title}}</span>
+              <q-icon name="highlight_off" @click="section=''" class="col-1" size="28px"/>
+            </div>
+            <div class="row q-pb-xl">
+              <div class="col-12 q-px-xl q-py-sm">
+                <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
+                     :key="`${index}-subtabs`">
+                  <div v-if="statusChildBlocks[featureFlagElement.name]">
+                    <div v-if="device == 0">
+                      <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
+                                   v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                    </div>
+                    <div v-if="device == 1">
+                      <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
+                                   v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
       </div>
     </q-scroll-area>
   </div>
@@ -88,6 +90,7 @@ export default {
     elementSelected() {
       this.element = this.elementSelected;
       this.attributesKey = this.$uid()
+      this.section = '';
     },
     element(newValue) {
       this.setElementSelected(newValue);
@@ -120,7 +123,7 @@ export default {
       device: editorStore.models.device,
       element: null,
       attributesKey: this.$uid(),
-      section: 'panel-0',
+      section: '',
       panelNames: ['panel-0', 'panel-1', 'panel-2', 'panel-3', 'panel-4', 'panel-5', 'panel-6', 'panel-7', 'panel-8', 'panel-9', 'panel-10', 'panel-11', 'panel-12'],
     }
   },
@@ -220,4 +223,8 @@ export default {
   width: max-content
   float: right
   border-radius 10px 0 0 10px
+
+.q-card
+  &:hover
+    background-color: $grey-4
 </style>

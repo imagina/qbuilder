@@ -1,7 +1,7 @@
 <template>
   <div id="builderDrawerBlockList">
     <!--Title-->
-    <div class="drawer-title">
+    <div class="drawer-title" style="padding: 4px 24px;">
       {{ $trp('ibuilder.cms.block') }}
       <q-input bottom-slots v-model="inputSearch" dark dense>
         <template v-slot:append>

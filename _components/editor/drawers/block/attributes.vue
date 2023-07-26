@@ -1,7 +1,7 @@
 <template>
   <div id="builderDrawerBlockAttributes" :key="attributesKey" v-if="blockConfig">
     <!--Title-->
-    <div class="drawer-title">
+    <div class="drawer-title" style="padding: 16px 24px;">
       {{ $trp('ibuilder.cms.block') }}
       <q-btn @click="closeAttributesDrawer" color="green" color-text="white" no-caps :label= "$tr('isite.cms.label.ready')"/>
     </div>

@@ -8,7 +8,7 @@
       </div>
     </div>
     <!--Iframe/preview-->
-    <iframe-post style="height: calc(100vh - 52px)" v-else ref="iframePost"/>
+    <iframe-post style="height: calc(100vh - 50px)" v-else ref="iframePost"/>
   </div>
 </template>
 <script>

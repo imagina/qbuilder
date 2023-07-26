@@ -58,7 +58,6 @@ export default defineComponent({
 #builderEditorDrawers
   .drawer-title
     background-color $primaryBuilder
-    padding 16px 24px
     color white
     font-size 18px
     display flex

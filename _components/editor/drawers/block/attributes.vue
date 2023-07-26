@@ -33,7 +33,7 @@
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
         <div class="col-12">
-          <q-scroll-area v-if="section == ''" style="height: calc(100vh - 280px)">
+          <q-scroll-area v-if="section == ''" style="height: calc(100vh - 275px)">
           <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
             <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
                      :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
@@ -54,11 +54,13 @@
           <!--Main Fields-->
           <div v-for="(attributes, groupIndex) in elementSelectedAttr"
                v-show="section == panelNames[groupIndex]" :key="groupIndex" class="col-12">
-            <div class="text-h6 row q-ma-sm q-px-sm">
-              <span class="col-11">{{attributes.title}}</span>
-              <q-btn class="col-1" icon="close"round  @click="section=''" />
+            <div class="attributes_title row text-h6 q-pa-md">
+              <div class="col-11">{{attributes.title}}</div>
+              <div class="col-1" vertical-top>
+                <q-btn  icon="close"round  @click="section=''" />
+              </div>
             </div>
-            <q-scroll-area style="height: calc(100vh - 340px)">
+            <q-scroll-area style="height: calc(100vh - 350px)">
               <div class="row">
                 <div class="col-12 q-px-md q-my-md">
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</p>
@@ -240,4 +242,7 @@ export default {
 .q-field
   padding-bottom: 20px
 
+.attributes_title
+  border-bottom: 1px solid
+  border-color: $grey-4
 </style>

@@ -58,7 +58,7 @@
               <span class="col-11">{{attributes.title}}</span>
               <q-btn class="col-1" icon="close"round  @click="section=''" />
             </div>
-            <q-scroll-area style="height: calc(100vh - 320px)">
+            <q-scroll-area style="height: calc(100vh - 340px)">
               <div class="row">
                 <div class="col-12 q-px-md q-my-md">
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</p>
@@ -226,7 +226,6 @@ export default {
 <style lang="stylus">
 #builderDrawerBlockAttributes
 .q-tabs
-  border-right: 1px solid $grey-3
   min-height 100%
 
 .q-tab

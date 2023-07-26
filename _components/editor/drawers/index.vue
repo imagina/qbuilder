@@ -71,4 +71,11 @@ export default defineComponent({
 
   .padding-drawer-content
     padding 16px 24px
+
+  .q-drawer
+    padding: 0px !important
+    border-right: 0px
+
+  .q-drawer-container
+    padding: 0px !important
 </style>

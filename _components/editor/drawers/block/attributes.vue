@@ -39,10 +39,10 @@
                      :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
                      :key="`${index}-maintabs`"
                      @click="section = panelNames[index]" class="col-5 q-ma-md cursor-pointer" flat bordered v-ripple >
-              <div class="text-subtitle1 text-bold bg-grey-3 q-px-md q-py-xs">{{tab.title}}</div>
+              <div class="text-subtitle2 text-bold bg-grey-3 q-px-md q-py-xs ellipsis">{{tab.title}}</div>
               <q-card-section>
                 <div class="text-subtitle2">
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</p>
+                  <p class="ellipsis-3-lines">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun</p>
                 </div>
               </q-card-section>
             </q-card>

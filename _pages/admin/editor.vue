@@ -64,19 +64,18 @@ export default defineComponent({
 </script>
 <style lang="stylus">
 #pageBuilderEditor
-  padding 0px 100px 50px 100px
+  padding 0px 100px 0px 100px
   height 100vh
   width calc(100% - 500px)
   transform translateX(540px)
 
   .editor-options{
     width 100%
-    height 60px
     display flex
     align-items center
     justify-content space-between
     background-color #5333ed
-    padding 0 50px
+    padding 16px 24px 16px 24px
   }
 
   #editorContent

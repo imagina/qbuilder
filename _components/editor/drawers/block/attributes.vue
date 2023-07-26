@@ -19,8 +19,8 @@
                 ]"/>
       </div>
 
-      <div class="text-center q-mb-md">
-        <div class="text-h6 bg-green text-white">
+      <div class="text-center q-mb-md row">
+        <div class="text-h6 bg-green text-white col-12">
           <div v-if="device">
             Desktop <q-icon name="desktop_windows"/>
           </div>
@@ -33,17 +33,18 @@
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
         <div class="col-12">
-
-          <div class="row justify-evenly" v-for="(element, index) in blockConfig.elements" :key="index">
-              <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
+          <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
+            <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
                      :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
                      :key="`${index}-maintabs`"
-                     @click="section = panelNames[index]" class="col-5 q-ma-xs cursor-pointer" flat bordered v-ripple >
-                     <q-card-section>
-                      <div class="text-subtitle1">{{tab.title}}</div>
-                      <div class="text-subtitle2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</div>
-                     </q-card-section>
-              </q-card>
+                     @click="section = panelNames[index]" class="col-5 q-ma-md cursor-pointer" flat bordered v-ripple >
+              <div class="text-subtitle1 text-bold bg-grey-3 q-px-md q-py-xs">{{tab.title}}</div>
+              <q-card-section>
+                <div class="text-subtitle2">
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</p>
+                </div>
+              </q-card-section>
+            </q-card>
           </div>
         </div>
       </div>
@@ -55,8 +56,13 @@
               <span class="col-11">{{attributes.title}}</span>
               <q-btn class="col-1" icon="close"round  @click="section=''" />
             </div>
+            <div class="row">
+              <div class="col-12 q-px-md q-my-md">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</p>
+              </div>
+            </div>
             <div class="row q-pb-xl">
-              <div class="col-12 q-px-xl q-py-sm">
+              <div class="col-12 q-px-md q-py-sm">
                 <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
                      :key="`${index}-subtabs`">
                   <div v-if="statusChildBlocks[featureFlagElement.name]">
@@ -226,7 +232,7 @@ export default {
 
 .q-card
   &:hover
-    background-color: $grey-4
+    border-color: $primary
 
 .q-field
   padding-bottom: 20px

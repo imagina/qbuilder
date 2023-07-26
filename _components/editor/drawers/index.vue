@@ -3,13 +3,13 @@
     <!--Inner Loading-->
     <inner-loading :visible="loading"/>
     <!--Block drawers-->
-    <q-drawer bordered v-model="drawers.blocksList" :width="540">
+    <q-drawer bordered v-model="drawers.blocksList" :width="540" hide-scrollbar>
       <blocks-list/>
     </q-drawer>
-    <q-drawer bordered v-model="drawers.blocksShow" :width="540" overlay>
+    <q-drawer bordered v-model="drawers.blocksShow" :width="540" overlay hide-scrollbar>
       <blocks-form/>
     </q-drawer>
-    <q-drawer bordered v-model="drawers.blockAttributes" :width="540">
+    <q-drawer bordered v-model="drawers.blockAttributes" :width="540" hide-scrollbar>
       <attributesForm/>
     </q-drawer>
   </div>

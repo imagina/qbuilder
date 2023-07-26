@@ -6,7 +6,7 @@
       <q-btn @click="closeAttributesDrawer" color="green" color-text="white" no-caps :label= "$tr('isite.cms.label.ready')"/>
     </div>
     <!--List the blocks-->
-    <q-scroll-area style="height: calc(100vh - 100px)">
+    <div>
       <div class="q-pa-md">
         <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
       </div>
@@ -19,7 +19,7 @@
                 ]"/>
       </div>
 
-      <div class="text-center q-mb-md row">
+      <div class="text-center   q-mb-md row">
         <div class="text-h6 bg-green text-white col-12">
           <div v-if="device">
             Desktop <q-icon name="desktop_windows"/>
@@ -33,6 +33,7 @@
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
         <div class="col-12">
+          <q-scroll-area v-if="section == ''" style="height: calc(100vh - 280px)">
           <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
             <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
                      :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
@@ -46,6 +47,7 @@
               </q-card-section>
             </q-card>
           </div>
+        </q-scroll-area>
         </div>
       </div>
       <div v-if="element" class="row">
@@ -56,32 +58,34 @@
               <span class="col-11">{{attributes.title}}</span>
               <q-btn class="col-1" icon="close"round  @click="section=''" />
             </div>
-            <div class="row">
-              <div class="col-12 q-px-md q-my-md">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</p>
+            <q-scroll-area style="height: calc(100vh - 320px)">
+              <div class="row">
+                <div class="col-12 q-px-md q-my-md">
+                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</p>
+                </div>
               </div>
-            </div>
-            <div class="row q-pb-xl">
-              <div class="col-12 q-px-md q-py-sm">
-                <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
-                     :key="`${index}-subtabs`">
-                  <div v-if="statusChildBlocks[featureFlagElement.name]">
-                    <div v-if="device == 0">
-                      <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
-                                   v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
-                    </div>
-                    <div v-if="device == 1">
-                      <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
-                                   v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+              <div class="row q-pb-xl">
+                <div class="col-12 q-px-md q-py-sm">
+                  <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
+                       :key="`${index}-subtabs`">
+                    <div v-if="statusChildBlocks[featureFlagElement.name]">
+                      <div v-if="device == 0">
+                        <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
+                                     v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                      </div>
+                      <div v-if="device == 1">
+                        <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
+                                     v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </q-scroll-area>
             <q-separator />
           </div>
       </div>
-    </q-scroll-area>
+    </div>
   </div>
 </template>
 

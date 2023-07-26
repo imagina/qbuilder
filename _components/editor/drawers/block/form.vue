@@ -1,8 +1,8 @@
 <template>
   <div id="builderDrawerBlockForm" :key="attributeKeyTemplate">
     <!--Title-->
-    <div class="drawer-title" style="padding: 16px 24px;">
-      {{ $tr("ibuilder.cms.blockDesign") }}
+    <div  class="drawer-title" style="padding: 16px 24px;">
+      {{getInternalName}}
       <!--Close Button-->
       <q-btn @click="closeBlockShow" color="green" color-text="white" no-caps ripple :label= "$tr('isite.cms.label.ready')"/>
     </div>
@@ -363,6 +363,9 @@ export default {
       }
       return response
     },
+    getInternalName() {
+      return (this.selectedBlock && this.formMainFields ? this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle : 'New Block' )
+    }
   },
   methods: {
     init() {

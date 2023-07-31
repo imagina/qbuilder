@@ -36,7 +36,7 @@
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
         <div class="col-12">
-          <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 275px)">
+          <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 300px)">
           <div class="row q-pl-md q-mt-sm" v-for="(element, index) in blockConfig.elements" :key="index">
             <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
                      :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
@@ -63,7 +63,7 @@
                 <q-btn  icon="arrow_back" round  @click="section=''" />
               </div>
             </div>
-            <q-scroll-area style="height: calc(100vh - 350px)">
+            <q-scroll-area style="height: calc(100vh - 375px)">
               <div class="row">
                 <div class="col-12 q-px-md q-my-md">
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</p>
@@ -90,6 +90,12 @@
             <q-separator />
           </div>
       </div>
+      <div class="row q-pa-md bg-grey-2">
+        <div class="col-12 text-center">
+          <q-btn color="primary" text-color="white" no-caps v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
+          <q-btn color="primary" text-color="white" no-caps v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -100,6 +106,11 @@ import Vue, { defineComponent, computed, reactive } from "vue";
 
 export default {
   name: 'attributes',
+  setup(){
+    return {
+      createMode: computed(() => editorStore.state.createMode),
+    }
+  },
   props: {},
   watch: {
     elementSelected() {
@@ -227,6 +238,14 @@ export default {
       console.log(this.formAttributesFields);
       console.log(this.formMobileAttributesFields);
     },
+    saveBlockInfo(){
+      if (this.selectedBlock) {
+        this.$eventBus.$emit('updateBlockInfo');
+      }else{
+        editorStore.methods.createMode();
+        //this.$eventBus.$emit('saveBlockInfo');
+      }
+    }
   }
 }
 </script>

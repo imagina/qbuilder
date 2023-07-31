@@ -1,14 +1,18 @@
 <template>
   <div id="builderDrawerBlockList">
     <!--Title-->
-    <div class="drawer-title" style="padding: 4px 24px;">
-      {{ $trp('ibuilder.cms.block') }}
-      <q-input bottom-slots v-model="inputSearch" dark dense>
-        <template v-slot:append>
-          <q-icon v-if="inputSearch !== ''" name="close" @click="inputSearch = ''" class="cursor-pointer" />
-          <q-icon name="search"></q-icon>
-        </template>
-      </q-input>
+    <div class="row drawer-title" style="padding: 14px 24px;">
+      <div class="col-7">
+        {{ $trp('ibuilder.cms.block') }}
+      </div>
+      <div class="col-5">
+        <q-input v-model="inputSearch" class="" style="padding-bottom: 0px" dense bg-color="white" dark standout>
+          <template v-slot:append>
+            <q-icon v-if="inputSearch !== ''" name="close" @click="inputSearch = ''" class="cursor-pointer" color="primary"/>
+            <q-icon v-if="inputSearch == ''" name="search" color="primary"></q-icon>
+          </template>
+        </q-input>
+      </div>
     </div>
     <!--List the blocks-->
     <q-scroll-area style="height: calc(100vh - 116px)">

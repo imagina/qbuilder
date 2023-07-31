@@ -1,14 +1,14 @@
 <template>
   <div id="builderBlockPreview">
     <!--No selected block-->
-    <div v-if="!selectedBlock && !formEntityFields.type" class="row full-height items-center justify-center">
+    <div v-if="!selectedBlock && !formEntityFields.type" class="row full-height items-center justify-center bg-white">
       <div class="text-center">
         <q-icon name="fa-light fa-puzzle-piece" size="60px" class="text-primary-builder"/>
         <div class="q-mt-md text-h5">{{ $tr('ibuilder.cms.chooseBlock') }}</div>
       </div>
     </div>
     <!--Iframe/preview-->
-    <iframe-post style="height: calc(100vh - 50px)" v-else ref="iframePost"/>
+    <iframe-post style="height: calc(100vh - 64px)" v-else ref="iframePost"/>
   </div>
 </template>
 <script>

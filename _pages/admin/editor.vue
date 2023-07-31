@@ -9,7 +9,7 @@
       <q-btn color="primary" text-color="white" no-caps v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
       <q-btn color="primary" text-color="white" no-caps v-else-if="!selectedBlock && !createMode" @click="() => saveBlockInfo()" label="Crear Bloque" />
     </div>
-    <div id="editorContent" class="bg-white shadow-7">
+    <div id="editorContent">
       <!--Block Preview-->
       <block-preview />
     </div>
@@ -63,7 +63,7 @@ export default defineComponent({
 </script>
 <style lang="stylus">
 #pageBuilderEditor
-  padding 0px 100px 0px 100px
+  padding 34px 100px 34px 100px
   height 100vh
   width calc(100% - 500px)
   transform translateX(540px)

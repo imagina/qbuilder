@@ -10,7 +10,7 @@
     <q-scroll-area style="height: calc(100vh - 100px)">
       <div
         class="padding-drawer-content row"
-        style="height: calc(100vh - 100px)"
+        style="height: calc(100vh - 150px)"
       >
         <!-- Key -> <pre>{{attributeKeyTemplate}}</pre> -->
         <!--Button Tabs-->
@@ -132,13 +132,27 @@
           </q-tab-panels>
         </div>
       </div>
+      <div class="row">
+        <div class="col-12 text-center">
+          <q-btn color="primary" text-color="white" no-caps v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
+          <q-btn color="primary" text-color="white" no-caps v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
+        </div>
+      </div>
     </q-scroll-area>
+    
   </div>
 </template>
 <script>
+
+import Vue, {computed} from "vue";
 import editorStore from "@imagina/qbuilder/_store/editor";
 
 export default {
+  setup(){
+    return {
+      createMode: computed(() => editorStore.state.createMode),
+    }
+  },
   props: {},
   components: {},
   watch: {
@@ -511,7 +525,16 @@ export default {
     setElementSelected(elementSelected){
       editorStore.methods.setElementSelected(elementSelected);
     },
+    saveBlockInfo(){
+      if (this.selectedBlock) {
+        this.$eventBus.$emit('updateBlockInfo');
+      }else{
+        editorStore.methods.createMode();
+        //this.$eventBus.$emit('saveBlockInfo');
+      }
+    }
   },
+
 };
 </script>
 <style lang="stylus">

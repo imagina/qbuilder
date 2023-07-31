@@ -1,7 +1,6 @@
 <template>
   <div ref="pageBuilderEditor" id="pageBuilderEditor" class="bg-blue-grey-3">
-    <div class="editor-options drawer-title">
-      
+    <div class="editor-options drawer-title" v-if="false">
       <q-btn-toggle v-if="createMode || selectedBlock" v-model="device"
                       class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
                       text-color="green" :options="deviceOptions"/>

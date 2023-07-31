@@ -2,9 +2,18 @@
   <div id="builderDrawerBlockForm" :key="attributeKeyTemplate">
     <!--Title-->
     <div  class="drawer-title" style="padding: 16px 24px;">
-      {{getInternalName}}
-      <!--Close Button-->
-      <q-btn @click="closeBlockShow" color="green" color-text="white" no-caps ripple :label= "$tr('isite.cms.label.ready')"/>
+      <div class="col-4">
+        {{getInternalName}}
+      </div>
+      <div class="col-4 text-center">
+        <q-btn-toggle v-if="createMode || selectedBlock" v-model="device"
+                        class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
+                        text-color="green" :options="deviceOptions" v-show="false"/>
+      </div>
+      <div class="col-4 text-right">
+        <!--Close Button-->
+        <q-btn @click="closeBlockShow" color="green" color-text="white" no-caps ripple :label= "$tr('isite.cms.label.ready')"/>
+      </div>
     </div>
     <!--Content-->
     <q-scroll-area style="height: calc(100vh - 136px)">
@@ -150,6 +159,7 @@ export default {
   setup(){
     return {
       createMode: computed(() => editorStore.state.createMode),
+      device: editorStore.models.device,
     }
   },
   props: {},
@@ -378,6 +388,9 @@ export default {
     },
     getInternalName() {
       return (this.selectedBlock && this.formMainFields ? this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle : 'New Block' )
+    },
+    deviceOptions(){
+      return [{label: 'Mobile', value: 0}, {label: 'Desktop', value: 1}]
     }
   },
   methods: {

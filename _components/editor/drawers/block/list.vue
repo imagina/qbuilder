@@ -2,16 +2,19 @@
   <div id="builderDrawerBlockList">
     <!--Title-->
     <div class="row drawer-title" style="padding: 14px 24px;">
-      <div class="col-7">
+      <div class="col-4">
         {{ $trp('ibuilder.cms.block') }}
       </div>
-      <div class="col-5">
-        <q-input v-model="inputSearch" class="" style="padding-bottom: 0px" dense bg-color="white" dark standout>
+      <div class="col-4 text-center">
+        <q-input v-model="inputSearch" autofocus dense dark standout style="padding-bottom: 0px">
           <template v-slot:append>
             <q-icon v-if="inputSearch !== ''" name="close" @click="inputSearch = ''" class="cursor-pointer" color="primary"/>
             <q-icon v-if="inputSearch == ''" name="search" color="primary"></q-icon>
           </template>
         </q-input>
+      </div>
+      <div class="col-4 text-right">
+        <q-btn color="primary" text-color="white" icon="add_circle" dense no-caps @click="() => editorStore.methods.createMode()" label="Crear Bloque" />
       </div>
     </div>
     <!--List the blocks-->
@@ -42,9 +45,11 @@ import editorStore from '@imagina/qbuilder/_store/editor'
 export default defineComponent({
   setup() {
     let inputSearch = ref("")
+
     return {
       blocks: computed(() => editorStore.state.blocks),
       setSelectedBlock: editorStore.methods.setSelectedBlock,
+      editorStore,
       inputSearch
     }
   },

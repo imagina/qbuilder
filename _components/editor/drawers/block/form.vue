@@ -7,10 +7,10 @@
       <q-btn @click="closeBlockShow" color="green" color-text="white" no-caps ripple :label= "$tr('isite.cms.label.ready')"/>
     </div>
     <!--Content-->
-    <q-scroll-area style="height: calc(100vh - 100px)">
+    <q-scroll-area style="height: calc(100vh - 136px)">
       <div
         class="padding-drawer-content row"
-        style="height: calc(100vh - 150px)"
+        style="height: calc(100vh - 200px)"
       >
         <!-- Key -> <pre>{{attributeKeyTemplate}}</pre> -->
         <!--Button Tabs-->
@@ -132,14 +132,13 @@
           </q-tab-panels>
         </div>
       </div>
-      <div class="row">
+    </q-scroll-area>
+    <div class="row q-pa-md bg-grey-2">
         <div class="col-12 text-center">
           <q-btn color="primary" text-color="white" no-caps v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
           <q-btn color="primary" text-color="white" no-caps v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
         </div>
       </div>
-    </q-scroll-area>
-    
   </div>
 </template>
 <script>

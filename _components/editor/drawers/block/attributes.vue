@@ -7,19 +7,23 @@
     </div>
     <!--List the blocks-->
     <div>
-      <div class="q-pa-md">
-        <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
+      <div class="q-px-md q-pt-md row">
+        <div class="col-12">
+          <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
+        </div>
       </div>
-      <div v-if="element && featureFlagElement" class="text-center q-mb-md">
-        <q-btn-toggle @click="() => resetAttributesKey()" v-model="statusChildBlocks[featureFlagElement.name]"
-                      class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
-                      text-color="green" :options="[
-                            { label: `${featureFlagElement.title} (On)`, value: true },
-                            { label: `${featureFlagElement.title} (Off)`, value: false }
-                ]"/>
+      <div class="q-pb-md row">
+        <div v-if="element && featureFlagElement" class="text-center col-12">
+          <q-btn-toggle @click="() => resetAttributesKey()" v-model="statusChildBlocks[featureFlagElement.name]"
+                        class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
+                        text-color="green" :options="[
+                              { label: `${featureFlagElement.title} (On)`, value: true },
+                              { label: `${featureFlagElement.title} (Off)`, value: false }
+                  ]"/>
+        </div>
       </div>
 
-      <div class="text-center row">
+      <div class="q-pt-xs text-center row">
         <div class="text-h6 bg-green text-white col-12">
           <div v-if="device">
             Desktop <q-icon name="desktop_windows"/>

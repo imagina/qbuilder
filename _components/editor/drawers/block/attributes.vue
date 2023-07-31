@@ -193,7 +193,7 @@ export default {
       return (this.selectedBlock && this.formMainFields ? this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle : 'New Block' )
     },
     deviceOptions(){
-      return [{label: 'Mobile', value: 0}, {label: 'Desktop', value: 1}]
+      return [{label: '', value: 0, icon: 'phone_iphone'}, {label: '', value: 1, icon: 'desktop_windows'}]
     }
   },
   methods: {

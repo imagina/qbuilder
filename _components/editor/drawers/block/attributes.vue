@@ -246,10 +246,6 @@ export default {
 
       this.formAttributesFields = reactive(tmpDesktopAttributes)
       this.formMobileAttributesFields = reactive(tmpMobileAttributes)
-
-
-      console.log(this.formAttributesFields);
-      console.log(this.formMobileAttributesFields);
     },
     saveBlockInfo(){
       if (this.selectedBlock) {

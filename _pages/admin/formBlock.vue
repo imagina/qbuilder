@@ -395,7 +395,7 @@ export default {
         block.elements = this.$clone(blockElements)
       })
       //response
-      console.log("este response: ", response);
+
       return response
     },
     //Selected block
@@ -447,8 +447,6 @@ export default {
         contentFields: {},
         ...(this.selectedBlock?.block || {}),
       }
-
-      console.log("wtf", block);
 
       //Validate if there is content for this form
       if (block.content.length || Object.keys(block.contentFields).length) {
@@ -511,7 +509,7 @@ export default {
           ...(this.formContentFields[this.$store.state.qsiteApp.defaultLocale] || {})
         }
       }
-      console.log({component, entity, attributes});
+
       return {component, entity, attributes}
     },
     //get body params to iframe
@@ -692,7 +690,7 @@ export default {
               this.$set(this.formEntity, "id", response.data.entity.id)
               //Set fields
               this.formContentFields = this.$clone(response.data)
-              console.log(this.formContentFields);
+
               //Set the formAttributes data
               const blockAttr = response.data.attributes
               Object.keys(blockAttr).forEach(attrName => {

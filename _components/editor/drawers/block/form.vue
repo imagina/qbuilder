@@ -481,22 +481,16 @@ export default {
 
       Object.keys(this.statusChildBlocks).forEach(blockName => {
         const blockAttrStatus = this.statusChildBlocks[blockName];
-        console.log({blockAttrStatus});
         if (blockName === 'mainBlock') blockName = 'mainblock';
         if (!blockAttrStatus) {
           response.attributes[blockName].propertiesStatus = false;
           response.mobileAttributes[blockName].propertiesStatus = false;
-          console.log("false")
         }else{
           response.attributes[blockName].propertiesStatus = true;
           response.mobileAttributes[blockName].propertiesStatus = true;
-          console.log("true")
         }
       })
 
-      console.log(this.statusChildBlocks)
-
-      console.log(response);
       return response;
     },
     //Close the form block drawer and back to the list

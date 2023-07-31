@@ -54,7 +54,7 @@
               <div class="text-subtitle2 text-bold bg-grey-3 q-px-md q-py-xs ellipsis">{{tab.title}}</div>
               <q-card-section>
                 <div class="text-subtitle2">
-                  <p class="ellipsis-3-lines">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun</p>
+                  <p class="ellipsis-3-lines" v-text="$tr('ibuilder.cms.defaultAttributesDescription')" />
                 </div>
               </q-card-section>
             </q-card>
@@ -75,7 +75,7 @@
             <q-scroll-area style="height: calc(100vh - 375px)">
               <div class="row">
                 <div class="col-12 q-px-md q-my-md">
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididun...</p>
+                  <p v-text="$tr('ibuilder.cms.defaultAttributesDescription')" />
                 </div>
               </div>
               <div class="row q-pb-xl">

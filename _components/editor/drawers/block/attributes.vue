@@ -22,7 +22,6 @@
                   ]"/>
         </div>
       </div>
-
       <div class="q-pt-xs text-center row">
         <div class="text-h6 bg-green text-white col-12">
           <div v-if="device">
@@ -61,7 +60,7 @@
             <div class="row text-h6 q-pa-md bg-grey-2">
               <div class="col-11 text-bold">{{attributes.title}}</div>
               <div class="col-1" vertical-top>
-                <q-btn  icon="close"round  @click="section=''" />
+                <q-btn  icon="arrow_back" round  @click="section=''" />
               </div>
             </div>
             <q-scroll-area style="height: calc(100vh - 350px)">

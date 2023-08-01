@@ -23,8 +23,8 @@
                     left-label />
         </div>
       </div>
-      <div class="row bg-green" v-if="(section == '')">
-        <div class="col-12 text-center text-white text-bold text-h6 q-py-sm">
+      <div class="row bg-green q-py-sm" v-if="(section == '')" style="height: 52px">
+        <div class="col-12 text-center text-white text-bold text-h6">
             Attributes
         </div>
       </div>

@@ -20,6 +20,7 @@ const state = reactive({
     blocksList: false,
     blocksShow: false,
     blockAttributes: false,
+    tabFormSection: 'main'
   },
   blocks: [],
   blocksConfiguration: [],
@@ -277,6 +278,7 @@ const methods = {
     state.formExtraFields = {};
     state.formAttributesFields = {};
     state.formMobileAttributesFields = {};
+    state.drawers.tabFormSection = 'main'
     removeLastSelectedBlock();
   },
   setBlockFormData(){

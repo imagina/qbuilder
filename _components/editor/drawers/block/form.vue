@@ -25,7 +25,7 @@
         <!--Button Tabs-->
         <div class="col-3">
           <q-tabs
-            v-model="tabFormSection"
+            v-model="editorStore.state.drawers.tabFormSection"
             vertical
             class="text-primary-builder"
             active-bg-color="primary-builder"
@@ -42,7 +42,7 @@
         <!-- Form  Content-->
         <div class="col-9" v-if="selectedBlock">
           <q-tab-panels
-            v-model="tabFormSection"
+            v-model="editorStore.state.drawers.tabFormSection"
             animated
             vertical
             keep-alive
@@ -91,7 +91,7 @@
         </div>
         <div class="col-9" v-else>
           <q-tab-panels
-            v-model="tabFormSection"
+            v-model="editorStore.state.drawers.tabFormSection"
             animated
             vertical
             keep-alive
@@ -156,6 +156,7 @@ export default {
     return {
       createMode: computed(() => editorStore.state.createMode),
       device: editorStore.models.device,
+      editorStore
     }
   },
   props: {},
@@ -188,7 +189,6 @@ export default {
   },
   data() {
     return {
-      tabFormSection: "main",
       blocksConfiguration: editorStore.models.blocksConfiguration,
       formMainFields: editorStore.models.formMainFields,
       formEntityFields: editorStore.models.formEntityFields,

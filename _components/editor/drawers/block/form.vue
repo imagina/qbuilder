@@ -143,11 +143,11 @@
       </div>
     </q-scroll-area>
     <div class="row q-pa-md bg-grey-2">
-        <div class="col-12 text-center">
-          <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
-          <q-btn color="primary" text-color="white" no-caps rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
-        </div>
+      <div class="col-12 text-center">
+        <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
+        <q-btn color="primary" text-color="white" no-caps rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
       </div>
+    </div>
   </div>
 </template>
 <script>

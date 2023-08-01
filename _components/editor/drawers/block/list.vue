@@ -5,7 +5,7 @@
       <div class="col-4">
         {{ $trp('ibuilder.cms.block') }}
       </div>
-      <div class="col-4 text-center">
+      <div class="col-8 text-center">
         <q-input v-model="inputSearch" autofocus dense dark standout style="padding-bottom: 0px">
           <template v-slot:append>
             <q-icon v-if="inputSearch !== ''" name="close" @click="inputSearch = ''" class="cursor-pointer" color="primary"/>
@@ -13,12 +13,9 @@
           </template>
         </q-input>
       </div>
-      <div class="col-4 text-right">
-        <q-btn color="primary" text-color="white" icon="add_circle" dense no-caps @click="() => editorStore.methods.createMode()" label="Crear Bloque" />
-      </div>
     </div>
     <!--List the blocks-->
-    <q-scroll-area style="height: calc(100vh - 100px)">
+    <q-scroll-area style="height: calc(100vh - 136px)">
       <div class="padding-drawer-content">
         <div class="row q-gutter-y-md">
           <div v-for="(block, blockKey) in filteredBlocks" :key="blockKey" @click="setSelectedBlock(block)"
@@ -36,6 +33,11 @@
         </div>
       </div>
     </q-scroll-area>
+    <div class="row q-pa-md bg-grey-2">
+      <div class="col-12 text-center">
+        <q-btn color="primary" text-color="white" no-caps rounded unelevated icon="fa-light fa-plus" @click="() => editorStore.methods.createMode()" label="Crear Bloque" />
+      </div>
+    </div>
   </div>
 </template>
 <script>

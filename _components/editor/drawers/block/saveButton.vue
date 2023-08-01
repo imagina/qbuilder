@@ -1,5 +1,5 @@
 <template>
-	<div class="row q-pa-md bg-grey-2">
+	<div class="row q-pa-md bg-grey-2 fixed-bottom">
       <div class="col-12 text-center">      	
         <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => $eventBus.$emit('updateBlockInfo')" label="Guardar" />
         <q-btn color="primary" text-color="white" no-caps rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />

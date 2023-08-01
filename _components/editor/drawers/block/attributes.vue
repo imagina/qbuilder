@@ -32,7 +32,7 @@
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
         <div class="col-12">
-          <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 212px)">
+          <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 260px)">
             <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
               <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
                        :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"

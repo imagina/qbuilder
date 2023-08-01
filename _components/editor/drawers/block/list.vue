@@ -18,7 +18,7 @@
       </div>
     </div>
     <!--List the blocks-->
-    <q-scroll-area style="height: calc(100vh - 116px)">
+    <q-scroll-area style="height: calc(100vh - 100px)">
       <div class="padding-drawer-content">
         <div class="row q-gutter-y-md">
           <div v-for="(block, blockKey) in filteredBlocks" :key="blockKey" @click="setSelectedBlock(block)"

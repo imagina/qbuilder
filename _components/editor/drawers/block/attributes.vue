@@ -2,51 +2,33 @@
   <div id="builderDrawerBlockAttributes" :key="attributesKey" v-if="blockConfig">
     <!--Title-->
     <div class="drawer-title" style="padding: 16px 24px;">
-      <div class="col-4">
+      <div class="col-6">
         {{getInternalName}}
       </div>
-      <div class="col-4 text-center">
-        <q-btn-toggle v-if="createMode || selectedBlock" v-model="device"
-                        class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
-                        text-color="green" :options="deviceOptions"/>
-      </div>
-      <div class="col-4 text-right">
+      <div class="col-6 text-right">
         <q-btn @click="closeAttributesDrawer" color="green" color-text="white" no-caps :label= "$tr('isite.cms.label.ready')"/>
       </div>
     </div>
     <!--List the blocks-->
     <div>
       <div class="q-px-md q-pt-md row">
-        <div class="col-12">
+        <div class="col-9">
           <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
         </div>
-      </div>
-      <div class="q-pb-md row">
-        <div v-if="element && featureFlagElement" class="text-center col-12">
-          <q-btn-toggle @click="() => resetAttributesKey()" v-model="statusChildBlocks[featureFlagElement.name]"
-                        class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
-                        text-color="green" :options="[
-                              { label: `${featureFlagElement.title} (On)`, value: true },
-                              { label: `${featureFlagElement.title} (Off)`, value: false }
-                  ]"/>
-        </div>
-      </div>
-      <div class="q-pt-xs text-center row">
-        <div class="text-h6 bg-green text-white col-12">
-          <div v-if="device">
-            Desktop <q-icon name="desktop_windows"/>
-          </div>
-          <div v-else>
-            Mobile <q-icon name="phone_iphone" />
-          </div>
+        <div v-if="element && featureFlagElement" class="col-3 text-right">
+          <q-toggle @input="() => resetAttributesKey()"
+                    v-model="statusChildBlocks[featureFlagElement.name]"
+                    :label="statusChildBlocks[featureFlagElement.name] ? '(On)': '(Off)' "
+                    color="green"
+                    left-label />
         </div>
       </div>
       <div v-if="element" class="row">
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
         <div class="col-12">
-          <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 300px)">
-          <div class="row q-pl-md q-mt-sm" v-for="(element, index) in blockConfig.elements" :key="index">
+          <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 212px)">
+          <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
             <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
                      :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
                      :key="`${index}-maintabs`"
@@ -66,13 +48,30 @@
           <!--Main Fields-->
           <div v-for="(attributes, groupIndex) in elementSelectedAttr"
                v-show="(section == panelNames[groupIndex]) && statusChildBlocks[featureFlagElement.name]" :key="groupIndex" class="col-12">
-            <div class="row text-h6 q-pa-md bg-grey-2">
-              <div class="col-11 text-bold">{{attributes.title}}</div>
-              <div class="col-1" vertical-top>
-                <q-btn  icon="arrow_back" round  @click="section=''" />
+            <div class="row bg-grey-2">
+              <div class="col-3 q-py-sm">
+                <q-btn icon="fa-light fa-chevron-left" rounded unelevated flat color="green" @click="section=''" />
+              </div>
+              <div class="col-6 text-center text-bold text-h6 q-py-sm">
+                {{attributes.title}}
+              </div>
+              <div class="col-3 text-right">
+                <q-toggle
+                    v-model="device"
+                    keep-color
+                    checked-icon="fa-light fa-desktop "
+                    unchecked-icon="fa-light fa-mobile"
+                    :true-value="1"
+                    :false-value="0"
+                    size="lg"
+                    color="secondary"
+                    icon-color="white"
+                    left-label
+                    :label="device ? 'Desktop': 'Mobile'"
+                  />
               </div>
             </div>
-            <q-scroll-area style="height: calc(100vh - 375px)">
+            <q-scroll-area style="height: calc(100vh - 265px)">
               <div class="row">
                 <div class="col-12 q-px-md q-my-md">
                   <p v-text="$tr('ibuilder.cms.defaultAttributesDescription')" />
@@ -101,8 +100,8 @@
       </div>
       <div class="row q-pa-md bg-grey-2">
         <div class="col-12 text-center">
-          <q-btn color="primary" text-color="white" no-caps v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
-          <q-btn color="primary" text-color="white" no-caps v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
+          <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
+          <q-btn color="primary" text-color="white" no-caps  rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
         </div>
       </div>
     </div>
@@ -191,9 +190,6 @@ export default {
     },
     getInternalName() {
       return (this.selectedBlock && this.formMainFields ? this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle : 'New Block' )
-    },
-    deviceOptions(){
-      return [{label: '', value: 0, icon: 'phone_iphone'}, {label: '', value: 1, icon: 'desktop_windows'}]
     }
   },
   methods: {

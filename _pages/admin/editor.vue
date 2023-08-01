@@ -11,6 +11,9 @@
     </div>
     <div id="editorContent">
       <!--Block Preview-->
+      <div class="text-center text-white bg-green" v-if="false">
+        {{device ? 'Desktop': 'Mobile'}}
+      </div>
       <block-preview />
     </div>
   </div>

@@ -23,6 +23,11 @@
                     left-label />
         </div>
       </div>
+      <div class="row bg-green" v-if="(section == '')">
+        <div class="col-12 text-center text-white text-bold text-h6 q-py-sm">
+            Attributes
+        </div>
+      </div>
       <div v-if="element" class="row">
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
@@ -98,12 +103,7 @@
             <q-separator />
           </div>
       </div>
-      <div class="row q-pa-md bg-grey-2 fixed-bottom">
-        <div class="col-12 text-center">
-          <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
-          <q-btn color="primary" text-color="white" no-caps  rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
-        </div>
-      </div>
+      <saveButton />
     </div>
   </div>
 </template>
@@ -111,6 +111,7 @@
 <script>
 import editorStore from "@imagina/qbuilder/_store/editor";
 import Vue, { defineComponent, computed, reactive } from "vue";
+import saveButton from '@imagina/qbuilder/_components/editor/drawers/block/saveButton.vue'
 
 export default {
   name: 'attributes',
@@ -119,6 +120,9 @@ export default {
       createMode: computed(() => editorStore.state.createMode),
       device: editorStore.models.device,
     }
+  },
+  components: {
+    saveButton
   },
   props: {},
   watch: {

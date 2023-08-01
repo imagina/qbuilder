@@ -142,18 +142,14 @@
         </div>
       </div>
     </q-scroll-area>
-    <div class="row q-pa-md bg-grey-2">
-      <div class="col-12 text-center">
-        <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
-        <q-btn color="primary" text-color="white" no-caps rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
-      </div>
-    </div>
+    <saveButton />
   </div>
 </template>
 <script>
 
 import Vue, {computed} from "vue";
 import editorStore from "@imagina/qbuilder/_store/editor";
+import saveButton from '@imagina/qbuilder/_components/editor/drawers/block/saveButton.vue'
 
 export default {
   setup(){
@@ -163,7 +159,9 @@ export default {
     }
   },
   props: {},
-  components: {},
+  components: {
+    saveButton
+  },
   watch: {
     selectedBlock(newValue) {
       if (newValue) {
@@ -409,6 +407,7 @@ export default {
       if (this.$refs['main-form']) {
         this.isValidForm = await this.$refs['main-form'].validateCompleteForm();
         if (this.isValidForm) {
+          editorStore.state.loading = true
           const data = this.getBlockData();
           const requestParams = {notToSnakeCase: this.notToSnakeCase}
           this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
@@ -419,6 +418,7 @@ export default {
       if (this.$refs['main-form']){
         this.isValidForm = await this.$refs['main-form'].validateCompleteForm();
         if (this.isValidForm) {
+          editorStore.state.loading = true
           const data = this.getBlockData();
           const requestParams = {notToSnakeCase: this.notToSnakeCase}
           this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());

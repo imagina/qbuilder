@@ -413,6 +413,7 @@ export default {
         block.elements = this.$clone(blockElements)
       })
       //response
+
       return response
     },
     //Selected block
@@ -512,7 +513,6 @@ export default {
           }]
         }
       }
-
       //Response
       return response
     },
@@ -545,6 +545,7 @@ export default {
           ...(this.formContentFields[this.$store.state.qsiteApp.defaultLocale] || {})
         }
       }
+
       return {component, entity, attributes}
     },
     //get body params to iframe
@@ -592,7 +593,6 @@ export default {
           response.attributes[blockName] = {}
         }
       })
-
       //Response
       return response
     },
@@ -726,6 +726,7 @@ export default {
               this.$set(this.formEntity, "id", response.data.entity.id)
               //Set fields
               this.formContentFields = this.$clone(response.data)
+
               //Set the formAttributes data
               const blockAttr = response.data.attributes
               Object.keys(blockAttr).forEach(attrName => {

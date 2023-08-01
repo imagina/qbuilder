@@ -18,7 +18,7 @@
         <div v-if="element && featureFlagElement" class="col-3 text-right">
           <q-toggle @input="() => resetAttributesKey()"
                     v-model="statusChildBlocks[featureFlagElement.name]"
-                    :label="statusChildBlocks[featureFlagElement.name] ? '(On)': '(Off)' "
+                    :label="statusChildBlocks[featureFlagElement.name] ? 'Active': 'Disabled' "
                     color="green"
                     left-label />
         </div>
@@ -28,34 +28,34 @@
                                 formType="collapsible"/> -->
         <div class="col-12">
           <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 212px)">
-          <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
-            <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
-                     :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
-                     :key="`${index}-maintabs`"
-                     @click="section = panelNames[index]" class="col-5 q-ma-md cursor-pointer" flat bordered v-ripple >
-              <div class="text-subtitle2 text-bold bg-grey-3 q-px-md q-py-xs ellipsis">{{tab.title}}</div>
-              <q-card-section>
-                <div class="text-subtitle2">
-                  <p class="ellipsis-3-lines" v-text="$tr('ibuilder.cms.defaultAttributesDescription')" />
-                </div>
-              </q-card-section>
-            </q-card>
-          </div>
-        </q-scroll-area>
+            <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
+              <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
+                       :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
+                       :key="`${index}-maintabs`"
+                       @click="section = panelNames[index]" class="col-5 q-ma-md cursor-pointer" flat bordered v-ripple >
+                <div class="text-subtitle2 text-bold bg-grey-3 q-px-md q-py-xs ellipsis">{{tab.title}}</div>
+                <q-card-section>
+                  <div class="text-subtitle2">
+                    <p class="ellipsis-3-lines" v-text="$tr('ibuilder.cms.defaultAttributesDescription')" />
+                  </div>
+                </q-card-section>
+              </q-card>
+            </div>
+          </q-scroll-area>
         </div>
       </div>
       <div v-if="element" class="row">
           <!--Main Fields-->
           <div v-for="(attributes, groupIndex) in elementSelectedAttr"
                v-show="(section == panelNames[groupIndex]) && statusChildBlocks[featureFlagElement.name]" :key="groupIndex" class="col-12">
-            <div class="row bg-grey-2">
+            <div class="row bg-green">
               <div class="col-3 q-py-sm">
-                <q-btn icon="fa-light fa-chevron-left" rounded unelevated flat color="green" @click="section=''" />
+                <q-btn icon="fa-light fa-chevron-left" rounded unelevated flat color="white" @click="section=''" />
               </div>
-              <div class="col-6 text-center text-bold text-h6 q-py-sm">
+              <div class="col-6 text-center text-white text-bold text-h6 q-py-sm">
                 {{attributes.title}}
               </div>
-              <div class="col-3 text-right">
+              <div class="col-3 text-right text-white q-pr-sm">
                 <q-toggle
                     v-model="device"
                     keep-color
@@ -64,8 +64,8 @@
                     :true-value="1"
                     :false-value="0"
                     size="lg"
-                    color="secondary"
-                    icon-color="white"
+                    color="white"
+                    icon-color="grey"
                     left-label
                     :label="device ? 'Desktop': 'Mobile'"
                   />
@@ -98,7 +98,7 @@
             <q-separator />
           </div>
       </div>
-      <div class="row q-pa-md bg-grey-2">
+      <div class="row q-pa-md bg-grey-2 fixed-bottom">
         <div class="col-12 text-center">
           <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
           <q-btn color="primary" text-color="white" no-caps  rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />

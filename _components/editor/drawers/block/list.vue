@@ -33,7 +33,7 @@
         </div>
       </div>
     </q-scroll-area>
-    <div class="row q-pa-md bg-grey-2">
+    <div class="row q-pa-md bg-grey-2 fixed-bottom">
       <div class="col-12 text-center">
         <q-btn color="primary" text-color="white" no-caps rounded unelevated icon="fa-light fa-plus" @click="() => editorStore.methods.createMode()" label="Crear Bloque" />
       </div>

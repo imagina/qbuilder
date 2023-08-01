@@ -2,11 +2,11 @@
   <div id="builderDrawerBlockList">
     <!--Title-->
     <div class="row drawer-title" style="padding: 14px 24px;">
-      <div class="col-4">
+      <div class="col-6">
         {{ $trp('ibuilder.cms.block') }}
       </div>
-      <div class="col-8 text-center">
-        <q-input v-model="inputSearch" autofocus dense dark standout style="padding-bottom: 0px">
+      <div class="col-6 text-center">
+        <q-input v-model="inputSearch" autofocus dense dark standout bg-color="white" style="padding-bottom: 0px">
           <template v-slot:append>
             <q-icon v-if="inputSearch !== ''" name="close" @click="inputSearch = ''" class="cursor-pointer" color="primary"/>
             <q-icon v-if="inputSearch == ''" name="search" color="primary"></q-icon>

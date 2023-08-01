@@ -1,17 +1,19 @@
 <template>
   <div ref="pageBuilderEditor" id="pageBuilderEditor" class="bg-blue-grey-3">
-    <div class="editor-options drawer-title">
-      
+    <div class="editor-options drawer-title" v-if="false">
       <q-btn-toggle v-if="createMode || selectedBlock" v-model="device"
                       class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
                       text-color="green" :options="deviceOptions"/>
       <div></div>
-      <q-btn color="white" text-color="primary" v-if="selectedBlock" class="editor-options-save" @click="() => saveBlockInfo()">Guardar</q-btn>
-      <q-btn color="white" text-color="primary" v-else-if="createMode" class="editor-options-create primary" @click="() => $eventBus.$emit('saveBlockInfo')">Guardar Bloque</q-btn>
-      <q-btn color="white" text-color="primary" v-else-if="!selectedBlock && !createMode" class="editor-options-create primary" @click="() => saveBlockInfo()">Crear Bloque</q-btn>
+      <q-btn color="primary" text-color="white" no-caps v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
+      <q-btn color="primary" text-color="white" no-caps v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
+      <q-btn color="primary" text-color="white" no-caps v-else-if="!selectedBlock && !createMode" @click="() => saveBlockInfo()" label="Crear Bloque" />
     </div>
-    <div id="editorContent" class="bg-white shadow-7">
+    <div id="editorContent">
       <!--Block Preview-->
+      <div class="text-center text-white bg-green" v-if="false">
+        {{device ? 'Desktop': 'Mobile'}}
+      </div>
       <block-preview />
     </div>
   </div>
@@ -64,23 +66,18 @@ export default defineComponent({
 </script>
 <style lang="stylus">
 #pageBuilderEditor
-  padding 0px 100px 50px 100px
+  padding 34px 100px 34px 100px
   height 100vh
   width calc(100% - 500px)
-  transform translateX(500px)
+  transform translateX(540px)
 
   .editor-options{
     width 100%
-    height 60px
     display flex
     align-items center
     justify-content space-between
     background-color #5333ed
-    padding 0 50px
-  }
-
-  .editor-options-save, .editor-options-create{
-      
+    padding 16px 24px 16px 24px
   }
 
   #editorContent

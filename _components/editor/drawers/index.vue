@@ -3,13 +3,13 @@
     <!--Inner Loading-->
     <inner-loading :visible="loading"/>
     <!--Block drawers-->
-    <q-drawer bordered v-model="drawers.blocksList" :width="500">
+    <q-drawer bordered v-model="drawers.blocksList" :width="540" hide-scrollbar>
       <blocks-list/>
     </q-drawer>
-    <q-drawer bordered v-model="drawers.blocksShow" :width="500" overlay>
+    <q-drawer bordered v-model="drawers.blocksShow" :width="540" overlay hide-scrollbar>
       <blocks-form/>
     </q-drawer>
-    <q-drawer bordered v-model="drawers.blockAttributes" :width="500">
+    <q-drawer bordered v-model="drawers.blockAttributes" :width="540" hide-scrollbar>
       <attributesForm/>
     </q-drawer>
   </div>
@@ -58,7 +58,6 @@ export default defineComponent({
 #builderEditorDrawers
   .drawer-title
     background-color $primaryBuilder
-    padding 16px 24px
     color white
     font-size 18px
     display flex
@@ -71,4 +70,11 @@ export default defineComponent({
 
   .padding-drawer-content
     padding 16px 24px
+
+  .q-drawer
+    padding: 0px !important
+    border-right: 0px
+
+  .q-drawer-container
+    padding: 0px !important
 </style>

@@ -1,18 +1,25 @@
 <template>
   <div id="builderDrawerBlockForm" :key="attributeKeyTemplate">
     <!--Title-->
-    <div class="drawer-title">
-      {{ $tr("ibuilder.cms.blockDesign") }}
-      <!--Close Button-->
-      <div @click="closeBlockShow" class="text-subtitle1 cursor-pointer">
-        {{ $tr("isite.cms.label.ready") }}
+    <div  class="drawer-title" style="padding: 16px 24px;">
+      <div class="col-4">
+        {{getInternalName}}
+      </div>
+      <div class="col-4 text-center">
+        <q-btn-toggle v-if="createMode || selectedBlock" v-model="device"
+                        class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
+                        text-color="green" :options="deviceOptions" v-show="false"/>
+      </div>
+      <div class="col-4 text-right">
+        <!--Close Button-->
+        <q-btn @click="closeBlockShow" color="green" color-text="white" no-caps ripple :label= "$tr('isite.cms.label.ready')"/>
       </div>
     </div>
     <!--Content-->
-    <q-scroll-area style="height: calc(100vh - 60px)">
+    <q-scroll-area style="height: calc(100vh - 136px)">
       <div
         class="padding-drawer-content row"
-        style="height: calc(100vh - 60px)"
+        style="height: calc(100vh - 200px)"
       >
         <!-- Key -> <pre>{{attributeKeyTemplate}}</pre> -->
         <!--Button Tabs-->
@@ -135,12 +142,26 @@
         </div>
       </div>
     </q-scroll-area>
+    <div class="row q-pa-md bg-grey-2">
+      <div class="col-12 text-center">
+        <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
+        <q-btn color="primary" text-color="white" no-caps rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
+      </div>
+    </div>
   </div>
 </template>
 <script>
+
+import Vue, {computed} from "vue";
 import editorStore from "@imagina/qbuilder/_store/editor";
 
 export default {
+  setup(){
+    return {
+      createMode: computed(() => editorStore.state.createMode),
+      device: editorStore.models.device,
+    }
+  },
   props: {},
   components: {},
   watch: {
@@ -365,6 +386,12 @@ export default {
       }
       return response
     },
+    getInternalName() {
+      return (this.selectedBlock && this.formMainFields ? this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle : 'New Block' )
+    },
+    deviceOptions(){
+      return [{label: '', value: 0, icon: 'phone_iphone'}, {label: '', value: 1, icon: 'desktop_windows'}]
+    }
   },
   methods: {
     init() {
@@ -454,22 +481,16 @@ export default {
 
       Object.keys(this.statusChildBlocks).forEach(blockName => {
         const blockAttrStatus = this.statusChildBlocks[blockName];
-        console.log({blockAttrStatus});
         if (blockName === 'mainBlock') blockName = 'mainblock';
         if (!blockAttrStatus) {
           response.attributes[blockName].propertiesStatus = false;
           response.mobileAttributes[blockName].propertiesStatus = false;
-          console.log("false")
         }else{
           response.attributes[blockName].propertiesStatus = true;
           response.mobileAttributes[blockName].propertiesStatus = true;
-          console.log("true")
         }
       })
 
-      console.log(this.statusChildBlocks)
-
-      console.log(response);
       return response;
     },
     //Close the form block drawer and back to the list
@@ -510,7 +531,16 @@ export default {
     setElementSelected(elementSelected){
       editorStore.methods.setElementSelected(elementSelected);
     },
+    saveBlockInfo(){
+      if (this.selectedBlock) {
+        this.$eventBus.$emit('updateBlockInfo');
+      }else{
+        editorStore.methods.createMode();
+        //this.$eventBus.$emit('saveBlockInfo');
+      }
+    }
   },
+
 };
 </script>
 <style lang="stylus">

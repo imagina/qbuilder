@@ -2,6 +2,17 @@ import Vue, {reactive, computed} from 'vue';
 import crud from '@imagina/qcrud/_services/baseService.js';
 import helper from '@imagina/qsite/_plugins/helper'
 
+//Manage the id of the last selected block before submit
+  function setLastSelectedBlock(id){
+    localStorage.setItem('lastSelectedBlockId', id);
+  }
+  function getLastSelectedBlock(){
+    return localStorage.getItem('lastSelectedBlockId') ? localStorage.getItem('lastSelectedBlockId') : null;
+  }
+  function removeLastSelectedBlock(){
+    localStorage.removeItem("lastSelectedBlockId");
+  }
+
 //States
 const state = reactive({
   loading: false,
@@ -129,8 +140,6 @@ const getters = {
     const entity = state.formEntityFields
     let attributes
     if (Object.keys(state.formAttributesFields).length > 0 && Object.keys(state.formMobileAttributesFields).length > 0) {
-      console.log(state.formAttributesFields);
-      console.log(state.formMobileAttributesFields);
       if (state.device === 0) {
         attributes = {
           ...state.formMobileAttributesFields,
@@ -142,8 +151,6 @@ const getters = {
               .reduce((result, current) => Object.assign(result, current), {}))
           }
         }
-
-        console.log("Mobile");
       }else{
         attributes = {
           ...state.formAttributesFields,
@@ -155,7 +162,6 @@ const getters = {
               .reduce((result, current) => Object.assign(result, current), {}))
           }
         }
-        console.log("Desktop")
       }
     }else{
       const blockAttributes = state.blocks.find(block => block.component.systemName === state.blockConfig.systemName).attributes || []; 
@@ -169,10 +175,8 @@ const getters = {
             .reduce((result, current) => Object.assign(result, current), {}))
         }
       }
-      console.log(state.blocksConfiguration);
     }
     //Return
-    console.log({component, entity, attributes});
     if (attributes.mainBlock) {
       attributes.mainblock = {...attributes.mainBlock};
       delete attributes.mainBlock;
@@ -225,7 +229,6 @@ const methods = {
       //Request
       crud.index('apiRoutes.qbuilder.blocks', requestParams).then(response => {
         state.blocks = response.data
-        console.log("mira aquí: ", response.data);
         state.drawers.blocksList = true
         state.loading = false
         resolve(response.data)
@@ -259,7 +262,8 @@ const methods = {
   },
   //Set the selected block
   setSelectedBlock(block) {
-    state.selectedBlock = block
+    state.selectedBlock = block;
+    setLastSelectedBlock(block.id);
     state.drawers.blocksShow = true
     state.attributesKeyTemplate = Vue.prototype.$uid()
   },
@@ -273,6 +277,7 @@ const methods = {
     state.formExtraFields = {};
     state.formAttributesFields = {};
     state.formMobileAttributesFields = {};
+    removeLastSelectedBlock();
   },
   setBlockFormData(){
     //Set only the main from data
@@ -288,7 +293,6 @@ const methods = {
   },
 
   closeAttributesDrawer(){
-    
     state.drawers.blockAttributes = false;
     state.drawers.blocksShow = true;
   },
@@ -306,4 +310,5 @@ export default {
   models,
   getters,
   methods,
+  getLastSelectedBlock,
 }

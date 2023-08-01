@@ -46,4 +46,5 @@ export default {
   .layout-editor
     .q-page-container
       padding-left 0 !important
+      overflow: hidden
 </style>

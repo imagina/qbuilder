@@ -1,68 +1,110 @@
 <template>
   <div id="builderDrawerBlockAttributes" :key="attributesKey" v-if="blockConfig">
     <!--Title-->
-    <div class="drawer-title">
-      {{ $trp('ibuilder.cms.block') }}
-      <div @click="closeAttributesDrawer" class="text-subtitle1 cursor-pointer">
-        {{ $tr("isite.cms.label.ready") }}
+    <div class="drawer-title" style="padding: 16px 24px;">
+      <div class="col-6">
+        {{getInternalName}}
+      </div>
+      <div class="col-6 text-right">
+        <q-btn @click="closeAttributesDrawer" color="green" color-text="white" no-caps :label= "$tr('isite.cms.label.ready')"/>
       </div>
     </div>
     <!--List the blocks-->
-    <q-scroll-area style="height: calc(100vh - 60px)">
-      <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
-      <div v-if="element" class="text-center q-mb-md">
-        <q-btn-toggle @click="() => resetAttributesKey()" v-model="statusChildBlocks[featureFlagElement.name]"
-                      class="my-custom-toggle" no-caps rounded unelevated toggle-color="green" color="grey-3"
-                      text-color="green" :options="[
-                            { label: `${featureFlagElement.title} (On)`, value: true },
-                            { label: `${featureFlagElement.title} (Off)`, value: false }
-                ]"/>
+    <div>
+      <div class="q-px-md q-pt-md row">
+        <div class="col-9">
+          <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
+        </div>
+        <div v-if="element && featureFlagElement" class="col-3 text-right">
+          <q-toggle @input="() => resetAttributesKey()"
+                    v-model="statusChildBlocks[featureFlagElement.name]"
+                    :label="statusChildBlocks[featureFlagElement.name] ? 'Active': 'Disabled' "
+                    color="green"
+                    left-label />
+        </div>
       </div>
-      <div v-if="element" class="padding-drawer-content row">
+      <div v-if="element" class="row">
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
-        <div class="col-3" v-if="statusChildBlocks[featureFlagElement.name]">
-          <q-tabs
-              v-model="section"
-              vertical
-              class="text-primary-builder"
-              active-bg-color="primary-builder"
-              active-color="white"
-              no-caps
-              indicator-color="primary-builder"
-              content-class="text-right"
-          >
-            <div v-for="(element, index) in blockConfig.elements" :key="index">
-              <q-tab v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
-                     :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
-                     :key="`${index}-maintabs`"/>
+        <div class="col-12">
+          <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 212px)">
+            <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
+              <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
+                       :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
+                       :key="`${index}-maintabs`"
+                       @click="section = panelNames[index]" class="col-5 q-ma-md cursor-pointer" flat bordered v-ripple >
+                <div class="text-subtitle2 text-bold bg-grey-3 q-px-md q-py-xs ellipsis">{{tab.title}}</div>
+                <q-card-section>
+                  <div class="text-subtitle2">
+                    <p class="ellipsis-3-lines" v-text="$tr('ibuilder.cms.defaultAttributesDescription')" />
+                  </div>
+                </q-card-section>
+              </q-card>
             </div>
-          </q-tabs>
-        </div>
-        <div class="col-9">
-          <!--Main Fields-->
-          <div v-for="(attributes, groupIndex) in elementSelectedAttr"
-               v-show="section == panelNames[groupIndex]" :key="groupIndex">
-            <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
-                 :key="`${index}-subtabs`">
-              <div v-if="statusChildBlocks[featureFlagElement.name]">
-                <q-separator class="q-mb-md"/>
-                <div v-if="device == 0">
-                  Mobile
-                  <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
-                               v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
-                </div>
-                <div v-if="device == 1">
-                  Desktop
-                  <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
-                               v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
-                </div>
-              </div>
-            </div>
-          </div>
+          </q-scroll-area>
         </div>
       </div>
-    </q-scroll-area>
+      <div v-if="element" class="row">
+          <!--Main Fields-->
+          <div v-for="(attributes, groupIndex) in elementSelectedAttr"
+               v-show="(section == panelNames[groupIndex]) && statusChildBlocks[featureFlagElement.name]" :key="groupIndex" class="col-12">
+            <div class="row bg-green">
+              <div class="col-3 q-py-sm">
+                <q-btn icon="fa-light fa-chevron-left" rounded unelevated flat color="white" @click="section=''" />
+              </div>
+              <div class="col-6 text-center text-white text-bold text-h6 q-py-sm">
+                {{attributes.title}}
+              </div>
+              <div class="col-3 text-right text-white q-pr-sm">
+                <q-toggle
+                    v-model="device"
+                    keep-color
+                    checked-icon="fa-light fa-desktop "
+                    unchecked-icon="fa-light fa-mobile"
+                    :true-value="1"
+                    :false-value="0"
+                    size="lg"
+                    color="white"
+                    icon-color="grey"
+                    left-label
+                    :label="device ? 'Desktop': 'Mobile'"
+                  />
+              </div>
+            </div>
+            <q-scroll-area style="height: calc(100vh - 265px)">
+              <div class="row">
+                <div class="col-12 q-px-md q-my-md">
+                  <p v-text="$tr('ibuilder.cms.defaultAttributesDescription')" />
+                </div>
+              </div>
+              <div class="row q-pb-xl">
+                <div class="col-12 q-px-md q-py-sm">
+                  <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
+                       :key="`${index}-subtabs`">
+                    <div v-if="statusChildBlocks[featureFlagElement.name]">
+                      <div v-if="device == 0">
+                        <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
+                                     v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                      </div>
+                      <div v-if="device == 1">
+                        <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
+                                     v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </q-scroll-area>
+            <q-separator />
+          </div>
+      </div>
+      <div class="row q-pa-md bg-grey-2 fixed-bottom">
+        <div class="col-12 text-center">
+          <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
+          <q-btn color="primary" text-color="white" no-caps  rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -72,11 +114,18 @@ import Vue, { defineComponent, computed, reactive } from "vue";
 
 export default {
   name: 'attributes',
+  setup(){
+    return {
+      createMode: computed(() => editorStore.state.createMode),
+      device: editorStore.models.device,
+    }
+  },
   props: {},
   watch: {
     elementSelected() {
       this.element = this.elementSelected;
       this.attributesKey = this.$uid()
+      this.section = '';
     },
     element(newValue) {
       this.setElementSelected(newValue);
@@ -109,7 +158,7 @@ export default {
       device: editorStore.models.device,
       element: null,
       attributesKey: this.$uid(),
-      section: 'panel-0',
+      section: '',
       panelNames: ['panel-0', 'panel-1', 'panel-2', 'panel-3', 'panel-4', 'panel-5', 'panel-6', 'panel-7', 'panel-8', 'panel-9', 'panel-10', 'panel-11', 'panel-12'],
     }
   },
@@ -139,6 +188,9 @@ export default {
         },
       }
     },
+    getInternalName() {
+      return (this.selectedBlock && this.formMainFields ? this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle : 'New Block' )
+    }
   },
   methods: {
     setElementSelected(elementSelected) {
@@ -190,11 +242,15 @@ export default {
 
       this.formAttributesFields = reactive(tmpDesktopAttributes)
       this.formMobileAttributesFields = reactive(tmpMobileAttributes)
-
-
-      console.log(this.formAttributesFields);
-      console.log(this.formMobileAttributesFields);
     },
+    saveBlockInfo(){
+      if (this.selectedBlock) {
+        this.$eventBus.$emit('updateBlockInfo');
+      }else{
+        editorStore.methods.createMode();
+        //this.$eventBus.$emit('saveBlockInfo');
+      }
+    }
   }
 }
 </script>
@@ -202,11 +258,17 @@ export default {
 <style lang="stylus">
 #builderDrawerBlockAttributes
 .q-tabs
-  border-right: 1px solid $grey-3
   min-height 100%
 
 .q-tab
   width: max-content
   float: right
   border-radius 10px 0 0 10px
+
+.q-card
+  &:hover
+    border-color: $primary
+
+.q-field
+  padding-bottom: 20px
 </style>

@@ -406,18 +406,19 @@ export default {
     async updateBlock(){
       await this.validateForms()
       if (this.isValidForm) {
-        editorStore.state.loading = true
         const data = this.getBlockData();
         const requestParams = {notToSnakeCase: this.notToSnakeCase}
+        editorStore.state.loading = true
+        editorStore.setLastSelectedBlock(this.selectedBlock.id)
         this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
       }
     },
     async createBlock(){
       await this.validateForms()
       if (this.isValidForm) {
-        editorStore.state.loading = true
         const data = this.getBlockData();
         const requestParams = {notToSnakeCase: this.notToSnakeCase}
+        editorStore.state.loading = true
         this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());
       }
     },
@@ -437,8 +438,22 @@ export default {
         if(!isValidContentForm){
           editorStore.state.drawers.tabFormSection = 'content'
         }
+      } else {
+        //force the message if the content-form isn't ready or hidden
+        if(editorStore.state.createMode){
+          if(isValidMainForm){
+            const msg = `${this.$tr('isite.cms.message.formInvalid')} ${this.$trp('isite.cms.label.content')}`
+            this.$alert.error(msg)
+            // goto content tab
+            editorStore.state.drawers.tabFormSection = 'content'
+          }
+        }
       }
-      this.isValidForm = isValidMainForm && isValidContentForm
+      if(editorStore.state.createMode){
+        this.isValidForm = isValidMainForm && isValidContentForm
+      } else {
+        this.isValidForm = isValidMainForm || isValidContentForm
+      }
     },
     deleteExtraKeys(obj){
       const attributesKeys = Object.keys(obj);

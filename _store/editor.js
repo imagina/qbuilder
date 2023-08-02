@@ -5,12 +5,18 @@ import helper from '@imagina/qsite/_plugins/helper'
 //Manage the id of the last selected block before submit
   function setLastSelectedBlock(id){
     localStorage.setItem('lastSelectedBlockId', id);
+    //localStorage.setItem('lastSelectedTab', state.drawers.tabFormSection);
+
   }
   function getLastSelectedBlock(){
-    return localStorage.getItem('lastSelectedBlockId') ? localStorage.getItem('lastSelectedBlockId') : null;
+    //state.drawers.tabFormSection =  localStorage.getItem('lastSelectedTab') ? localStorage.getItem('lastSelectedTab') :  'main'
+    const lastSelectedBlockId = localStorage.getItem('lastSelectedBlockId') ? localStorage.getItem('lastSelectedBlockId') : null;
+    removeLastSelectedBlock();
+    return lastSelectedBlockId
   }
   function removeLastSelectedBlock(){
     localStorage.removeItem("lastSelectedBlockId");
+    //localStorage.removeItem('lastSelectedTab')
   }
 
 //States
@@ -266,7 +272,7 @@ const methods = {
   //Set the selected block
   setSelectedBlock(block) {
     state.selectedBlock = block;
-    setLastSelectedBlock(block.id);
+    //setLastSelectedBlock(block.id);
     state.drawers.blocksShow = true
     state.attributesKeyTemplate = Vue.prototype.$uid()
   },
@@ -314,5 +320,6 @@ export default {
   models,
   getters,
   methods,
+  setLastSelectedBlock,
   getLastSelectedBlock,
 }

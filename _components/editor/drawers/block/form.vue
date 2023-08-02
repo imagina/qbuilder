@@ -404,26 +404,41 @@ export default {
     setStatusChildBlock: editorStore.methods.setStatusChildBlock,
     setBlockConfig: editorStore.methods.setBlockConfig,
     async updateBlock(){
-      if (this.$refs['main-form']) {
-        this.isValidForm = await this.$refs['main-form'].validateCompleteForm();
-        if (this.isValidForm) {
-          editorStore.state.loading = true
-          const data = this.getBlockData();
-          const requestParams = {notToSnakeCase: this.notToSnakeCase}
-          this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
-        }
+      await this.validateForms()
+      if (this.isValidForm) {
+        editorStore.state.loading = true
+        const data = this.getBlockData();
+        const requestParams = {notToSnakeCase: this.notToSnakeCase}
+        this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
       }
     },
     async createBlock(){
-      if (this.$refs['main-form']){
-        this.isValidForm = await this.$refs['main-form'].validateCompleteForm();
-        if (this.isValidForm) {
-          editorStore.state.loading = true
-          const data = this.getBlockData();
-          const requestParams = {notToSnakeCase: this.notToSnakeCase}
-          this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());
+      await this.validateForms()
+      if (this.isValidForm) {
+        editorStore.state.loading = true
+        const data = this.getBlockData();
+        const requestParams = {notToSnakeCase: this.notToSnakeCase}
+        this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());
+      }
+    },
+    async validateForms() {
+      let isValidMainForm = false
+      let isValidContentForm = false
+
+      if (this.$refs['main-form']) {
+        isValidMainForm = await this.$refs['main-form'].validateCompleteForm();
+        if(!isValidMainForm){
+          editorStore.state.drawers.tabFormSection = 'main'
         }
       }
+
+      if (this.$refs['content-form']){
+        isValidContentForm = await this.$refs['content-form'].validateCompleteForm();
+        if(!isValidContentForm){
+          editorStore.state.drawers.tabFormSection = 'content'
+        }
+      }
+      this.isValidForm = isValidMainForm && isValidContentForm
     },
     deleteExtraKeys(obj){
       const attributesKeys = Object.keys(obj);
@@ -508,7 +523,7 @@ export default {
       this.formMainFields = fields;
     },
 
-    setFormContentFields(){
+    setFormContentFields(){      
       const { id, params, type } = this.selectedBlock.entity;
       const fields = {
         id,
@@ -517,7 +532,7 @@ export default {
       }
       this.formEntityFields = fields;
       const extraFieldsBlock = this.blocks.find(block => block.systemName === this.formMainFields.systemName);
-      this.formExtraFields = {...extraFieldsBlock};
+      this.formExtraFields = {...extraFieldsBlock};      
     },
 
     resetFormMainFields(){
@@ -530,15 +545,7 @@ export default {
 
     setElementSelected(elementSelected){
       editorStore.methods.setElementSelected(elementSelected);
-    },
-    saveBlockInfo(){
-      if (this.selectedBlock) {
-        this.$eventBus.$emit('updateBlockInfo');
-      }else{
-        editorStore.methods.createMode();
-        //this.$eventBus.$emit('saveBlockInfo');
-      }
-    }
+    },    
   },
 
 };

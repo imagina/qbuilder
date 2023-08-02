@@ -20,7 +20,8 @@ const state = reactive({
     blocksList: false,
     blocksShow: false,
     blockAttributes: false,
-    tabFormSection: 'main'
+    tabFormSection: 'main',
+    disableSaveButton: false
   },
   blocks: [],
   blocksConfiguration: [],
@@ -139,6 +140,7 @@ const getters = {
       systemName: state.formMainFields.componentName
     }
     const entity = state.formEntityFields
+    state.drawers.disableSaveButton = false;
     let attributes
     if (Object.keys(state.formAttributesFields).length > 0 && Object.keys(state.formMobileAttributesFields).length > 0) {
       if (state.device === 0) {
@@ -213,6 +215,7 @@ const methods = {
     state.drawers.blocksList = true;
     state.createMode = true;
     state.drawers.blocksShow = true;
+    state.drawers.disableSaveButton = true
     state.attributesKeyTemplate = Vue.prototype.$uid()
   },
   //Get blocks

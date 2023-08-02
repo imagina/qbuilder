@@ -207,52 +207,45 @@ export default {
     },
     setAttributes(){
       const block = this.blocks.find(block => block.component.systemName === this.blockConfig.systemName);
-      const blockAttributesDesktop = block.attributes || [];
-      const blockAttributesMobile = block.mobileAttributes || [];
-      const tmpDesktopAttributes = {};
-      const tmpMobileAttributes = {};
-      Object.keys(blockAttributesDesktop).forEach(attributeName => {
-        if ((blockAttributesDesktop[attributeName] != undefined) && !Array.isArray(blockAttributesDesktop[attributeName])) {
-          if(blockAttributesMobile[attributeName]){
-            tmpMobileAttributes[attributeName] = {...blockAttributesMobile[attributeName]}
-          }else{
-            tmpMobileAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
+      if(block){
+        const blockAttributesDesktop = block.attributes || [];
+        const blockAttributesMobile = block.mobileAttributes || [];
+        const tmpDesktopAttributes = {};
+        const tmpMobileAttributes = {};
+        Object.keys(blockAttributesDesktop).forEach(attributeName => {
+          if ((blockAttributesDesktop[attributeName] != undefined) && !Array.isArray(blockAttributesDesktop[attributeName])) {
+            if(blockAttributesMobile[attributeName]){
+              tmpMobileAttributes[attributeName] = {...blockAttributesMobile[attributeName]}
+            }else{
+              tmpMobileAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
+            }
+            tmpDesktopAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
+
+            const objAttrBlock = tmpDesktopAttributes[attributeName];
+            if (Object.hasOwn(objAttrBlock, 'propertiesStatus')) {
+              this.setStatusChildBlock(attributeName, tmpDesktopAttributes[attributeName].propertiesStatus);
+            }else{
+              tmpMobileAttributes[attributeName].propertiesStatus = true;
+              tmpDesktopAttributes[attributeName].propertiesStatus = true;
+              this.setStatusChildBlock(attributeName, true);
+            }
+          } else {
+            tmpMobileAttributes[attributeName].propertiesStatus = false;
+            tmpDesktopAttributes[attributeName].propertiesStatus = false;
+            this.setStatusChildBlock(attributeName, false);
           }
-          tmpDesktopAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
-          
-          const objAttrBlock = tmpDesktopAttributes[attributeName];
-          if (Object.hasOwn(objAttrBlock, 'propertiesStatus')) {
-            this.setStatusChildBlock(attributeName, tmpDesktopAttributes[attributeName].propertiesStatus);
-          }else{
-            tmpMobileAttributes[attributeName].propertiesStatus = true;
-            tmpDesktopAttributes[attributeName].propertiesStatus = true;
-            this.setStatusChildBlock(attributeName, true);
-          }
-          
-        } else {
-          tmpMobileAttributes[attributeName].propertiesStatus = false;
-          tmpDesktopAttributes[attributeName].propertiesStatus = false;
-          this.setStatusChildBlock(attributeName, false);
+        })
+
+        if(tmpDesktopAttributes['mainblock']){
+          tmpDesktopAttributes['mainBlock'] = {...tmpDesktopAttributes['mainblock']};
+          tmpMobileAttributes['mainBlock'] = {...tmpMobileAttributes['mainblock']};
+
+          delete tmpDesktopAttributes['mainblock'];
+          delete tmpMobileAttributes['mainblock'];
         }
-      })
 
-      if(tmpDesktopAttributes['mainblock']){
-        tmpDesktopAttributes['mainBlock'] = {...tmpDesktopAttributes['mainblock']};
-        tmpMobileAttributes['mainBlock'] = {...tmpMobileAttributes['mainblock']};
-
-        delete tmpDesktopAttributes['mainblock'];
-        delete tmpMobileAttributes['mainblock'];
-      }
-
-      this.formAttributesFields = reactive(tmpDesktopAttributes)
-      this.formMobileAttributesFields = reactive(tmpMobileAttributes)
-    },
-    saveBlockInfo(){
-      if (this.selectedBlock) {
-        this.$eventBus.$emit('updateBlockInfo');
-      }else{
-        editorStore.methods.createMode();
-        //this.$eventBus.$emit('saveBlockInfo');
+        this.formAttributesFields = reactive(tmpDesktopAttributes)
+        this.formMobileAttributesFields = reactive(tmpMobileAttributes)
       }
     }
   }

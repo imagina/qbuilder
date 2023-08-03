@@ -279,7 +279,9 @@ const methods = {
   //Finish Edit block
   closeBlockShow() {
     state.selectedBlock = null
+    state.drawers.blocksList = true
     state.drawers.blocksShow = false
+    state.drawers.blockAttributes = false;
     state.createMode = false;
     state.formMainFields = {};
     state.formEntityFields = {};

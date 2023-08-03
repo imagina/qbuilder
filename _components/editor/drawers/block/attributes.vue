@@ -2,11 +2,12 @@
   <div id="builderDrawerBlockAttributes" :key="attributesKey" v-if="blockConfig">
     <!--Title-->
     <div class="drawer-title" style="padding: 16px 24px;">
-      <div class="col-6">
+      <div class="col-8">
         {{getInternalName}}
       </div>
-      <div class="col-6 text-right">
-        <q-btn @click="closeAttributesDrawer" color="green" color-text="white" no-caps :label= "$tr('isite.cms.label.ready')"/>
+      <div class="col-4 text-right">
+        <!--Close Button-->
+        <q-btn @click="closeBlockShow" color="primary" color-text="white" no-caps ripple label= "Cerrar"/>
       </div>
     </div>
     <!--List the blocks-->
@@ -24,7 +25,10 @@
         </div>
       </div>
       <div class="row bg-green q-py-sm" v-if="(section == '')" style="height: 52px">
-        <div class="col-12 text-center text-white text-bold text-h6">
+        <div class="col-3">
+          <q-btn icon="fa-light fa-chevron-left" rounded unelevated flat color="white" @click="closeAttributesDrawer" />
+        </div>
+        <div class="col-6 text-center text-white text-bold text-h6">
             Attributes
         </div>
       </div>
@@ -247,7 +251,8 @@ export default {
         this.formAttributesFields = reactive(tmpDesktopAttributes)
         this.formMobileAttributesFields = reactive(tmpMobileAttributes)
       }
-    }
+    },
+    closeBlockShow: editorStore.methods.closeBlockShow
   }
 }
 </script>

@@ -12,7 +12,7 @@
       </div>
       <div class="col-4 text-right">
         <!--Close Button-->
-        <q-btn @click="closeBlockShow" color="green" color-text="white" no-caps ripple :label= "$tr('isite.cms.label.ready')"/>
+        <q-btn @click="closeBlockShow" color="primary" color-text="white" no-caps ripple label= "Cerrar"/>
       </div>
     </div>
     <!--Content-->
@@ -132,11 +132,13 @@
                 formType="grid"
                 no-actions
               />
+              <dynamic-field v-if="!formMainFields.componentName && !contentFieldsConfig.contentFields.length" :field="tabsInfo.content.fields.helpText" />
             </q-tab-panel>
             <q-tab-panel name="attributes" class="column">
               <div v-if="blockConfig && blockConfig.elements !== undefined">
                 <q-btn v-for="(element, indexFA) in blockConfig.elements" :key="indexFA" :label="element.title" color="primary-builder" class="full-width q-mb-md" @click="() => setElementSelected(element.systemName)"/>
               </div>
+              <dynamic-field v-else :field="tabsInfo.attributes.fields.helpText" />
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -383,6 +385,32 @@ export default {
         }
       }
       return response
+    },
+    tabsInfo(){
+      return  {
+        content: {
+          fields: {
+            helpText: {
+              type: "banner",
+              colClass: "col-12",
+              props: {
+                message: "Selecciona un 'Bloque'. Luego podras Configurar aquí el contenido del componente."
+              }
+            }
+          }
+        },
+        attributes: {
+          fields: {
+            helpText: {
+              type: "banner",
+              colClass: "col-12",
+              props: {
+                message: "Selecciona un 'Bloque' y una 'Entidad'. Luego podras personalizar sus atributos."
+              }
+            }
+          }
+        }
+      }
     },
     getInternalName() {
       return (this.selectedBlock && this.formMainFields ? this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle : 'New Block' )

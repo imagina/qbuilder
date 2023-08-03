@@ -5,12 +5,18 @@ import helper from '@imagina/qsite/_plugins/helper'
 //Manage the id of the last selected block before submit
   function setLastSelectedBlock(id){
     localStorage.setItem('lastSelectedBlockId', id);
+    //localStorage.setItem('lastSelectedTab', state.drawers.tabFormSection);
+
   }
   function getLastSelectedBlock(){
-    return localStorage.getItem('lastSelectedBlockId') ? localStorage.getItem('lastSelectedBlockId') : null;
+    //state.drawers.tabFormSection =  localStorage.getItem('lastSelectedTab') ? localStorage.getItem('lastSelectedTab') :  'main'
+    const lastSelectedBlockId = localStorage.getItem('lastSelectedBlockId') ? localStorage.getItem('lastSelectedBlockId') : null;
+    removeLastSelectedBlock();
+    return lastSelectedBlockId
   }
   function removeLastSelectedBlock(){
     localStorage.removeItem("lastSelectedBlockId");
+    //localStorage.removeItem('lastSelectedTab')
   }
 
 //States
@@ -20,6 +26,8 @@ const state = reactive({
     blocksList: false,
     blocksShow: false,
     blockAttributes: false,
+    tabFormSection: 'main',
+    disableSaveButton: false
   },
   blocks: [],
   blocksConfiguration: [],
@@ -212,6 +220,7 @@ const methods = {
     state.drawers.blocksList = true;
     state.createMode = true;
     state.drawers.blocksShow = true;
+    //state.drawers.disableSaveButton = true
     state.attributesKeyTemplate = Vue.prototype.$uid()
   },
   //Get blocks
@@ -263,20 +272,23 @@ const methods = {
   //Set the selected block
   setSelectedBlock(block) {
     state.selectedBlock = block;
-    setLastSelectedBlock(block.id);
+    //setLastSelectedBlock(block.id);
     state.drawers.blocksShow = true
     state.attributesKeyTemplate = Vue.prototype.$uid()
   },
   //Finish Edit block
   closeBlockShow() {
     state.selectedBlock = null
+    state.drawers.blocksList = true
     state.drawers.blocksShow = false
+    state.drawers.blockAttributes = false;
     state.createMode = false;
     state.formMainFields = {};
     state.formEntityFields = {};
     state.formExtraFields = {};
     state.formAttributesFields = {};
     state.formMobileAttributesFields = {};
+    state.drawers.tabFormSection = 'main'
     removeLastSelectedBlock();
   },
   setBlockFormData(){
@@ -310,5 +322,6 @@ export default {
   models,
   getters,
   methods,
+  setLastSelectedBlock,
   getLastSelectedBlock,
 }

@@ -12,7 +12,7 @@
       </div>
       <div class="col-4 text-right">
         <!--Close Button-->
-        <q-btn @click="closeBlockShow" color="green" color-text="white" no-caps ripple :label= "$tr('isite.cms.label.ready')"/>
+        <q-btn @click="closeBlockShow" color="primary" color-text="white" no-caps ripple label= "Cerrar"/>
       </div>
     </div>
     <!--Content-->
@@ -25,7 +25,7 @@
         <!--Button Tabs-->
         <div class="col-3">
           <q-tabs
-            v-model="tabFormSection"
+            v-model="editorStore.state.drawers.tabFormSection"
             vertical
             class="text-primary-builder"
             active-bg-color="primary-builder"
@@ -42,7 +42,7 @@
         <!-- Form  Content-->
         <div class="col-9" v-if="selectedBlock">
           <q-tab-panels
-            v-model="tabFormSection"
+            v-model="editorStore.state.drawers.tabFormSection"
             animated
             vertical
             keep-alive
@@ -91,7 +91,7 @@
         </div>
         <div class="col-9" v-else>
           <q-tab-panels
-            v-model="tabFormSection"
+            v-model="editorStore.state.drawers.tabFormSection"
             animated
             vertical
             keep-alive
@@ -132,38 +132,39 @@
                 formType="grid"
                 no-actions
               />
+              <dynamic-field v-if="!formMainFields.componentName && !contentFieldsConfig.contentFields.length" :field="tabsInfo.content.fields.helpText" />
             </q-tab-panel>
             <q-tab-panel name="attributes" class="column">
               <div v-if="blockConfig && blockConfig.elements !== undefined">
                 <q-btn v-for="(element, indexFA) in blockConfig.elements" :key="indexFA" :label="element.title" color="primary-builder" class="full-width q-mb-md" @click="() => setElementSelected(element.systemName)"/>
               </div>
+              <dynamic-field v-else :field="tabsInfo.attributes.fields.helpText" />
             </q-tab-panel>
           </q-tab-panels>
         </div>
       </div>
     </q-scroll-area>
-    <div class="row q-pa-md bg-grey-2">
-      <div class="col-12 text-center">
-        <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
-        <q-btn color="primary" text-color="white" no-caps rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
-      </div>
-    </div>
+    <saveButton />
   </div>
 </template>
 <script>
 
 import Vue, {computed} from "vue";
 import editorStore from "@imagina/qbuilder/_store/editor";
+import saveButton from '@imagina/qbuilder/_components/editor/drawers/block/saveButton.vue'
 
 export default {
   setup(){
     return {
       createMode: computed(() => editorStore.state.createMode),
       device: editorStore.models.device,
+      editorStore
     }
   },
   props: {},
-  components: {},
+  components: {
+    saveButton
+  },
   watch: {
     selectedBlock(newValue) {
       if (newValue) {
@@ -190,7 +191,6 @@ export default {
   },
   data() {
     return {
-      tabFormSection: "main",
       blocksConfiguration: editorStore.models.blocksConfiguration,
       formMainFields: editorStore.models.formMainFields,
       formEntityFields: editorStore.models.formEntityFields,
@@ -386,6 +386,32 @@ export default {
       }
       return response
     },
+    tabsInfo(){
+      return  {
+        content: {
+          fields: {
+            helpText: {
+              type: "banner",
+              colClass: "col-12",
+              props: {
+                message: "Selecciona un 'Bloque'. Luego podras Configurar aquí el contenido del componente."
+              }
+            }
+          }
+        },
+        attributes: {
+          fields: {
+            helpText: {
+              type: "banner",
+              colClass: "col-12",
+              props: {
+                message: "Selecciona un 'Bloque' y una 'Entidad'. Luego podras personalizar sus atributos."
+              }
+            }
+          }
+        }
+      }
+    },
     getInternalName() {
       return (this.selectedBlock && this.formMainFields ? this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle : 'New Block' )
     },
@@ -406,23 +432,55 @@ export default {
     setStatusChildBlock: editorStore.methods.setStatusChildBlock,
     setBlockConfig: editorStore.methods.setBlockConfig,
     async updateBlock(){
-      if (this.$refs['main-form']) {
-        this.isValidForm = await this.$refs['main-form'].validateCompleteForm();
-        if (this.isValidForm) {
-          const data = this.getBlockData();
-          const requestParams = {notToSnakeCase: this.notToSnakeCase}
-          this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
-        }
+      await this.validateForms()
+      if (this.isValidForm) {
+        const data = this.getBlockData();
+        const requestParams = {notToSnakeCase: this.notToSnakeCase}
+        editorStore.state.loading = true
+        editorStore.setLastSelectedBlock(this.selectedBlock.id)
+        this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
       }
     },
     async createBlock(){
-      if (this.$refs['main-form']){
-        this.isValidForm = await this.$refs['main-form'].validateCompleteForm();
-        if (this.isValidForm) {
-          const data = this.getBlockData();
-          const requestParams = {notToSnakeCase: this.notToSnakeCase}
-          this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());
+      await this.validateForms()
+      if (this.isValidForm) {
+        const data = this.getBlockData();
+        const requestParams = {notToSnakeCase: this.notToSnakeCase}
+        editorStore.state.loading = true
+        this.$crud.create("apiRoutes.qbuilder.blocks", data, requestParams).then(() => this.$router.go());
+      }
+    },
+    async validateForms() {
+      let isValidMainForm = false
+      let isValidContentForm = false
+
+      if (this.$refs['main-form']) {
+        isValidMainForm = await this.$refs['main-form'].validateCompleteForm();
+        if(!isValidMainForm){
+          editorStore.state.drawers.tabFormSection = 'main'
         }
+      }
+
+      if (this.$refs['content-form']){
+        isValidContentForm = await this.$refs['content-form'].validateCompleteForm();
+        if(!isValidContentForm){
+          editorStore.state.drawers.tabFormSection = 'content'
+        }
+      } else {
+        //force the message if the content-form isn't ready or hidden
+        if(editorStore.state.createMode){
+          if(isValidMainForm){
+            const msg = `${this.$tr('isite.cms.message.formInvalid')} ${this.$trp('isite.cms.label.content')}`
+            this.$alert.error(msg)
+            // goto content tab
+            editorStore.state.drawers.tabFormSection = 'content'
+          }
+        }
+      }
+      if(editorStore.state.createMode){
+        this.isValidForm = isValidMainForm && isValidContentForm
+      } else {
+        this.isValidForm = isValidMainForm || isValidContentForm
       }
     },
     deleteExtraKeys(obj){
@@ -508,7 +566,7 @@ export default {
       this.formMainFields = fields;
     },
 
-    setFormContentFields(){
+    setFormContentFields(){      
       const { id, params, type } = this.selectedBlock.entity;
       const fields = {
         id,
@@ -517,7 +575,7 @@ export default {
       }
       this.formEntityFields = fields;
       const extraFieldsBlock = this.blocks.find(block => block.systemName === this.formMainFields.systemName);
-      this.formExtraFields = {...extraFieldsBlock};
+      this.formExtraFields = {...extraFieldsBlock};      
     },
 
     resetFormMainFields(){
@@ -530,15 +588,7 @@ export default {
 
     setElementSelected(elementSelected){
       editorStore.methods.setElementSelected(elementSelected);
-    },
-    saveBlockInfo(){
-      if (this.selectedBlock) {
-        this.$eventBus.$emit('updateBlockInfo');
-      }else{
-        editorStore.methods.createMode();
-        //this.$eventBus.$emit('saveBlockInfo');
-      }
-    }
+    },    
   },
 
 };

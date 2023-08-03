@@ -2,11 +2,12 @@
   <div id="builderDrawerBlockAttributes" :key="attributesKey" v-if="blockConfig">
     <!--Title-->
     <div class="drawer-title" style="padding: 16px 24px;">
-      <div class="col-6">
+      <div class="col-8">
         {{getInternalName}}
       </div>
-      <div class="col-6 text-right">
-        <q-btn @click="closeAttributesDrawer" color="green" color-text="white" no-caps :label= "$tr('isite.cms.label.ready')"/>
+      <div class="col-4 text-right">
+        <!--Close Button-->
+        <q-btn @click="closeBlockShow" color="primary" color-text="white" no-caps ripple label= "Cerrar"/>
       </div>
     </div>
     <!--List the blocks-->
@@ -23,11 +24,19 @@
                     left-label />
         </div>
       </div>
+      <div class="row bg-green q-py-sm" v-if="(section == '')" style="height: 52px">
+        <div class="col-3">
+          <q-btn icon="fa-light fa-chevron-left" rounded unelevated flat color="white" @click="closeAttributesDrawer" />
+        </div>
+        <div class="col-6 text-center text-white text-bold text-h6">
+            Attributes
+        </div>
+      </div>
       <div v-if="element" class="row">
         <!-- <dynamic-form v-model="element" :blocks="elementOptions"
                                 formType="collapsible"/> -->
         <div class="col-12">
-          <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 212px)">
+          <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 260px)">
             <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
               <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
                        :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
@@ -98,12 +107,7 @@
             <q-separator />
           </div>
       </div>
-      <div class="row q-pa-md bg-grey-2 fixed-bottom">
-        <div class="col-12 text-center">
-          <q-btn color="primary" text-color="white" no-caps rounded unelevated v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
-          <q-btn color="primary" text-color="white" no-caps  rounded unelevated v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
-        </div>
-      </div>
+      <saveButton />
     </div>
   </div>
 </template>
@@ -111,6 +115,7 @@
 <script>
 import editorStore from "@imagina/qbuilder/_store/editor";
 import Vue, { defineComponent, computed, reactive } from "vue";
+import saveButton from '@imagina/qbuilder/_components/editor/drawers/block/saveButton.vue'
 
 export default {
   name: 'attributes',
@@ -119,6 +124,9 @@ export default {
       createMode: computed(() => editorStore.state.createMode),
       device: editorStore.models.device,
     }
+  },
+  components: {
+    saveButton
   },
   props: {},
   watch: {
@@ -203,54 +211,48 @@ export default {
     },
     setAttributes(){
       const block = this.blocks.find(block => block.component.systemName === this.blockConfig.systemName);
-      const blockAttributesDesktop = block.attributes || [];
-      const blockAttributesMobile = block.mobileAttributes || [];
-      const tmpDesktopAttributes = {};
-      const tmpMobileAttributes = {};
-      Object.keys(blockAttributesDesktop).forEach(attributeName => {
-        if ((blockAttributesDesktop[attributeName] != undefined) && !Array.isArray(blockAttributesDesktop[attributeName])) {
-          if(blockAttributesMobile[attributeName]){
-            tmpMobileAttributes[attributeName] = {...blockAttributesMobile[attributeName]}
-          }else{
-            tmpMobileAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
+      if(block){
+        const blockAttributesDesktop = block.attributes || [];
+        const blockAttributesMobile = block.mobileAttributes || [];
+        const tmpDesktopAttributes = {};
+        const tmpMobileAttributes = {};
+        Object.keys(blockAttributesDesktop).forEach(attributeName => {
+          if ((blockAttributesDesktop[attributeName] != undefined) && !Array.isArray(blockAttributesDesktop[attributeName])) {
+            if(blockAttributesMobile[attributeName]){
+              tmpMobileAttributes[attributeName] = {...blockAttributesMobile[attributeName]}
+            }else{
+              tmpMobileAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
+            }
+            tmpDesktopAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
+
+            const objAttrBlock = tmpDesktopAttributes[attributeName];
+            if (Object.hasOwn(objAttrBlock, 'propertiesStatus')) {
+              this.setStatusChildBlock(attributeName, tmpDesktopAttributes[attributeName].propertiesStatus);
+            }else{
+              tmpMobileAttributes[attributeName].propertiesStatus = true;
+              tmpDesktopAttributes[attributeName].propertiesStatus = true;
+              this.setStatusChildBlock(attributeName, true);
+            }
+          } else {
+            tmpMobileAttributes[attributeName].propertiesStatus = false;
+            tmpDesktopAttributes[attributeName].propertiesStatus = false;
+            this.setStatusChildBlock(attributeName, false);
           }
-          tmpDesktopAttributes[attributeName] = {...blockAttributesDesktop[attributeName]}
-          
-          const objAttrBlock = tmpDesktopAttributes[attributeName];
-          if (Object.hasOwn(objAttrBlock, 'propertiesStatus')) {
-            this.setStatusChildBlock(attributeName, tmpDesktopAttributes[attributeName].propertiesStatus);
-          }else{
-            tmpMobileAttributes[attributeName].propertiesStatus = true;
-            tmpDesktopAttributes[attributeName].propertiesStatus = true;
-            this.setStatusChildBlock(attributeName, true);
-          }
-          
-        } else {
-          tmpMobileAttributes[attributeName].propertiesStatus = false;
-          tmpDesktopAttributes[attributeName].propertiesStatus = false;
-          this.setStatusChildBlock(attributeName, false);
+        })
+
+        if(tmpDesktopAttributes['mainblock']){
+          tmpDesktopAttributes['mainBlock'] = {...tmpDesktopAttributes['mainblock']};
+          tmpMobileAttributes['mainBlock'] = {...tmpMobileAttributes['mainblock']};
+
+          delete tmpDesktopAttributes['mainblock'];
+          delete tmpMobileAttributes['mainblock'];
         }
-      })
 
-      if(tmpDesktopAttributes['mainblock']){
-        tmpDesktopAttributes['mainBlock'] = {...tmpDesktopAttributes['mainblock']};
-        tmpMobileAttributes['mainBlock'] = {...tmpMobileAttributes['mainblock']};
-
-        delete tmpDesktopAttributes['mainblock'];
-        delete tmpMobileAttributes['mainblock'];
+        this.formAttributesFields = reactive(tmpDesktopAttributes)
+        this.formMobileAttributesFields = reactive(tmpMobileAttributes)
       }
-
-      this.formAttributesFields = reactive(tmpDesktopAttributes)
-      this.formMobileAttributesFields = reactive(tmpMobileAttributes)
     },
-    saveBlockInfo(){
-      if (this.selectedBlock) {
-        this.$eventBus.$emit('updateBlockInfo');
-      }else{
-        editorStore.methods.createMode();
-        //this.$eventBus.$emit('saveBlockInfo');
-      }
-    }
+    closeBlockShow: editorStore.methods.closeBlockShow
   }
 }
 </script>

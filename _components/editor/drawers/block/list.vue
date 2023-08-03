@@ -6,7 +6,7 @@
         {{ $trp('ibuilder.cms.block') }}
       </div>
       <div class="col-6 text-center">
-        <q-input v-model="inputSearch" autofocus dense dark standout bg-color="white" style="padding-bottom: 0px">
+        <q-input v-model="inputSearch" dense dark standout bg-color="white" style="padding-bottom: 0px">
           <template v-slot:append>
             <q-icon v-if="inputSearch !== ''" name="close" @click="inputSearch = ''" class="cursor-pointer" color="primary"/>
             <q-icon v-if="inputSearch == ''" name="search" color="primary"></q-icon>
@@ -33,16 +33,13 @@
         </div>
       </div>
     </q-scroll-area>
-    <div class="row q-pa-md bg-grey-2 fixed-bottom">
-      <div class="col-12 text-center">
-        <q-btn color="primary" text-color="white" no-caps rounded unelevated icon="fa-light fa-plus" @click="() => editorStore.methods.createMode()" label="Crear Bloque" />
-      </div>
-    </div>
+    <saveButton />
   </div>
 </template>
 <script>
 import Vue, {defineComponent, computed, ref} from "vue";
 import editorStore from '@imagina/qbuilder/_store/editor'
+import saveButton from '@imagina/qbuilder/_components/editor/drawers/block/saveButton.vue'
 
 export default defineComponent({
   setup() {
@@ -52,14 +49,16 @@ export default defineComponent({
       blocks: computed(() => editorStore.state.blocks),
       setSelectedBlock: editorStore.methods.setSelectedBlock,
       editorStore,
-      inputSearch
+      inputSearch,
     }
   },
   beforeDestroy() {
     this.$root.$off('page.data.refresh')
   },
   props: {},
-  components: {},
+  components: {
+    saveButton
+  },
   watch: {
     blocks(oldBlocks, newBlocks){
       this.openLastSelectedBlock();

@@ -35,8 +35,8 @@
             content-class="text-right"
           >
             <q-tab name="main" label="Main" />
-            <q-tab name="content" :label="$trp('isite.cms.label.content')" />
-            <q-tab name="attributes" label="Attributes" />
+            <q-tab name="content" :label="$trp('isite.cms.label.content')" v-show="blockConfig"/>
+            <q-tab name="attributes" label="Attributes" v-show="blockConfig"/>
           </q-tabs>
         </div>
         <!-- Form  Content-->

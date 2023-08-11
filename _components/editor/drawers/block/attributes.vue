@@ -91,11 +91,11 @@
                   <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
                        :key="`${index}-subtabs`">
                     <div v-if="statusChildBlocks[featureFlagElement.name]">
-                      <div v-if="device == 0">
+                      <div v-if="device == 0" class="q-gutter-y-sm">
                         <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
                                      v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
                       </div>
-                      <div v-if="device == 1">
+                      <div v-if="device == 1" class="q-gutter-y-sm">
                         <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
                                      v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
                       </div>
@@ -212,10 +212,9 @@ export default {
       this.attributesKey = this.$uid()
     },
     setAttributes(){
-      const block = this.blocks.find(block => block.component.systemName === this.blockConfig.systemName);
-      if(block){
-        const blockAttributesDesktop = block.attributes || [];
-        const blockAttributesMobile = block.mobileAttributes || [];
+        const block = this.blocks.find(block => block.component.systemName === this.blockConfig.systemName);
+        const blockAttributesDesktop = block ? block.attributes : [];
+        const blockAttributesMobile = block ? block.mobileAttributes : [];
         const tmpDesktopAttributes = {};
         const tmpMobileAttributes = {};
         Object.keys(blockAttributesDesktop).forEach(attributeName => {
@@ -252,14 +251,13 @@ export default {
 
         this.formAttributesFields = reactive(tmpDesktopAttributes)
         this.formMobileAttributesFields = reactive(tmpMobileAttributes)
-      }
     },
     closeBlockShow: editorStore.methods.closeBlockShow
   }
 }
 </script>
 
-<style lang="stylus">
+<style scoped lang="stylus">
 #builderDrawerBlockAttributes
 .q-tabs
   min-height 100%
@@ -272,7 +270,4 @@ export default {
 .q-card
   &:hover
     border-color: $primary
-
-.q-field
-  padding-bottom: 20px
 </style>

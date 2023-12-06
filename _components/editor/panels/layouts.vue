@@ -1,26 +1,20 @@
 <template>
-  <div id="builderEditor">
-    <!--Panels-->
-    <div :style="`width: ${panelWidth}`">
-      <panel-layout />
-    </div>
+  <div id="builderPanelLayouts">
+    Hello world
   </div>
 </template>
 <script>
 import Vue, {defineComponent, computed} from "vue";
 import store from '@imagina/qbuilder/_store/editor'
-//components
-import panelLayout from '@imagina/qbuilder/_components/editor/panels/layouts.vue'
+
 export default defineComponent({
   setup() {
     return {
-      panelWidth: computed(() => store.state.panelWidth)
+      width: computed(() => store.state.panelWidth)
     }
   },
   props: {},
-  components: {
-    panelLayout
-  },
+  components: {},
   watch: {},
   mounted() {
     this.$nextTick(function () {

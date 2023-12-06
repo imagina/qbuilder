@@ -5,7 +5,7 @@ export default {
     path: '/builder/editor',
     name: 'qbuilder.admin.editor.index',
     page: () => import('@imagina/qbuilder/_pages/admin/editor'),
-    layout: () => import('@imagina/qbuilder/_layouts/editor.vue'),
+    layout: () => import('@imagina/qsite/_layouts/blank.vue'),
     title: 'Editor',
     icon: 'fa-light fa-puzzle-piece',
     authenticated: true,

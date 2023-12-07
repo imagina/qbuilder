@@ -1,17 +1,17 @@
 <template>
   <div id="builderEditor" class="row">
     <!--Panels-->
-    <div class="preview-panels" :style="`width: ${panelWidth}`">
-      <layout-panel @selected="val => layoutSelected = val"/>
+    <div class="preview-panels" :style="`width: ${store.panelWidth}`">
+      <layout-panel @selected="val => store.layoutSelected = val"/>
     </div>
     <!-- Preview -->
-    <div class="preview-content" :style="`width: calc(100vw - ${panelWidth})`">
+    <div class="preview-content" :style="`width: calc(100vw - ${store.panelWidth})`">
       <!--Actions-->
       <div class="preview-content__actions row justify-between items-center">
         <div class="q-px-md q-py-sm text-primary text-h6">
           Layout (PT)
         </div>
-        <q-tabs v-if="layoutSelected" v-model="layoutTab" align="right" inline-label
+        <q-tabs v-if="store.layoutSelected" v-model="layoutTab" align="right" inline-label
                 no-caps indicator-color="transparent" :active-bg-color="tabColor" active-color="white"
                 :content-class="`text-${tabColor} bg-grey-2`">
           <q-tab name="preview" label="Preview (PT)" icon="fa-light fa-eye"/>
@@ -21,10 +21,10 @@
       <q-separator :color="tabColor" size="3px"/>
       <!--Box with layout-->
       <div class="preview-content__box">
-        <q-tab-panels v-if="layoutSelected" v-model="layoutTab" animated transition-prev="scale"
+        <q-tab-panels v-if="store.layoutSelected" v-model="layoutTab" animated transition-prev="scale"
                       transition-next="scale">
           <q-tab-panel name="preview" class="q-pa-none">
-            <layout-preview/>
+            <iframe-post style="height: calc(100vh - 60px)" ref="iframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none">
             <layout-builder/>
@@ -43,15 +43,15 @@
 import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_pages/admin/editor/controller'
 //components
-import layoutPreview from '@imagina/qbuilder/_components/editor/layoutPreview.vue'
+import iframePost from "@imagina/qsite/_components/master/iframePost.vue";
 import layoutBuilder from '@imagina/qbuilder/_components/editor/layoutBuilder.vue'
-import layoutPanel from '@imagina/qbuilder/_components/layoutPanel/view.vue'
+import layoutPanel from '@imagina/qbuilder/_components/layoutPanel'
 
 export default defineComponent({
   props: {},
   components: {
     layoutPanel,
-    layoutPreview,
+    iframePost,
     layoutBuilder
   },
   setup() {

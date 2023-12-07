@@ -1,30 +1,30 @@
+import {computed, onMounted, reactive, ref, toRefs} from "vue";
+import service from '@imagina/qbuilder/_pages/admin/editor/services'
 import store from '@imagina/qbuilder/_pages/admin/editor/store'
-import {computed, onMounted, reactive} from "vue";
 
 
 export default function editorController() {
+  // Refs
+  const refs = {
+    refIframePost: ref(null)
+  }
 
+  // States
   const state = reactive({
     layoutTab: 'preview'
   })
 
-  const model = {
-    panelWidth: computed(() => store.panelWidth),
-    layoutSelected: computed({
-      get: () => store.layoutSelected,
-      set: (val) => store.layoutSelected = val
-    }),
-    layoutTab: computed({
-      get: () => state.layoutTab,
-      set: (val) => state.layoutTab = val,
-    }),
+  // Computed
+  const computeds = {
     tabColor: computed(() => state.layoutTab == 'preview' ? 'purple' : 'orange')
   }
 
+  // Methods
   const methods = {}
 
+  // Mounted
   onMounted(() => {
   })
 
-  return {...model, ...methods}
+  return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}
 }

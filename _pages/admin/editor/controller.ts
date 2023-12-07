@@ -1,9 +1,10 @@
-import {computed, onMounted, reactive, ref, toRefs} from "vue";
+import {computed, onMounted, reactive, ref, toRefs, watch, getCurrentInstance} from "vue";
 import service from '@imagina/qbuilder/_pages/admin/editor/services'
 import store from '@imagina/qbuilder/_pages/admin/editor/store'
 
-
 export default function editorController() {
+  const proxy = getCurrentInstance().proxy
+
   // Refs
   const refs = {
     refIframePost: ref(null)
@@ -16,7 +17,8 @@ export default function editorController() {
 
   // Computed
   const computeds = {
-    tabColor: computed(() => state.layoutTab == 'preview' ? 'purple' : 'orange')
+    storeSelectedLayout: computed(() => store.layoutSelected),
+    tabColor: computed(() => state.layoutTab == 'preview' ? 'purple' : 'orange'),
   }
 
   // Methods
@@ -25,6 +27,16 @@ export default function editorController() {
   // Mounted
   onMounted(() => {
   })
+
+  // Watch
+  watch(computeds.storeSelectedLayout, (newField, oldField) => {
+    setTimeout(() => {
+      refs.refIframePost.value.loadIframe(
+        `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
+        store.layoutSelected
+      )
+    }, 300)
+  });
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}
 }

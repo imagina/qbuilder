@@ -24,10 +24,10 @@
         <q-tab-panels v-if="store.layoutSelected" v-model="layoutTab" animated transition-prev="scale"
                       transition-next="scale">
           <q-tab-panel name="preview" class="q-pa-none">
-            <iframe-post style="height: calc(100vh - 60px)" ref="iframePost"/>
+            <iframe-post style="height: calc(100vh - 60px)" ref="refIframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none">
-            <layout-builder/>
+            Builder...
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->
@@ -44,15 +44,13 @@ import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_pages/admin/editor/controller'
 //components
 import iframePost from "@imagina/qsite/_components/master/iframePost.vue";
-import layoutBuilder from '@imagina/qbuilder/_components/editor/layoutBuilder.vue'
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel'
 
 export default defineComponent({
   props: {},
   components: {
     layoutPanel,
-    iframePost,
-    layoutBuilder
+    iframePost
   },
   setup() {
     return {...controller()}

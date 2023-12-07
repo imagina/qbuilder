@@ -28,13 +28,13 @@
   </div>
 </template>
 <script>
-import {defineComponent, computed} from 'vue'
+import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_components/layoutPanel/controller'
 
 export default defineComponent({
   props: {},
   setup(props, {emit}) {
-    return {...controller(props, emit)}
+    return controller(props, emit)
   }
 })
 </script>

@@ -1,35 +1,32 @@
-import store from '@imagina/qbuilder/_components/layoutPanel/store'
+import {computed, reactive, ref, onMounted, toRefs} from "vue";
 import service from '@imagina/qbuilder/_components/layoutPanel/service'
-import {computed, reactive, ref, onMounted} from "vue";
-
+import store from '@imagina/qbuilder/_components/layoutPanel/store'
 
 export default function layoutController(props: any, emit: any) {
+  // Refs
+  const refs = {
+    // key: ref(defaultValue)
+  }
+
+  // States
   const state = reactive({
     loading: false,
+    layouts: [],
     layoutSelected: null
   })
 
-  let model = {
-    layouts: computed(() => store.layouts),
-    loading: computed({
-      get: () => state.loading,
-      set: (val) => state.loading = val
-    }),
-    layoutSelected: computed({
-      get: () => state.layoutSelected,
-      set: (val) => state.layoutSelected = val
-    })
+  // Computed
+  const computeds = {
+    // key: computed(() => {})
   }
 
+  // Methods
   const methods = {
-    init() {
-      this.getLayouts()
-    },
     getLayouts() {
       state.loading = true
       //Request
       service.getLayouts(true).then(response => {
-        store.layouts = response.data;
+        state.layouts = response.data
         state.loading = false
       }).catch(error => state.loading = false)
     },
@@ -39,10 +36,10 @@ export default function layoutController(props: any, emit: any) {
     }
   }
 
-  //mounted
+  // Mounted
   onMounted(() => {
-    methods.init()
+    methods.getLayouts()
   })
 
-  return {...model, ...methods}
+  return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}
 }

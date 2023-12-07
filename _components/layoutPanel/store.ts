@@ -1,19 +1,19 @@
 import {computed, reactive} from "vue";
-import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
+//import {StateKeyInterface} from '@imagina/qsite/_components/v3/demo/interface'
 
-interface State {
-  layouts: Layout[]
+interface StateInterface {
+  //stateKey: StateKeyInterface[]
 }
 
-const state = reactive<State>({
-  layouts: []
+const state = reactive<StateInterface>({
+  // key: Default value
 })
 
 export default computed(() => ({
-  set layouts(val) {
-    state.layouts = val
-  },
-  get layouts() {
-    return state.layouts
-  }
+  // set key(val) {
+  //   state.key = val
+  // },
+  // get key() {
+  //   return state.key
+  // }
 })).value

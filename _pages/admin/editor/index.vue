@@ -9,7 +9,7 @@
       <!--Actions-->
       <div class="preview-content__actions row justify-between items-center">
         <div class="q-px-md q-py-sm text-primary text-h6">
-          Layout (PT)
+          {{ $tr('ibuilder.cms.layout') }}
         </div>
         <q-tabs v-if="store.layoutSelected" v-model="layoutTab" align="right" inline-label
                 no-caps indicator-color="transparent" :active-bg-color="tabColor" active-color="white"
@@ -27,7 +27,7 @@
             <iframe-post style="height: calc(100vh - 60px)" ref="refIframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none">
-            Builder...
+            <view-grid :blocks="store.layoutSelected.blocks"/>
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->
@@ -44,13 +44,15 @@ import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_pages/admin/editor/controller'
 //components
 import iframePost from "@imagina/qsite/_components/master/iframePost.vue";
-import layoutPanel from '@imagina/qbuilder/_components/layoutPanel'
+import layoutPanel from '@imagina/qbuilder/_components/layoutPanel';
+import viewGrid from '@imagina/qbuilder/_components/editor';
 
 export default defineComponent({
   props: {},
   components: {
     layoutPanel,
-    iframePost
+    iframePost,
+    viewGrid
   },
   setup() {
     return {...controller()}

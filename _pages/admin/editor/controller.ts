@@ -22,7 +22,16 @@ export default function editorController() {
   }
 
   // Methods
-  const methods = {}
+  const methods = {
+    previewPage() {
+      setTimeout(() => {
+        refs.refIframePost.value.loadIframe(
+            `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
+            store.layoutSelected
+        )
+      }, 300)
+    }
+  }
 
   // Mounted
   onMounted(() => {
@@ -30,12 +39,13 @@ export default function editorController() {
 
   // Watch
   watch(computeds.storeSelectedLayout, (newField, oldField) => {
-    setTimeout(() => {
-      refs.refIframePost.value.loadIframe(
-        `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
-        store.layoutSelected
-      )
-    }, 300)
+    methods.previewPage();
+  });
+
+  watch(() => state.layoutTab, (newField, oldField) => {
+    if(state.layoutTab === 'preview') {
+      methods.previewPage();
+    }
   });
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}

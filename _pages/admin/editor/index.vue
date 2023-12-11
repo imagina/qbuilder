@@ -27,7 +27,7 @@
             <iframe-post style="height: calc(100vh - 60px)" ref="refIframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none">
-            <view-grid :blocks="store.layoutSelected.blocks"/>
+            <view-grid :blocks="storeSelectedLayout.blocks"/>
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->
@@ -45,7 +45,7 @@ import controller from '@imagina/qbuilder/_pages/admin/editor/controller'
 //components
 import iframePost from "@imagina/qsite/_components/master/iframePost.vue";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel';
-import viewGrid from '@imagina/qbuilder/_components/editor';
+import viewGrid from '@imagina/qbuilder/_components/viewGrid';
 
 export default defineComponent({
   props: {},

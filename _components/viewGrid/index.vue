@@ -12,7 +12,7 @@
 </template>
 <script>
 import {defineComponent} from 'vue'
-import controller from "@imagina/qbuilder/_components/editor/controller";
+import controller from "@imagina/qbuilder/_components/viewGrid/controller";
 //components
 import draggable from 'vuedraggable'
 

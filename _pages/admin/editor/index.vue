@@ -14,8 +14,8 @@
         <q-tabs v-if="store.layoutSelected" v-model="layoutTab" align="right" inline-label
                 no-caps indicator-color="transparent" :active-bg-color="tabColor" active-color="white"
                 :content-class="`text-${tabColor} bg-grey-2`">
-          <q-tab name="preview" label="Preview (PT)" icon="fa-light fa-eye"/>
-          <q-tab name="builder" label="Builder (PT)" icon="fa-light fa-border-none"/>
+          <q-tab name="preview" :label="$tr('ibuilder.cms.label.preview')" icon="fa-light fa-eye"/>
+          <q-tab name="builder" :label="$tr('ibuilder.cms.label.builder')" icon="fa-light fa-border-none"/>
         </q-tabs>
       </div>
       <q-separator :color="tabColor" size="3px"/>
@@ -27,13 +27,13 @@
             <iframe-post style="height: calc(100vh - 60px)" ref="refIframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none">
-            <handle-grid v-model="storeSelectedLayout.blocks" order-by="sortOrder"/>
+            <handle-grid v-model="storeSelectedLayout.blocks" order-by="sortOrder" title-field="internalTitle"/>
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->
         <div v-else class="text-center q-py-lg">
           <q-icon name="fa-light fa-exclamation-circle" size="60px" color="warning"/>
-          <div class="q-mt-md text-h5 text-blue-grey"> Choose a layout (PT)</div>
+          <div class="q-mt-md text-h5 text-blue-grey">{{ $tr('ibuilder.cms.label.chooseLayout') }}</div>
         </div>
       </div>
     </div>
@@ -45,7 +45,7 @@ import controller from '@imagina/qbuilder/_pages/admin/editor/controller'
 //components
 import iframePost from "@imagina/qsite/_components/master/iframePost.vue";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel';
-import handleGrid from '@imagina/qbuilder/_components/handleGrid';
+import handleGrid from '@imagina/qsite/_components/v3/handleGrid';
 
 export default defineComponent({
   props: {},

@@ -5,7 +5,7 @@
       <layout-panel @selected="val => store.layoutSelected = val"/>
     </div>
     <!-- Preview -->
-    <div class="preview-content" :style="`width: calc(100vw - ${store.panelWidth})`">
+    <div class="preview-content" :style="`width: calc(100vw - (${store.panelWidth} + 10px))`">
       <!--Actions-->
       <div class="preview-content__actions row justify-between items-center">
         <div class="q-px-md q-py-sm text-primary text-h6">
@@ -24,7 +24,7 @@
         <q-tab-panels v-if="store.layoutSelected" v-model="layoutTab" animated transition-prev="scale"
                       transition-next="scale">
           <q-tab-panel name="preview" class="q-pa-none">
-            <iframe-post style="height: calc(100vh - 60px)" ref="refIframePost"/>
+            <iframe-post :id="storeSelectedLayout.id" ref="refIframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none">
             <handle-grid v-model="storeSelectedLayout.blocks" order-by="sortOrder" title-field="internalTitle"/>

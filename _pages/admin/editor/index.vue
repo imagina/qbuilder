@@ -43,7 +43,7 @@
 import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_pages/admin/editor/controller'
 //components
-import iframePost from "@imagina/qsite/_components/master/iframePost.vue";
+import iframePost from "@imagina/qsite/_components/v3/iframePost";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid';
 

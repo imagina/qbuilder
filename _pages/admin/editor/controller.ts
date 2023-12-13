@@ -1,4 +1,4 @@
-import {computed, onMounted, reactive, ref, toRefs, watch, getCurrentInstance} from "vue";
+import {computed, onMounted, onUnmounted,reactive, ref, toRefs, watch, getCurrentInstance} from "vue";
 import service from '@imagina/qbuilder/_pages/admin/editor/services'
 import store from '@imagina/qbuilder/_pages/admin/editor/store'
 
@@ -37,6 +37,10 @@ export default function editorController() {
 
   // Mounted
   onMounted(() => {
+  })
+
+  onUnmounted(() => {
+    store.layoutSelected = null
   })
 
   // Watch

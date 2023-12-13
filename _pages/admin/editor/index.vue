@@ -24,7 +24,7 @@
         <q-tab-panels v-if="store.layoutSelected" v-model="layoutTab" animated transition-prev="scale"
                       transition-next="scale">
           <q-tab-panel name="preview" class="q-pa-none">
-            <iframe-post :id="storeSelectedLayout.id" ref="refIframePost"/>
+            <iframe-post :id="`iframeLayout${storeSelectedLayout.id}`" ref="refIframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none">
             <handle-grid v-model="storeSelectedLayout.blocks" order-by="sortOrder" title-field="internalTitle"/>

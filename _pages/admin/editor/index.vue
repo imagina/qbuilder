@@ -5,7 +5,7 @@
       <layout-panel @selected="val => store.layoutSelected = val"/>
     </div>
     <!-- Preview -->
-    <div class="preview-content" :style="`width: calc(100vw - (${store.panelWidth} + 10px))`">
+    <div class="preview-content" :style="`width: calc(100% - ${store.panelWidth})`">
       <!--Actions-->
       <div class="preview-content__actions row justify-between items-center">
         <div class="q-px-md q-py-sm text-primary text-h6">

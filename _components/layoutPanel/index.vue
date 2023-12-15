@@ -12,11 +12,11 @@
       </q-btn>
       <q-separator spaced/>
       <q-list>
-        <q-item v-for="(layout, key) in layouts" :key="layout.id" clickable v-ripple active-class="list-selected"
-                class="element" :active="layoutSelected ? (layoutSelected.id == layout.id) : false"
-                @click="setLayoutSelected(layout)">
+        <q-item v-for="(item, key) in items" :key="item.id" clickable v-ripple active-class="list-selected"
+                class="element" :active="itemSelected ? (itemSelected.id == item.id) : false"
+                @click="setItemSelected(item)">
           <q-item-section>
-            <span class="ellipsis-2-lines full-width">{{ layout.title }}</span>
+            <span class="ellipsis-2-lines full-width">{{ item.title }}</span>
           </q-item-section>
           <q-item-section avatar>
             <q-icon size="xs" name="fa-light fa-arrow-right"/>
@@ -32,7 +32,16 @@ import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_components/layoutPanel/controller'
 
 export default defineComponent({
-  props: {},
+  props: {
+    items: {
+      type: Array,
+      default: []
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    }
+  },
   setup(props, {emit}) {
     return controller(props, emit)
   }

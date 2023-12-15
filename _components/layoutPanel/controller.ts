@@ -1,8 +1,9 @@
-import {computed, reactive, ref, onMounted, toRefs} from "vue";
+import {computed, reactive, ref, onMounted, toRefs, getCurrentInstance} from "vue";
 import service from '@imagina/qbuilder/_components/layoutPanel/service'
 import store from '@imagina/qbuilder/_components/layoutPanel/store'
 
 export default function layoutController(props: any, emit: any) {
+  const proxy = getCurrentInstance()!.proxy
   // Refs
   const refs = {
     // key: ref(defaultValue)
@@ -30,9 +31,9 @@ export default function layoutController(props: any, emit: any) {
         state.loading = false
       }).catch(error => state.loading = false)
     },
-    setLayoutSelected(layout) {
-      state.layoutSelected = layout
-      emit('selected', layout)
+    setLayoutSelected(layoutSelected) {
+      const layout = proxy.$clone(layoutSelected)
+      emit('selected', {layout, select: (val) => {state.layoutSelected = val}})
     }
   }
 

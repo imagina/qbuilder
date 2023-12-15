@@ -2,7 +2,7 @@
   <div id="builderEditor" class="row relative-position">
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
-      <layout-panel @selected="val => changeLayout(val)"/>
+      <layout-panel @selected="val => changeLayout(val)" :loading="layoutLoading" :items="layouts" />
       <q-btn v-if="store.layoutSelected" label="Guardar" class="full-width absolute-bottom text-capitalize"
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
     </div>

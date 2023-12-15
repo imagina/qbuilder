@@ -13,7 +13,9 @@ export default function editorController() {
   // States
   const state = reactive({
     layoutTab: 'preview',
-    loading: false
+    loading: false,
+    layoutLoading: false,
+    layouts: []
   })
 
   // Computed
@@ -35,7 +37,7 @@ export default function editorController() {
       }
     },
     changeLayout(value) {
-      const {layout, select} = value
+      const {item: layout, select} = value
       if(store.layoutSelected && store.layoutSelected.id !== layout.id) {
         proxy.$alert.warning({
           mode: 'modal',
@@ -63,7 +65,6 @@ export default function editorController() {
       const layout = store.layoutSelected
 
       proxy.$crud.update('apiRoutes.qbuilder.layouts', layout.id, layout).then(response => {
-        proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')})
         methods.saveBlocks(layout.blocks)
       }).catch(error => {
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')})
@@ -72,29 +73,34 @@ export default function editorController() {
     },
     saveBlocks(blocks) {
       const requestParams = {notToSnakeCase: ["component", "entity", "attributes"]}
+      const blockPromise = []
       for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
-
-        proxy.$crud.update('apiRoutes.qbuilder.blocks', block.id, block, requestParams).then(response => {
-          proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
-          // Verificar si es el último ciclo
-          if (i === blocks.length - 1) {
-            state.loading = false;
-          }
-        }).catch(error => {
-          proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
-          // En caso de error, también considerarlo como el último ciclo
-          if (i === blocks.length - 1) {
-            state.loading = false;
-          }
-        });
+        blockPromise.push(proxy.$crud.update('apiRoutes.qbuilder.blocks', block.id, block, requestParams))
       }
 
+      Promise.all(blockPromise).then(() => {
+        methods.getLayouts();
+        proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
+        state.loading = false;
+      }).catch(error => {
+        proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
+        state.loading = false;
+      });
+    },
+    getLayouts() {
+      state.layoutLoading = true
+      //Request
+      service.getLayouts(true).then(response => {
+        state.layouts = response.data
+        state.layoutLoading = false
+      }).catch(error => state.layoutLoading = false)
     },
   }
 
   // Mounted
   onMounted(() => {
+    methods.getLayouts()
   })
 
   onUnmounted(() => {

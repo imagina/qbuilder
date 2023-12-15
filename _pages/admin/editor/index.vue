@@ -1,8 +1,10 @@
 <template>
-  <div id="builderEditor" class="row">
+  <div id="builderEditor" class="row relative-position">
     <!--Panels-->
-    <div class="preview-panels" :style="`width: ${store.panelWidth}`">
-      <layout-panel @selected="val => store.layoutSelected = val"/>
+    <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
+      <layout-panel @selected="val => changeLayout(val)"/>
+      <q-btn v-if="store.layoutSelected" label="Guardar" class="full-width absolute-bottom text-capitalize"
+             color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
     </div>
     <!-- Preview -->
     <div class="preview-content" :style="`width: calc(100% - ${store.panelWidth})`">
@@ -37,6 +39,8 @@
         </div>
       </div>
     </div>
+
+    <inner-loading :visible="loading"/>
   </div>
 </template>
 <script>

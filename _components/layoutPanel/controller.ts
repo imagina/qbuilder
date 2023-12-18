@@ -22,6 +22,9 @@ export default function layoutController(props: any, emit: any) {
     setItemSelected(itemSelected) {
       const item = proxy.$clone(itemSelected)
       emit('selected', {item, select: (val) => {state.itemSelected = val}})
+    },
+    createItem() {
+      emit('create')
     }
   }
 

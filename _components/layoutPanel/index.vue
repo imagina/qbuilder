@@ -4,7 +4,7 @@
       <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.layouts') }}</h2>
     </div>
     <div class="drawer-body relative-position">
-      <q-btn outline rounded class="full-width q-mb-sm text-capitalize" color="primary" no-caps padding="md md">
+      <q-btn @click="createItem" outline rounded class="full-width q-mb-sm text-capitalize" color="primary" no-caps padding="md md">
         <q-icon size="xs" left name="fa-solid fa-plus"/>
         <div class="text-center">
           {{ $tr('ibuilder.cms.newLayout') }}

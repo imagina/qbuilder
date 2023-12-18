@@ -7,7 +7,8 @@ export default function editorController() {
 
   // Refs
   const refs = {
-    refIframePost: ref(null)
+    refIframePost: ref(null),
+    crudLayout: ref(null)
   }
 
   // States

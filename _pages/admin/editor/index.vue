@@ -1,8 +1,15 @@
 <template>
   <div id="builderEditor" class="row relative-position">
+    <!---Component CRUD Slided -->
+    <div class="text-right q-mb-md">
+      <!--Crud Files-->
+      <crud :crud-data="import('@imagina/qbuilder/_crud/layouts')" type="onlyUpdate" ref="crudLayout"
+            @created="getLayouts" @updated="getLayouts" @deleted="getLayouts"
+            />
+    </div>
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
-      <layout-panel @selected="val => changeLayout(val)" :loading="layoutLoading" :items="layouts" />
+      <layout-panel @create="crudLayout.create()" @selected="val => changeLayout(val)" :loading="layoutLoading" :items="layouts" />
       <q-btn v-if="store.layoutSelected" label="Guardar" class="full-width absolute-bottom text-capitalize"
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
     </div>

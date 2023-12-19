@@ -4,7 +4,7 @@
     <div class="text-right q-mb-md">
       <!--Crud Files-->
       <crud :crud-data="import('@imagina/qbuilder/_crud/layouts')" type="onlyUpdate" ref="crudLayout"
-            @created="getLayouts" @updated="getLayouts" @deleted="getLayouts"
+            @created="getLayouts('created')" @updated="getLayouts('updated')" @deleted="getLayouts"
       />
     </div>
     <!--Panels-->
@@ -19,10 +19,11 @@
       <!--Actions-->
       <div class="preview-content__actions row justify-between items-center">
         <div class="q-px-md q-py-sm text-primary text-h6">
+          <q-btn v-if="store.layoutSelected" size="xs" padding="sm" class="q-mr-sm" unelevated outline
+                 @click="crudLayout.update(store.layoutSelected)" icon="fa-light fa-edit" round color="cyan">
+            <q-tooltip>{{ $tr('isite.cms.label.edit') }}</q-tooltip>
+          </q-btn>
           {{ titleTab }}
-
-          <q-btn v-if="store.layoutSelected" size="xs" padding="sm" class="q-ml-md"
-                 @click="crudLayout.update(store.layoutSelected)" icon="fa-light fa-pencil" round/>
         </div>
         <q-tabs v-if="store.layoutSelected" v-model="layoutTab" align="right" inline-label
                 no-caps indicator-color="transparent" :active-bg-color="tabColor" active-color="white"

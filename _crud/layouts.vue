@@ -25,28 +25,26 @@ export default {
             value: '',
             type: 'input',
             isTranslatable: true,
+            required: true,
             props: {
               label: `${this.$tr('isite.cms.form.name')}`,
             },
           },
           systemName: {
-            value: '',
+            value: null,
             type: 'input',
+            required: true,
             props: {
-              label: this.$tr('isite.cms.form.systemName'),
-              rules: [
-                val => !!val || this.$tr('isite.cms.message.fieldRequired')
-              ]
+              label: this.$tr('isite.cms.form.systemName')
             }
           },
           entityType: {
             value: '',
             type: 'select',
+            required: true,
             props: {
               label: this.$tr('iqreable.cms.form.entityType'),
-              options: [
-                {label: "Page", value: 'Modules\\Page\\Entities\\Page'},
-              ]
+              options: this.entityTypeOptions
             }
           },
           type: {
@@ -54,9 +52,9 @@ export default {
             type: 'select',
             props: {
               label: this.$tr('isite.cms.form.type'),
-              options: [
-                {label: 'Nosotros', value: 'us'}
-              ]
+              vIf: this.crudInfo.entityType && this.typeOptions.length,
+              clearable: true,
+              options: this.typeOptions
             }
           },
           default: {
@@ -71,12 +69,49 @@ export default {
             },
           },
         },
-        formRight: {},
+        handleFormUpdates: (formData, changedFields, formType) => {
+          return new Promise(resolve => {
+            if (changedFields.includes('entityType')) formData.type = null
+            resolve(formData)
+          })
+        }
       }
     },
     //Crud info
     crudInfo() {
       return this.$store.state.qcrudComponent.component[this.crudId] || {}
+    },
+    //Return the configBuilder by module only with values
+    builderConfig() {
+      let config = this.$store.getters['qsiteApp/getConfigApp']('builder.layout', true)
+      let response = {}
+
+      //Filter only items with values
+      Object.keys(config).forEach(moduleName => {
+        if (config[moduleName]) response[moduleName] = config[moduleName]
+      })
+
+      return response
+    },
+    //Return the entityType options including the module name to each entity opt
+    entityTypeOptions() {
+      let response = []
+      Object.keys(this.builderConfig).forEach(moduleName => {
+        // Get only the entity options including the module name to each label
+        let moduleEntityTypeOptions = this.builderConfig[moduleName].map(item => ({
+          ...item.entity,
+          label: `${item.entity.label} (${moduleName})`
+        }))
+        // Set options to response
+        response = [...response, ...moduleEntityTypeOptions]
+      })
+      return response
+    },
+    // Return the type options by entityType selected
+    typeOptions() {
+      if (!this.crudInfo.entityType) return []
+      let moduleBuilderConfig = Object.values(this.builderConfig).flat().find(item => item.entity.value == this.crudInfo.entityType)
+      return moduleBuilderConfig.types
     }
   }
 }

@@ -12,11 +12,11 @@ export default {
         crudId: this.crudId,
         apiRoute: 'apiRoutes.qbuilder.layouts',
         create: {
-          title: this.$tr('ibuilder.cms.newLayout')
+          title: this.$tr('ibuilder.cms.label.newLayout')
         },
         read: {},
         update: {
-          title: this.$tr('ibuilder.cms.updateLayout')
+          title: this.$tr('ibuilder.cms.label.updateLayout')
         },
         delete: true,
         formLeft: {

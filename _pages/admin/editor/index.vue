@@ -5,11 +5,12 @@
       <!--Crud Files-->
       <crud :crud-data="import('@imagina/qbuilder/_crud/layouts')" type="onlyUpdate" ref="crudLayout"
             @created="getLayouts" @updated="getLayouts" @deleted="getLayouts"
-            />
+      />
     </div>
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
-      <layout-panel @create="crudLayout.create()" @selected="val => changeLayout(val)" :loading="layoutLoading" :items="layouts" />
+      <layout-panel @create="crudLayout.create()" @selected="val => changeLayout(val)" :loading="layoutLoading"
+                    :items="layouts"/>
       <q-btn v-if="store.layoutSelected" label="Guardar" class="full-width absolute-bottom text-capitalize"
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
     </div>
@@ -18,7 +19,10 @@
       <!--Actions-->
       <div class="preview-content__actions row justify-between items-center">
         <div class="q-px-md q-py-sm text-primary text-h6">
-          {{ $tr('ibuilder.cms.layout') }}
+          {{ titleTab }}
+
+          <q-btn v-if="store.layoutSelected" size="xs" padding="sm" class="q-ml-md"
+                 @click="crudLayout.update(store.layoutSelected)" icon="fa-light fa-pencil" round/>
         </div>
         <q-tabs v-if="store.layoutSelected" v-model="layoutTab" align="right" inline-label
                 no-caps indicator-color="transparent" :active-bg-color="tabColor" active-color="white"

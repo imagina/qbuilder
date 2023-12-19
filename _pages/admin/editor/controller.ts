@@ -9,7 +9,8 @@ export default function editorController() {
   // Refs
   const refs = {
     refIframePost: ref<InstanceType<typeof iframePost>>(),
-    crudLayout: ref(null)
+    crudLayout: ref(null),
+    refPanel: ref(null)
   }
 
   // States
@@ -103,7 +104,7 @@ export default function editorController() {
         state.layouts = response.data
 
         // setup layoutSelected
-        if (crudActionLayout == 'created') store.layoutSelected = response.data[0]
+        if (crudActionLayout == 'created') refs.refPanel.value.setItemSelected(response.data[0])
         else if (crudActionLayout == 'updated') {
           store.layoutSelected = state.layouts.find(layout => layout.id === store.layoutSelected.id)
         }

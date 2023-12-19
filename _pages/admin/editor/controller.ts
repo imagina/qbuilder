@@ -1,25 +1,30 @@
 import {computed, onMounted, onUnmounted,reactive, ref, toRefs, watch, getCurrentInstance} from "vue";
 import service from '@imagina/qbuilder/_pages/admin/editor/services'
 import store from '@imagina/qbuilder/_pages/admin/editor/store'
+import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 
 export default function editorController() {
   const proxy = getCurrentInstance()!.proxy
 
   // Refs
   const refs = {
-    refIframePost: ref(null)
+    refIframePost: ref<InstanceType<typeof iframePost>>(),
+    crudLayout: ref(null)
   }
 
   // States
   const state = reactive({
     layoutTab: 'preview',
-    loading: false
+    loading: false,
+    layoutLoading: false,
+    layouts: []
   })
 
   // Computed
   const computeds = {
     storeSelectedLayout: computed(() => store.layoutSelected),
     tabColor: computed(() => state.layoutTab == 'preview' ? 'purple' : 'orange'),
+    titleTab: computed(() => store.layoutSelected?.title ?? proxy.$tr('ibuilder.cms.layout'))
   }
 
   // Methods
@@ -27,15 +32,17 @@ export default function editorController() {
     previewPage() {
       if (state.layoutTab === 'preview' && refs.refIframePost) {
         setTimeout(() => {
+          //@ts-ignore
           refs.refIframePost.value.loadIframe(
-            `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
-            store.layoutSelected
+              //@ts-ignore
+              `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
+              store.layoutSelected
           )
         }, 300)
       }
     },
     changeLayout(value) {
-      const {layout, select} = value
+      const {item: layout, select} = value
       if(store.layoutSelected && store.layoutSelected.id !== layout.id) {
         proxy.$alert.warning({
           mode: 'modal',
@@ -62,39 +69,46 @@ export default function editorController() {
       state.loading = true
       const layout = store.layoutSelected
 
+      //@ts-ignore
       proxy.$crud.update('apiRoutes.qbuilder.layouts', layout.id, layout).then(response => {
-        proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')})
+        //@ts-ignore
         methods.saveBlocks(layout.blocks)
       }).catch(error => {
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')})
         state.loading = false
       })
     },
-    saveBlocks(blocks) {
+    saveBlocks(blocks: any[]) {
       const requestParams = {notToSnakeCase: ["component", "entity", "attributes"]}
+      const blockPromise = []
       for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
-
-        proxy.$crud.update('apiRoutes.qbuilder.blocks', block.id, block, requestParams).then(response => {
-          proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
-          // Verificar si es el último ciclo
-          if (i === blocks.length - 1) {
-            state.loading = false;
-          }
-        }).catch(error => {
-          proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
-          // En caso de error, también considerarlo como el último ciclo
-          if (i === blocks.length - 1) {
-            state.loading = false;
-          }
-        });
+        //@ts-ignore
+        blockPromise.push(proxy.$crud.update('apiRoutes.qbuilder.blocks', block.id, block, requestParams))
       }
 
+      Promise.all(blockPromise).then(() => {
+        methods.getLayouts();
+        proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
+        state.loading = false;
+      }).catch(error =>  {
+        proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
+        state.loading = false;
+      });
+    },
+    getLayouts() {
+      state.layoutLoading = true
+      //Request
+      service.getLayouts(true).then(response => {
+        state.layouts = response.data
+        state.layoutLoading = false
+      }).catch(error => state.layoutLoading = false)
     },
   }
 
   // Mounted
   onMounted(() => {
+    methods.getLayouts()
   })
 
   onUnmounted(() => {
@@ -108,6 +122,15 @@ export default function editorController() {
 
   watch(() => state.layoutTab, (newField, oldField) => {
     methods.previewPage();
+  });
+
+  //@ts-ignore
+  watch(() => state.layouts, (newField, oldField) => {
+    //@ts-ignore
+    if(store.layoutSelected) {
+      //@ts-ignore
+      store.layoutSelected = state.layouts.find(layout => layout.id === store.layoutSelected.id)
+    }
   });
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}

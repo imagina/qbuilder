@@ -4,5 +4,6 @@ export interface Block {
 
 export interface Layout {
   id: number,
+  title: string,
   blocks: Block[]
 }

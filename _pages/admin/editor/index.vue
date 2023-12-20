@@ -40,8 +40,9 @@
           <q-tab-panel name="preview" class="q-pa-none">
             <iframe-post :id="`iframeLayout${storeSelectedLayout.id}`" ref="refIframePost"/>
           </q-tab-panel>
-          <q-tab-panel name="builder" class="q-pa-none">
-            <handle-grid v-model="storeSelectedLayout.blocks" order-by="sortOrder" title-field="internalTitle"/>
+          <q-tab-panel name="builder" class="q-pa-none overflow-hidden">
+            <handle-grid v-model="storeSelectedLayout.blocks" order-by="sortOrder" title-field="internalTitle"
+                         :can-add-new-item="true" ref="handleGrid" @create="val => createBlock(val)"/>
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->

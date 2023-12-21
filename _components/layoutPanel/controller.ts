@@ -25,6 +25,24 @@ export default function layoutController(props: any, emit: any) {
     },
     createItem() {
       emit('create')
+    },
+    orderedItems() {
+      const data = props.items;
+      const type = props.collapseBy
+      const response = {}
+
+      for (const item of data) {
+        const property = item[type]
+        if(property) {
+          if(response[property]) {
+            response[property].push(item)
+          } else {
+            response[property] = [item]
+          }
+        }
+      }
+
+      return response
     }
   }
 

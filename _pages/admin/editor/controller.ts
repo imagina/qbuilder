@@ -10,7 +10,8 @@ export default function editorController() {
   const refs = {
     refIframePost: ref<InstanceType<typeof iframePost>>(),
     crudLayout: ref(null),
-    refPanel: ref(null)
+    refPanel: ref(null),
+    handleGrid: ref(null)
   }
 
   // States
@@ -18,7 +19,8 @@ export default function editorController() {
     layoutTab: 'preview',
     loading: false,
     layoutLoading: false,
-    layouts: []
+    layouts: [],
+    id: 100,
   })
 
   // Computed
@@ -57,6 +59,7 @@ export default function editorController() {
               handler: () => {
                 store.layoutSelected = layout
                 select(layout)
+                refs.handleGrid.value.setState(layout.blocks);
               }
             },
           ]
@@ -111,7 +114,27 @@ export default function editorController() {
 
         state.layoutLoading = false
       }).catch(error => state.layoutLoading = false)
-    }
+    },
+    createBlock(val) {
+      const { onCreate } = val
+      proxy.$alert.warning({
+        mode: 'modal',
+        title: "Crea un nuevo Bloque",
+        message: "Crea un bloque de prueba ya",
+        actions: [
+          {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
+          {
+            label: proxy.$tr('isite.cms.label.accept'),
+            color: 'green',
+            handler: () => {
+              onCreate({id: state.id, sortOrder: 1, gridPosition: 'col-md-12', internalTitle: 'Test'})
+              state.id  += 1
+              console.log('Creando...')
+            }
+          },
+        ]
+      })
+    },
   }
 
   // Mounted

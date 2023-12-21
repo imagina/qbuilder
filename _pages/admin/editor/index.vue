@@ -13,10 +13,14 @@
                     :items="layouts" ref="refPanel" collapse-by="entityType"/>
       <q-btn v-if="store.layoutSelected" label="Guardar" class="full-width absolute-bottom text-capitalize"
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
+      <!--Over panels-->
+      <q-dialog v-model="showBlocksPanel" position="left" content-class="builder-panel-dialog" square>
+        <blocks-panel class="full-height"/>
+      </q-dialog>
     </div>
     <!-- Preview -->
     <div class="preview-content" :style="`width: calc(100% - ${store.panelWidth})`">
-      <!--Actions-->
+      <!--Header-->
       <div class="preview-content__actions row justify-between items-center">
         <div class="q-px-md q-py-sm text-primary text-h6">
           <q-btn v-if="store.layoutSelected" size="xs" padding="sm" class="q-mr-sm" unelevated outline
@@ -42,7 +46,7 @@
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none overflow-hidden">
             <handle-grid v-model="storeSelectedLayout.blocks" order-by="sortOrder" title-field="internalTitle"
-                         :can-add-new-item="true" ref="handleGrid" @create="val => createBlock(val)"/>
+                         :can-add-new-item="true" ref="handleGrid" @create="showBlocksPanel = true"/>
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->
@@ -62,12 +66,14 @@ import controller from '@imagina/qbuilder/_pages/admin/editor/controller'
 //components
 import iframePost from "@imagina/qsite/_components/v3/iframePost";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel';
+import blocksPanel from '@imagina/qbuilder/_components/blocksPanel';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid';
 
 export default defineComponent({
   props: {},
   components: {
     layoutPanel,
+    blocksPanel,
     iframePost,
     handleGrid
   },
@@ -94,4 +100,13 @@ export default defineComponent({
 
     &__box
       background-color white
+
+.builder-panel-dialog
+  .q-dialog__inner
+    padding 0
+    max-height 100vh
+
+    > div:first-child
+      height 100vh !important
+      max-height 100vh
 </style>

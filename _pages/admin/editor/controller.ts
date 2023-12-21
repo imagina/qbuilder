@@ -21,6 +21,7 @@ export default function editorController() {
     layoutLoading: false,
     layouts: [],
     id: 100,
+    showBlocksPanel: false
   })
 
   // Computed
@@ -116,7 +117,7 @@ export default function editorController() {
       }).catch(error => state.layoutLoading = false)
     },
     createBlock(val) {
-      const { onCreate } = val
+      const {onCreate} = val
       proxy.$alert.warning({
         mode: 'modal',
         title: "Crea un nuevo Bloque",
@@ -128,7 +129,7 @@ export default function editorController() {
             color: 'green',
             handler: () => {
               onCreate({id: state.id, sortOrder: 1, gridPosition: 'col-md-12', internalTitle: 'Test'})
-              state.id  += 1
+              state.id += 1
               console.log('Creando...')
             }
           },

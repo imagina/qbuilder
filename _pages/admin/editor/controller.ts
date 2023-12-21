@@ -59,7 +59,7 @@ export default function editorController() {
               handler: () => {
                 store.layoutSelected = layout
                 select(layout)
-                refs.handleGrid.value.setState(layout.blocks);
+                refs.handleGrid?.value?.setState(layout.blocks);
               }
             },
           ]

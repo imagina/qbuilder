@@ -1,6 +1,8 @@
 <template>
   <div id="builderBlockPanel" class="bg-white relative-position">
-    Blocks (PT)
+    <div class="drawer-title q-py-lg q-px-md">
+      <h2 class="text-center text-subtitle1 text-weight-bold">Blocks (PT)</h2>
+    </div>
     <!--Block types-->
     <div class="row">
       <div class="col-4">
@@ -9,14 +11,31 @@
         </q-tabs>
       </div>
       <div class="col-8">
-        Local Blocks (PT)
-        <div v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`">
-          - {{ block.internalTitle}} ({{block.systemName}})
-        </div>
-        <q-separator />
-        Library Blocks (PT)
-        <div v-for="(block, blockKey) in blocksBySelectedType.library" :key="`libraryKey${blockKey}`">
-          - {{ block.internalTitle}} ({{block.systemName}})
+
+        <div v-if="!blockTypeSelected" class="q-pa-md text-center text-weight-bold">Selecciona un bloque</div>
+
+        <div v-if="blockTypeSelected">
+          <div class="q-pa-md text-center text-weight-bold">Local Blocks (PT)</div>
+          <q-item v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`" clickable
+                  v-ripple active-class="list-selected" @click="blockSelected(block)">
+            <q-item-section>
+              <span class="ellipsis-2-lines full-width">{{ block.internalTitle}} ({{block.systemName}})</span>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon size="xs" name="fa-light fa-arrow-right"/>
+            </q-item-section>
+          </q-item>
+          <q-separator />
+          <div class="q-pa-md text-center text-weight-bold">Library Blocks (PT)</div>
+          <q-item v-for="(block, blockKey) in blocksBySelectedType.library" :key="`libraryKey${blockKey}`" clickable
+                  v-ripple active-class="list-selected" @click="blockSelected(block)">
+            <q-item-section>
+              <span class="ellipsis-2-lines full-width">{{ block.internalTitle}} ({{block.systemName}})</span>
+            </q-item-section>
+            <q-item-section avatar>
+              <q-icon size="xs" name="fa-light fa-arrow-right"/>
+            </q-item-section>
+          </q-item>
         </div>
       </div>
     </div>
@@ -37,5 +56,16 @@ export default defineComponent({
 </script>
 <style lang="stylus">
 #builderBlockPanel
-  width 500px
+  width 800px
+
+  .drawer-title {
+    display fixed
+    width 100%
+    display flex
+    text-align center
+    align-items center
+    justify-content center
+    background-color $primary
+    color white
+  }
 </style>

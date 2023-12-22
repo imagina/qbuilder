@@ -7,6 +7,7 @@ export default function controller(props: any, emit: any) {
 
   // Refs
   const refs = {
+    crudBlock: ref(null)
     // refKey: ref(defaultValue)
   }
 
@@ -20,9 +21,9 @@ export default function controller(props: any, emit: any) {
 
   // Computed
   const computeds = {
-    //Return the existing blocks to list 
+    //Return the existing blocks to list
     blockTypes: computed(() => {
-      // todo: obtener el name/title de cda bloque según el sistemName
+      // todo: obtener el name/title de cda bloque segÃºn el sistemName
       let blockTypes = new Set([...state.localBlocks, ...state.blockLibrary].map(item => item.component.systemName))
       return Array.from(blockTypes)
     }),
@@ -54,6 +55,13 @@ export default function controller(props: any, emit: any) {
     getBlockLibrary: async () => {
       let blocks = await service.getBlockLibrary(true)
       state.blockLibrary = blocks
+    },
+    blockSelected(block) {
+      console.log(block, refs.crudBlock?.value)
+      refs.crudBlock.value.create(block)
+    },
+    getBlocks() {
+      emit('create')
     }
   }
 

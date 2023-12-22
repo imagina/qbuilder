@@ -34,7 +34,7 @@ export default function editorController() {
       if (state.layoutTab === 'preview' && refs.refIframePost) {
         setTimeout(() => {
           //@ts-ignore
-          refs.refIframePost.value.loadIframe(
+          refs.refIframePost?.value?.loadIframe(
               //@ts-ignore
               `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
               store.layoutSelected
@@ -97,7 +97,7 @@ export default function editorController() {
       })
     },
     changeLayout(layout) {
-      refs.handleGrid.value.setState(layout.blocks)
+      refs.handleGrid?.value?.setState(layout.blocks)
     }
   }
 

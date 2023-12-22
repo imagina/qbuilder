@@ -1,6 +1,7 @@
 import {computed, reactive, ref, onMounted, toRefs, getCurrentInstance, watch} from "vue";
 import service from "@imagina/qbuilder/_components/layoutPanel/services";
 import store from "@imagina/qbuilder/_pages/admin/editor/store";
+import recursiveStore from "@imagina/qsite/_components/v3/recursiveItem/store";
 
 export default function layoutController(props: any, emit: any) {
     const proxy = getCurrentInstance()!.proxy
@@ -11,34 +12,37 @@ export default function layoutController(props: any, emit: any) {
 
     // States
     const state = reactive({
-        layoutSelected: null,
         loading: false,
-        layouts: []
+        layouts: [],
+        mapLayouts: []
     })
 
     // Computed
-    const computeds = {
-        mapLayouts: computed(() => methods.orderedItems())
-        // key: computed(() => {})
-    }
+    const computeds = {}
 
     // Methods
     const methods = {
-        getLayouts() {
+        getLayouts(crudAction = '') {
             state.loading = true
             //Request
             service.getLayouts(true).then(response => {
                 state.layouts = response.data
+
+                if(crudAction == 'created') {
+                    const firstLayout = state.layouts[0]
+                    recursiveStore.itemSelected = firstLayout;
+                    store.layoutSelected = firstLayout
+                } else if (crudAction == 'updated') {
+                    const layout = state.layouts.find(i => i.id == store.layoutSelected.id)
+
+                    if(layout) {
+                        store.layoutSelected = layout
+                    }
+                }
+
+                state.mapLayouts = methods.orderedItems()
                 state.loading = false
             }).catch(error => state.loading = false)
-        },
-        setLayoutSelected(itemSelected) {
-            const item = proxy.$clone(itemSelected)
-            emit('selected', {
-                item, select: (val) => {
-                    state.itemSelected = val
-                }
-            })
         },
         createItem() {
             emit('create')
@@ -66,51 +70,65 @@ export default function layoutController(props: any, emit: any) {
                         for (const type of module.types) {
                             const layoutFiltered = filterByEntityType.filter((lay) => lay.type == type.value)
                             if (layoutFiltered.length) {
-                                response.push({
-                                    title: `${module.entity.label} (${type.label})`,
-                                    action: () => {},
-                                    children: layoutFiltered.map(item => ({...item,
-                                        activated: true,
-                                        action: (val) => {
-                                            state.layoutSelected = state.layouts.find(i => i.id === val.id)
-                                        },
-                                        isSelected: false,
-                                        icon: 'fa-light fa-arrow-right'
-                                    }))
-                                })
+                                response.push(methods.setObjToSendRecursive(module.entity.label, type.label, layoutFiltered))
                             }
                         }
                         const layoutFilteredNull = filterByEntityType.filter((lay) => lay.type == null)
                         if (layoutFilteredNull.length) {
-                            response.push({
-                                title: `${module.entity.label} (Default)`,
-                                children: layoutFilteredNull.map(item => ({...item,
-                                    activated: true,
-                                    action: (val) => {
-                                      state.layoutSelected = state.layouts.find(i => i.id === val.id)
-                                    },
-                                    icon: 'fa-light fa-arrow-right',
-                                    isSelected: false
-                                })),
-                                action: () => {
-                                },
-                            })
+                            response.push(methods.setObjToSendRecursive(module.entity.label, 'Default', layoutFilteredNull))
                         }
                     }
                 }
             })
 
             return response
+        },
+        setObjToSendRecursive(moduleName, typeName, layoutsFiltered) {
+            return {
+                title: `${moduleName} (${typeName})`,
+                action: () => {},
+                children: layoutsFiltered.map(item => ({...item,
+                    activated: true,
+                    action: methods.actionToGetLayout,
+                    icon: 'fa-light fa-arrow-right'
+                }))
+            }
+        },
+        actionToGetLayout(value) {
+            const item = value
+            if (store.layoutSelected && store.layoutSelected.id !== item.id) {
+                return new Promise(resolve => {
+                    proxy.$alert.warning({
+                        mode: 'modal',
+                        title: proxy.$tr('ibuilder.cms.label.sureChangeLayout'),
+                        message: proxy.$tr('ibuilder.cms.label.descriptionSureChangeLayout'),
+                        actions: [
+                            {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8', handler: () => resolve(false)},
+                            {
+                                label: proxy.$tr('isite.cms.label.accept'),
+                                color: 'green',
+                                handler: () => {
+                                    const layout = state.layouts.find(i => i.id === item.id)
+                                    store.layoutSelected = layout
+                                    resolve(true)
+                                    emit('selected', layout);
+                                }
+                            },
+                        ]
+                    })
+                })
+            } else {
+                const layout = state.layouts.find(i => i.id === item.id)
+                store.layoutSelected = layout
+                emit('selected', layout);
+                return Promise.resolve(true)
+            }
         }
     }
 
-    watch(() => state.layoutSelected, () => {
-        console.log(state.layoutSelected)
-    })
-
     // Mounted
     onMounted(() => {
-        methods.getLayouts()
+        methods.getLayouts('created')
     })
 
     return {...refs, ...(toRefs(state)), ...computeds, ...methods}

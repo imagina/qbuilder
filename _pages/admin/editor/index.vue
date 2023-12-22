@@ -9,7 +9,7 @@
     </div>
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
-      <layout-panel @create="crudLayout.create()" @selected="val => changeLayout(val)" ref="refPanel" />
+      <layout-panel @create="crudLayout.create()" ref="refPanel" />
       <q-btn v-if="store.layoutSelected" label="Guardar" class="full-width absolute-bottom text-capitalize"
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
       <!--Over panels-->

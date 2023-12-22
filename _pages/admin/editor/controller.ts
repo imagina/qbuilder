@@ -42,31 +42,6 @@ export default function editorController() {
         }, 300)
       }
     },
-    changeLayout(value) {
-      const {item: layout, select} = value
-      if (store.layoutSelected && store.layoutSelected.id !== layout.id) {
-        proxy.$alert.warning({
-          mode: 'modal',
-          title: proxy.$tr('ibuilder.cms.label.sureChangeLayout'),
-          message: proxy.$tr('ibuilder.cms.label.descriptionSureChangeLayout'),
-          actions: [
-            {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
-            {
-              label: proxy.$tr('isite.cms.label.accept'),
-              color: 'green',
-              handler: () => {
-                store.layoutSelected = layout
-                select(layout)
-                refs.handleGrid?.value?.setState(layout.blocks);
-              }
-            },
-          ]
-        })
-      } else {
-        store.layoutSelected = layout
-        select(layout)
-      }
-    },
     saveLayout() {
       state.loading = true
       const layout = store.layoutSelected
@@ -99,7 +74,7 @@ export default function editorController() {
       });
     },
     refreshLayouts(crudAction) {
-      refs.refPanel?.value.getLayouts();
+      refs.refPanel?.value.getLayouts(crudAction);
     },
     createBlock(val) {
       const {onCreate} = val

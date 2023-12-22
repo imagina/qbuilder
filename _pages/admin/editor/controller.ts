@@ -18,9 +18,6 @@ export default function editorController() {
   const state = reactive({
     layoutTab: 'preview',
     loading: false,
-    layoutLoading: false,
-    layouts: [],
-    id: 100,
     showBlocksPanel: false
   })
 
@@ -38,9 +35,9 @@ export default function editorController() {
         setTimeout(() => {
           //@ts-ignore
           refs.refIframePost.value.loadIframe(
-            //@ts-ignore
-            `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
-            store.layoutSelected
+              //@ts-ignore
+              `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
+              store.layoutSelected
           )
         }, 300)
       }
@@ -93,7 +90,7 @@ export default function editorController() {
       }
 
       Promise.all(blockPromise).then(() => {
-        methods.getLayouts();
+        refs.refPanel.value.getLayouts();
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
         state.loading = false;
       }).catch(error => {
@@ -101,20 +98,8 @@ export default function editorController() {
         state.loading = false;
       });
     },
-    getLayouts(crudActionLayout = null) {
-      state.layoutLoading = true
-      //Request
-      service.getLayouts(true).then(response => {
-        state.layouts = response.data
-
-        // setup layoutSelected
-        if (crudActionLayout == 'created') refs.refPanel.value.setItemSelected(response.data[0])
-        else if (crudActionLayout == 'updated') {
-          store.layoutSelected = state.layouts.find(layout => layout.id === store.layoutSelected.id)
-        }
-
-        state.layoutLoading = false
-      }).catch(error => state.layoutLoading = false)
+    refreshLayouts(crudAction) {
+      refs.refPanel?.value.getLayouts();
     },
     createBlock(val) {
       const {onCreate} = val
@@ -140,7 +125,6 @@ export default function editorController() {
 
   // Mounted
   onMounted(() => {
-    methods.getLayouts()
   })
 
   onUnmounted(() => {

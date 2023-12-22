@@ -110,8 +110,8 @@ export default function layoutController(props: any, emit: any) {
                                 handler: () => {
                                     const layout = state.layouts.find(i => i.id === item.id)
                                     store.layoutSelected = layout
-                                    resolve(true)
                                     emit('selected', layout);
+                                    resolve(true)
                                 }
                             },
                         ]
@@ -128,7 +128,7 @@ export default function layoutController(props: any, emit: any) {
 
     // Mounted
     onMounted(() => {
-        methods.getLayouts('created')
+        methods.getLayouts()
     })
 
     return {...refs, ...(toRefs(state)), ...computeds, ...methods}

@@ -96,6 +96,9 @@ export default function editorController() {
         ]
       })
     },
+    changeLayout(layout) {
+      refs.handleGrid.value.setState(layout.blocks)
+    }
   }
 
   // Mounted

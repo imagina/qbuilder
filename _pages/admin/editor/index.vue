@@ -9,7 +9,7 @@
     </div>
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
-      <layout-panel @create="crudLayout.create()" ref="refPanel" />
+      <layout-panel @create="crudLayout.create()" @selected="changeLayout" ref="refPanel" />
       <q-btn v-if="store.layoutSelected" label="Guardar" class="full-width absolute-bottom text-capitalize"
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
       <!--Over panels-->
@@ -41,10 +41,10 @@
         <q-tab-panels v-if="store.layoutSelected" v-model="layoutTab" animated transition-prev="scale"
                       transition-next="scale">
           <q-tab-panel name="preview" class="q-pa-none">
-            <iframe-post :id="`iframeLayout${storeSelectedLayout.id}`" ref="refIframePost"/>
+            <iframe-post :id="`iframeLayout${store.layoutSelected.id}`" ref="refIframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none overflow-hidden">
-            <handle-grid v-model="storeSelectedLayout.blocks" order-by="sortOrder" title-field="internalTitle"
+            <handle-grid v-model="store.layoutSelected.blocks" order-by="sortOrder" title-field="internalTitle"
                          :can-add-new-item="true" ref="handleGrid" @create="showBlocksPanel = true"/>
           </q-tab-panel>
         </q-tab-panels>

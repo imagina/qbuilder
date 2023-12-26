@@ -2,6 +2,8 @@ import {computed, onMounted, onUnmounted, reactive, ref, toRefs, watch, getCurre
 import service from '@imagina/qbuilder/_pages/admin/editor/services'
 import store from '@imagina/qbuilder/_pages/admin/editor/store'
 import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
+import layoutPanel from '@imagina/qbuilder/_components/layoutPanel/index.vue';
+import handleGrid from '@imagina/qsite/_components/v3/handleGrid/index.vue';
 
 export default function editorController() {
   const proxy = getCurrentInstance()!.proxy
@@ -10,8 +12,8 @@ export default function editorController() {
   const refs = {
     refIframePost: ref<InstanceType<typeof iframePost>>(),
     crudLayout: ref(null),
-    refPanel: ref(null),
-    handleGrid: ref(null)
+    refPanel: ref<InstanceType<typeof layoutPanel>>(),
+    handleGrid: ref<InstanceType<typeof handleGrid>>()
   }
 
   // States
@@ -31,24 +33,21 @@ export default function editorController() {
   // Methods
   const methods = {
     previewPage() {
-      if (state.layoutTab === 'preview' && refs.refIframePost) {
+      if (state.layoutTab === 'preview') {
         setTimeout(() => {
-          //@ts-ignore
-          refs.refIframePost?.value?.loadIframe(
-              //@ts-ignore
-              `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
-              store.layoutSelected
-          )
+          if(refs.refIframePost?.value?.loadIframe && store.layoutSelected)
+            refs.refIframePost.value.loadIframe(
+                `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
+                store.layoutSelected
+            )
         }, 300)
       }
     },
     saveLayout() {
       state.loading = true
-      const layout = store.layoutSelected
+      const layout = store.layoutSelected!
 
-      //@ts-ignore
       proxy.$crud.update('apiRoutes.qbuilder.layouts', layout.id, layout).then(response => {
-        //@ts-ignore
         methods.saveBlocks(layout.blocks)
       }).catch(error => {
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')})
@@ -57,15 +56,14 @@ export default function editorController() {
     },
     saveBlocks(blocks: any[]) {
       const requestParams = {notToSnakeCase: ["component", "entity", "attributes"]}
-      const blockPromise = []
+      const blockPromise: Promise<any>[] = []
       for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
-        //@ts-ignore
         blockPromise.push(proxy.$crud.update('apiRoutes.qbuilder.blocks', block.id, block, requestParams))
       }
 
       Promise.all(blockPromise).then(() => {
-        refs.refPanel.value.getLayouts();
+        refs.refPanel?.value?.getLayouts();
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
         state.loading = false;
       }).catch(error => {
@@ -74,7 +72,7 @@ export default function editorController() {
       });
     },
     refreshLayouts(crudAction) {
-      refs.refPanel?.value.getLayouts(crudAction);
+      refs.refPanel?.value?.getLayouts(crudAction);
     },
     createBlock(val) {
       const {onCreate} = val
@@ -88,9 +86,7 @@ export default function editorController() {
             label: proxy.$tr('isite.cms.label.accept'),
             color: 'green',
             handler: () => {
-              onCreate({id: state.id, sortOrder: 1, gridPosition: 'col-md-12', internalTitle: 'Test'})
-              state.id += 1
-              console.log('Creando...')
+              onCreate()
             }
           },
         ]

@@ -1,13 +1,3 @@
-export interface Block {
-  id: number
-}
-
-export interface Layout {
-  id: number,
-  title: string,
-  blocks: Block[]
-}
-
 export interface MediaFiles {
   internalimage:   Image;
   blockbgimage:    Image;

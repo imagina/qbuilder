@@ -28,5 +28,18 @@ export default {
         resolve(response.data.data)
       }).catch(error => reject(error))
     })
-  }
+  },
+  getModuleBlocks(refresh = false, params = {}) {
+    return new Promise((resolve, reject) => {
+      //Params
+      let requestParams = {
+        refresh,
+        params
+      }
+      //Request
+      baseService.index('apiRoutes.qsite.configs', requestParams).then(response => {
+        resolve(response.data)
+      }).catch(error => reject(error))
+    })
+  },
 }

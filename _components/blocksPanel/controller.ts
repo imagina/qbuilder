@@ -7,7 +7,6 @@ export default function controller(props: any, emit: any) {
 
   // Refs
   const refs = {
-    crudBlock: ref(null)
     // refKey: ref(defaultValue)
   }
 
@@ -16,16 +15,28 @@ export default function controller(props: any, emit: any) {
     loading: false,
     localBlocks: [],
     blockLibrary: [],
-    blockTypeSelected: null
+    blockTypeSelected: null,
+    blockTypeConfig: [],
+    blockSelected: {}
   })
 
   // Computed
   const computeds = {
     //Return the existing blocks to list
     blockTypes: computed(() => {
-      // todo: obtener el name/title de cda bloque segÃºn el sistemName
+      // todo: obtener el name/title de cada bloque según el sistemName
       let blockTypes = new Set([...state.localBlocks, ...state.blockLibrary].map(item => item.component.systemName))
-      return Array.from(blockTypes)
+      const configs = state.blockTypeConfig
+      blockTypes = Array.from(blockTypes)
+      const response = []
+
+      for (const config of configs) {
+        if(blockTypes.includes(config.systemName)) {
+          response.push({title: config.title, systemName: config.systemName})
+        }
+      }
+
+      return response
     }),
     // return the blocks by selected type
     blocksBySelectedType: computed(() => {
@@ -42,7 +53,8 @@ export default function controller(props: any, emit: any) {
       state.loading = true
       await Promise.all([
         methods.getLocalBlocks(),
-        methods.getBlockLibrary()
+        methods.getBlockLibrary(),
+        methods.getConfigBlocks()
       ])
       state.loading = false
     },
@@ -56,12 +68,28 @@ export default function controller(props: any, emit: any) {
       let blocks = await service.getBlockLibrary(true)
       state.blockLibrary = blocks
     },
-    blockSelected(block) {
-      console.log(block, refs.crudBlock?.value)
-      refs.crudBlock.value.create(block)
+    selectBlock(block, type = 'local') {
+      state.blockSelected = {...block, blockType: type}
     },
-    getBlocks() {
-      emit('create')
+    getConfigBlocks: async() => {
+      const params = {
+        filter: {allTranslations: true, configNameByModule: 'blocks'}
+      }
+
+      const config = await service.getModuleBlocks(true, params)
+      const response = []
+      //Filter only items with values
+      Object.keys(config).forEach(moduleName => {
+        if (config[moduleName]) {
+          // Loop modules of config
+          const modules = config[moduleName]
+          for (const key in modules) {
+            //Save data of modules
+            response.push(modules[key])
+          }
+        }
+      })
+      state.blockTypeConfig = response
     }
   }
 

@@ -1,39 +1,35 @@
 <template>
   <div id="builderBlockPanel" class="bg-white relative-position">
     <div class="drawer-title q-py-lg q-px-md">
-      <h2 class="text-center text-subtitle1 text-weight-bold">Blocks (PT)</h2>
+      <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.label.blocks') }}</h2>
     </div>
     <!--Block types-->
     <div class="row">
       <div class="col-4">
         <q-tabs v-model="blockTypeSelected" vertical class="text-teal">
-          <q-tab v-for="(type, keyItem) in blockTypes" :key="keyItem" :name="type" :label="type" no-caps/>
+          <q-tab v-for="(type, keyItem) in blockTypes" :key="keyItem" :name="type.systemName" :label="type.title" no-caps/>
         </q-tabs>
       </div>
       <div class="col-8">
 
-        <div v-if="!blockTypeSelected" class="q-pa-md text-center text-weight-bold">Selecciona un bloque</div>
+        <div v-if="!blockTypeSelected" class="q-pa-md text-center text-weight-bold">{{ $tr('ibuilder.cms.label.selectBlock') }}</div>
 
         <div v-if="blockTypeSelected">
-          <div class="q-pa-md text-center text-weight-bold">Local Blocks (PT)</div>
+          <div class="q-pa-md text-center text-weight-bold">{{ $tr('ibuilder.cms.label.localBlocks') }}</div>
           <q-item v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`" clickable
-                  v-ripple active-class="list-selected" @click="blockSelected(block)">
-            <q-item-section>
-              <span class="ellipsis-2-lines full-width">{{ block.internalTitle}} ({{block.systemName}})</span>
-            </q-item-section>
-            <q-item-section avatar>
-              <q-icon size="xs" name="fa-light fa-arrow-right"/>
+                  v-ripple active-class="list-selected" @click="selectBlock(block)">
+            <q-item-section :class="`q-ma-sm selectable ${blockSelected.id == block.id && blockSelected.blockType === 'local' ? 'selectable--selected': ''}`">
+              <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle" />
+              <span class="ellipsis-2-lines full-width">{{ block.internalTitle}}</span>
             </q-item-section>
           </q-item>
           <q-separator />
-          <div class="q-pa-md text-center text-weight-bold">Library Blocks (PT)</div>
+          <div class="q-pa-md text-center text-weight-bold">{{ $tr('ibuilder.cms.label.libraryBlocks') }}</div>
           <q-item v-for="(block, blockKey) in blocksBySelectedType.library" :key="`libraryKey${blockKey}`" clickable
-                  v-ripple active-class="list-selected" @click="blockSelected(block)">
-            <q-item-section>
-              <span class="ellipsis-2-lines full-width">{{ block.internalTitle}} ({{block.systemName}})</span>
-            </q-item-section>
-            <q-item-section avatar>
-              <q-icon size="xs" name="fa-light fa-arrow-right"/>
+                  v-ripple active-class="list-selected" @click="selectBlock(block, 'library')">
+            <q-item-section :class="`q-ma-sm selectable ${blockSelected.id == block.id && blockSelected.blockType === 'library' ? 'selectable--selected': ''}`">
+              <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle" />
+              <span class="ellipsis-2-lines full-width">{{ block.internalTitle}}</span>
             </q-item-section>
           </q-item>
         </div>

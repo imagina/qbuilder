@@ -1,6 +1,12 @@
 import {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} from "vue";
 import service from '@imagina/qbuilder/_components/blocksPanel/services'
 import store from '@imagina/qbuilder/_components/blocksPanel/store'
+import {Block, ModuleBlockConfig, ModulesData} from '@imagina/qbuilder/_components/blocksPanel/interface'
+
+interface blockType {
+  title: string
+  systemName: string
+}
 
 export default function controller(props: any, emit: any) {
   const proxy = getCurrentInstance()!.proxy
@@ -10,14 +16,23 @@ export default function controller(props: any, emit: any) {
     // refKey: ref(defaultValue)
   }
 
+  interface StateProps {
+    loading: Boolean,
+    localBlocks: Block[],
+    blockLibrary: Block[],
+    blockTypeSelected: string | null,
+    blockTypeConfig: ModuleBlockConfig[],
+    blockSelected: Block | null
+  }
+
   // States
-  const state = reactive({
+  const state = reactive<StateProps>({
     loading: false,
     localBlocks: [],
     blockLibrary: [],
     blockTypeSelected: null,
     blockTypeConfig: [],
-    blockSelected: {}
+    blockSelected: null
   })
 
   // Computed
@@ -25,10 +40,11 @@ export default function controller(props: any, emit: any) {
     //Return the existing blocks to list
     blockTypes: computed(() => {
       // todo: obtener el name/title de cada bloque según el sistemName
-      let blockTypes = new Set([...state.localBlocks, ...state.blockLibrary].map(item => item.component.systemName))
-      const configs = state.blockTypeConfig
-      blockTypes = Array.from(blockTypes)
-      const response = []
+      const setBlockTypes: Set<string> = new Set([...state.localBlocks, ...state.blockLibrary].map(item => item.component.systemName))
+      console.warn(state.blockTypeConfig)
+      const configs: ModuleBlockConfig[] = state.blockTypeConfig
+      const blockTypes: string[] = Array.from(setBlockTypes)
+      const response: blockType[] = []
 
       for (const config of configs) {
         if(blockTypes.includes(config.systemName)) {
@@ -76,8 +92,9 @@ export default function controller(props: any, emit: any) {
         filter: {allTranslations: true, configNameByModule: 'blocks'}
       }
 
-      const config = await service.getModuleBlocks(true, params)
-      const response = []
+      const config: ModulesData = await service.getModuleBlocks(true, params)
+      state.test = config
+      const response: ModuleBlockConfig[] = []
       //Filter only items with values
       Object.keys(config).forEach(moduleName => {
         if (config[moduleName]) {

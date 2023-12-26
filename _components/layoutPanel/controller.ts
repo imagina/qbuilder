@@ -56,7 +56,7 @@ export default function layoutController(props: any, emit: any) {
                     store.layoutSelected = firstLayout
                 } else if (crudAction == 'updated') {
                     //If an update is made, find the layout
-                    const layout = state.layouts.find(i => i.id == store.layoutSelected.id)
+                    const layout = state.layouts.find(i => i.id == store.layoutSelected?.id)
 
                     //Reload the layout that was updated
                     if(layout) {
@@ -144,10 +144,14 @@ export default function layoutController(props: any, emit: any) {
                                 label: proxy.$tr('isite.cms.label.accept'),
                                 color: 'green',
                                 handler: () => {
-                                    const layout = state.layouts.find(i => i.id === item.id)
-                                    store.layoutSelected = layout
-                                    emit('selected', layout);
-                                    resolve(true)
+                                    const layout= state.layouts.find(i => i.id === item.id)
+                                    if(layout) {
+                                        store.layoutSelected = layout
+                                        emit('selected', layout);
+                                        resolve(true)
+                                    } else {
+                                        resolve(false)
+                                    }
                                 }
                             },
                         ]
@@ -155,9 +159,13 @@ export default function layoutController(props: any, emit: any) {
                 })
             } else {
                 const layout = state.layouts.find(i => i.id === item.id)
-                store.layoutSelected = layout
-                emit('selected', layout);
-                return Promise.resolve(true)
+                if(layout) {
+                    store.layoutSelected = layout
+                    emit('selected', layout);
+                    return Promise.resolve(true)
+                } else {
+                    return Promise.resolve(false)
+                }
             }
         }
     }

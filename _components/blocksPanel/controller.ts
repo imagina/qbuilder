@@ -41,7 +41,7 @@ export default function controller(props: any, emit: any) {
     blockTypes: computed(() => {
       // todo: obtener el name/title de cada bloque según el sistemName
       const setBlockTypes: Set<string> = new Set([...state.localBlocks, ...state.blockLibrary].map(item => item.component.systemName))
-      console.warn(state.blockTypeConfig)
+
       const configs: ModuleBlockConfig[] = state.blockTypeConfig
       const blockTypes: string[] = Array.from(setBlockTypes)
       const response: blockType[] = []
@@ -92,8 +92,7 @@ export default function controller(props: any, emit: any) {
         filter: {allTranslations: true, configNameByModule: 'blocks'}
       }
 
-      const config: ModulesData = await service.getModuleBlocks(true, params)
-      state.test = config
+      const config = await service.getModuleBlocks(true, params)
       const response: ModuleBlockConfig[] = []
       //Filter only items with values
       Object.keys(config).forEach(moduleName => {

@@ -18,7 +18,7 @@
           <div class="q-pa-md text-center text-weight-bold">{{ $tr('ibuilder.cms.label.localBlocks') }}</div>
           <q-item v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`" clickable
                   v-ripple active-class="list-selected" @click="selectBlock(block)">
-            <q-item-section :class="`q-ma-sm selectable ${blockSelected.id == block.id && blockSelected.blockType === 'local' ? 'selectable--selected': ''}`">
+            <q-item-section :class="`q-ma-sm selectable ${blockSelected && blockSelected.id == block.id && blockSelected.blockType === 'local' ? 'selectable--selected': ''}`">
               <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle" />
               <span class="ellipsis-2-lines full-width">{{ block.internalTitle}}</span>
             </q-item-section>
@@ -27,7 +27,7 @@
           <div class="q-pa-md text-center text-weight-bold">{{ $tr('ibuilder.cms.label.libraryBlocks') }}</div>
           <q-item v-for="(block, blockKey) in blocksBySelectedType.library" :key="`libraryKey${blockKey}`" clickable
                   v-ripple active-class="list-selected" @click="selectBlock(block, 'library')">
-            <q-item-section :class="`q-ma-sm selectable ${blockSelected.id == block.id && blockSelected.blockType === 'library' ? 'selectable--selected': ''}`">
+            <q-item-section :class="`q-ma-sm selectable ${blockSelected && blockSelected.id == block.id && blockSelected.blockType === 'library' ? 'selectable--selected': ''}`">
               <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle" />
               <span class="ellipsis-2-lines full-width">{{ block.internalTitle}}</span>
             </q-item-section>

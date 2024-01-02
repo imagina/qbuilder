@@ -8,7 +8,6 @@ export default {
   },
   computed: {
     crudData() {
-      console.warn('Entreee')
       return {
         crudId: this.crudId,
         apiRoute: 'apiRoutes.qbuilder.layouts',

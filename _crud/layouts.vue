@@ -8,6 +8,7 @@ export default {
   },
   computed: {
     crudData() {
+      console.warn('Entreee')
       return {
         crudId: this.crudId,
         apiRoute: 'apiRoutes.qbuilder.layouts',
@@ -71,7 +72,7 @@ export default {
         },
         handleFormUpdates: (formData, changedFields, formType) => {
           return new Promise(resolve => {
-            if (changedFields.includes('entityType')) formData.type = null
+            if (changedFields.length === 1 && changedFields.includes('entityType')) formData.type = null
             resolve(formData)
           })
         }

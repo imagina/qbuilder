@@ -43,31 +43,37 @@ export default function layoutController(props: any, emit: any) {
 
     // Methods
     const methods = {
-        getLayouts(crudAction = '') {
+        getLayouts(crudAction = ''): Promise<boolean> {
             state.loading = true
-            //Request
-            service.getLayouts(true).then(response => {
-                state.layouts = response.data
+            return new Promise(resolve => {
+                //Request
+                service.getLayouts(true).then(response => {
+                    state.layouts = response.data
 
-                //If the action is create, assign the first layout to the editor and recursiveItem stores
-                if(crudAction == 'created') {
-                    const firstLayout = state.layouts[0]
-                    recursiveStore.itemSelected = firstLayout;
-                    store.layoutSelected = firstLayout
-                } else if (crudAction == 'updated') {
-                    //If an update is made, find the layout
-                    const layout = state.layouts.find(i => i.id == store.layoutSelected?.id)
+                    //If the action is create, assign the first layout to the editor and recursiveItem stores
+                    if(crudAction == 'created') {
+                        const firstLayout = state.layouts[0]
+                        recursiveStore.itemSelected = firstLayout;
+                        store.layoutSelected = firstLayout
+                    } else if (crudAction == 'updated') {
+                        //If an update is made, find the layout
+                        const layout = state.layouts.find(i => i.id == store.layoutSelected?.id)
 
-                    //Reload the layout that was updated
-                    if(layout) {
-                        store.layoutSelected = layout
+                        //Reload the layout that was updated
+                        if(layout) {
+                            store.layoutSelected = layout
+                        }
                     }
-                }
 
-                //Every time the service is called, the layouts will be remapped
-                state.mapLayouts = methods.orderedItems()
-                state.loading = false
-            }).catch(error => state.loading = false)
+                    //Every time the service is called, the layouts will be remapped
+                    state.mapLayouts = methods.orderedItems()
+                    state.loading = false
+                    resolve(false)
+                }).catch(error => {
+                    state.loading = false
+                    resolve(false)
+                })
+            })
         },
         createItem() {
             emit('create')

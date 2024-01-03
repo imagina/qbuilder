@@ -45,7 +45,7 @@
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none overflow-hidden">
             <handle-grid v-model="store.layoutSelected.blocks" order-by="sortOrder" title-field="internalTitle"
-                         :can-add-new-item="true" ref="handleGrid" @create="showBlocksPanel = true"/>
+                         :can-add-new-item="true" ref="handleGrid" @create="(val) => openModalSelectBlock(val)"/>
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->

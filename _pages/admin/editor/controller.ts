@@ -20,7 +20,8 @@ export default function editorController() {
   const state = reactive({
     layoutTab: 'preview',
     loading: false,
-    showBlocksPanel: false
+    showBlocksPanel: false,
+    blockIndex: -1
   })
 
   // Computed
@@ -62,38 +63,31 @@ export default function editorController() {
         blockPromise.push(proxy.$crud.update('apiRoutes.qbuilder.blocks', block.id, block, requestParams))
       }
 
-      Promise.all(blockPromise).then(() => {
-        refs.refPanel?.value?.getLayouts();
+      Promise.all(blockPromise).then(async () => {
+        state.loading = await refs.refPanel?.value?.getLayouts() || false;
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
-        state.loading = false;
       }).catch(error => {
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
         state.loading = false;
       });
     },
-    refreshLayouts(crudAction) {
-      refs.refPanel?.value?.getLayouts(crudAction);
+    async refreshLayouts(crudAction) {
+      state.loading = true
+      state.loading = await refs.refPanel?.value?.getLayouts(crudAction) || false;
     },
-    createBlock(val) {
-      const {onCreate} = val
-      proxy.$alert.warning({
-        mode: 'modal',
-        title: "Crea un nuevo Bloque",
-        message: "Crea un bloque de prueba ya",
-        actions: [
-          {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
-          {
-            label: proxy.$tr('isite.cms.label.accept'),
-            color: 'green',
-            handler: () => {
-              onCreate()
-            }
-          },
-        ]
-      })
+    createBlock(block) {
+      //Se crea el nuevo bloque
+      refs.handleGrid?.value?.onCreate(state.blockIndex ,block)
+      // Se cierra la ventana
+      state.showBlocksPanel = false
     },
     changeLayout(layout) {
+      state.blockIndex = -1
       refs.handleGrid?.value?.setState(layout.blocks)
+    },
+    openModalSelectBlock(val) {
+      state.blockIndex = val.index
+      state.showBlocksPanel = true
     }
   }
 

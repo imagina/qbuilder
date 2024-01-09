@@ -6,14 +6,18 @@ import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
 
 //Map the object as needed by the recursiveItem
 interface MapLayout {
-  title: string,
-  action: () => void,
+  label: string,
+  action?: () => void,
   children: MapLayoutChildren[]
 }
 
-interface MapLayoutChildren extends Layout {
+interface MapLayoutChildren {
+  id: number,
+  type: string,
+  label: string,
   activated: Boolean,
-  action: (value: MapLayoutChildren) => Promise<Boolean>,
+  subLabel?: string,
+  action?: (value: MapLayoutChildren) => Promise<Boolean>,
   icon: string
 }
 
@@ -103,17 +107,18 @@ export default function layoutController(props: any, emit: any) {
             return layout.entityType == moduleEntityConfig.entity.value
           })
           // Map the layouts
-          const entityLayoutsChildren = entityLayouts.map(layout => ({
+          const entityLayoutsChildren: MapLayoutChildren[] = entityLayouts.map(layout => ({
             ...layout,
             type: layout.type ?? 'General',
-            title: `${layout.title} (${layout.type ?? 'General'})`,
+            label: `${layout.title} ${layout.default ? '(Default)' : ''}`,
+            subLabel: `${layout.type ?? 'General'}`,
             activated: true,
             icon: 'fa-light fa-arrow-right',
             action: methods.selectLayout
           }))
           // Include to response the layout by entities
           response.push({
-            title: `${moduleEntityConfig.entity.label} (${moduleName})`,
+            label: `${moduleEntityConfig.entity.label} (${moduleName})`,
             children: entityLayoutsChildren.sort((a, b) => a.type.localeCompare(b.type))
           })
         })
@@ -123,7 +128,7 @@ export default function layoutController(props: any, emit: any) {
       return response
     },
     //Define the action that will have coda children in recursiveItem
-    selectLayout(layoutSelected) {
+    selectLayout(layoutSelected: MapLayoutChildren): Promise<Boolean> {
       return new Promise(resolve => {
         // internal method to select the layout
         const setLayout = () => {

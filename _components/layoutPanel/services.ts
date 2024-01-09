@@ -1,7 +1,7 @@
 import baseService from '@imagina/qcrud/_services/baseService'
 
 export default {
-  getBlockConfigs(refresh = false, params = {}): Promise<any> {
+  getLayouts(refresh = false, params = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       const requestParams = {refresh, params}
       //Request

@@ -1,7 +1,7 @@
 import Vue, {reactive, computed} from 'vue';
 import crud from '@imagina/qcrud/_services/baseService';
 import helper from '@imagina/qsite/_plugins/helper'
-import { Layout } from '@imagina/qbuilder/_pages/admin/editor/interface'
+import { Layout } from '@imagina/qbuilder/_components/layoutPanel/interface'
 
 interface StateProps {
   panelWidth: string,

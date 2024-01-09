@@ -2,15 +2,14 @@
   <div id="builderEditor" class="row relative-position">
     <!---Component CRUD Slided -->
     <div class="text-right q-mb-md">
-      <!--Crud Files-->
+      <!--Crud Layouts-->
       <crud :crud-data="import('@imagina/qbuilder/_crud/layouts')" type="onlyUpdate" ref="crudLayout"
-            @created="getLayouts('created')" @updated="getLayouts('updated')" @deleted="getLayouts"
+            @created="refreshLayouts('created')" @updated="refreshLayouts('updated')"
       />
     </div>
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
-      <layout-panel @create="crudLayout.create()" @selected="val => changeLayout(val)" :loading="layoutLoading"
-                    :items="layouts" ref="refPanel" collapse-by="entityType"/>
+      <layout-panel @create="crudLayout.create()" @selected="changeLayout" ref="refPanel" />
       <q-btn v-if="store.layoutSelected" label="Guardar" class="full-width absolute-bottom text-capitalize"
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
       <!--Over panels-->
@@ -42,11 +41,11 @@
         <q-tab-panels v-if="store.layoutSelected" v-model="layoutTab" animated transition-prev="scale"
                       transition-next="scale">
           <q-tab-panel name="preview" class="q-pa-none">
-            <iframe-post :id="`iframeLayout${storeSelectedLayout.id}`" ref="refIframePost"/>
+            <iframe-post :id="`iframeLayout${store.layoutSelected.id}`" ref="refIframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none overflow-hidden">
-            <handle-grid v-model="storeSelectedLayout.blocks" order-by="sortOrder" title-field="internalTitle"
-                         :can-add-new-item="true" ref="handleGrid" @create="showBlocksPanel = true"/>
+            <handle-grid v-model="store.layoutSelected.blocks" order-by="sortOrder" title-field="internalTitle"
+                         :can-add-new-item="true" ref="handleGrid" @create="(val) => openModalSelectBlock(val)"/>
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->

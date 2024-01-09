@@ -12,52 +12,7 @@
         </div>
       </q-btn>
       <q-separator spaced/>
-      <q-list v-if="collapseBy.length">
-        <q-expansion-item
-            v-for="(item, key) in orderedItems()" :key="item.id"
-            expand-separator
-            :label="key"
-            group="items"
-        >
-          <q-list>
-            <q-item v-for="content in item" :key="item.id" clickable v-ripple active-class="list-selected"
-                    class="element" :active="itemSelected ? (itemSelected.id == content.id) : false"
-                    @click="setItemSelected(content)">
-              <q-item-section>
-                <span class="ellipsis-2-lines full-width">{{ content.title }}</span>
-              </q-item-section>
-              <q-item-section avatar>
-                <q-icon size="xs" name="fa-light fa-arrow-right"/>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-expansion-item>
-
-
-        <q-item v-if="!collapseBy.length" v-for="(item, key) in items" :key="item.id" clickable v-ripple
-                active-class="list-selected"
-                class="element" :active="itemSelected ? (itemSelected.id == item.id) : false"
-                @click="setItemSelected(item)">
-          <q-item-section>
-            <span class="ellipsis-2-lines full-width">{{ item.title }}</span>
-          </q-item-section>
-          <q-item-section avatar>
-            <q-icon size="xs" name="fa-light fa-arrow-right"/>
-          </q-item-section>
-        </q-item>
-      </q-list>
-      <q-list v-if="!collapseBy.length">
-        <q-item v-for="(item, key) in items" :key="item.id" clickable v-ripple active-class="list-selected"
-                class="element" :active="itemSelected ? (itemSelected.id == item.id) : false"
-                @click="setItemSelected(item)">
-          <q-item-section>
-            <span class="ellipsis-2-lines full-width">{{ item.title }}</span>
-          </q-item-section>
-          <q-item-section avatar>
-            <q-icon size="xs" name="fa-light fa-arrow-right"/>
-          </q-item-section>
-        </q-item>
-      </q-list>
+      <recursive-item :translatable="false" :menu="mapLayouts" right-icon />
       <inner-loading :visible="loading"/>
     </div>
   </div>
@@ -65,21 +20,12 @@
 <script>
 import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_components/layoutPanel/controller'
+import recursiveItem from '@imagina/qsite/_components/v3/recursiveItem'
 
 export default defineComponent({
-  props: {
-    items: {
-      type: Array,
-      default: []
-    },
-    loading: {
-      type: Boolean,
-      default: false
-    },
-    collapseBy: {
-      type: String,
-      default: ''
-    }
+  props: {},
+  components: {
+    recursiveItem
   },
   setup(props, {emit}) {
     return controller(props, emit)

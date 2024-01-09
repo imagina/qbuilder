@@ -62,7 +62,8 @@ export default function controller(props: any, emit: any) {
         local: state.localBlocks.filter(block => block.component.systemName == state.blockTypeSelected),
         library: state.blockLibrary.filter(block => block.component.systemName == state.blockTypeSelected)
       }
-    })
+    }),
+    tabColor: computed(() => state.blockTypeTab == 'global' ? 'purple' : 'orange')
   }
 
   // Methods

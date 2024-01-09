@@ -5,22 +5,21 @@
     </div>
     <!--Block types-->
     <div class="row">
-      <div class="col-4 border-tab">
-        <div class="title-tabs bg-purple text-white">
-          <span>Types of Blocks (PT)</span>
-        </div>
+      <div class="col-4">
+        <div class="title-tabs"></div>
         <q-tabs v-model="blockTypeSelected" vertical active-bg-color="primary"
-                active-color="white" indicator-color="primary" class="scroll-content q-pr-sm">
+                active-color="white" indicator-color="primary" class="scroll-content q-pr-sm border-tab">
           <q-tab v-for="(type, keyItem) in blockTypes" content-class="full-width items-start custom-position" :key="keyItem" :name="type.systemName" :label="type.title" no-caps />
         </q-tabs>
       </div>
       <div class="col-8">
         <q-tabs v-model="blockTypeTab" align="right" inline-label
-                no-caps indicator-color="transparent" active-bg-color="purple" active-color="white"
-                content-class="text-purple bg-grey-2">
+                no-caps indicator-color="transparent" :active-bg-color="tabColor" active-color="white"
+                :content-class="`text-${tabColor} bg-grey-2`">
           <q-tab name="global" :label="$tr('ibuilder.cms.label.libraryBlocks')" />
           <q-tab name="local" :label="$tr('ibuilder.cms.label.localBlocks')"/>
         </q-tabs>
+        <q-separator :color="tabColor" size="2px"/>
 
         <q-tab-panels v-model="blockTypeTab" animated transition-prev="scale"
                       transition-next="scale" class="scroll-content">
@@ -82,14 +81,12 @@ export default defineComponent({
   }
 
   .title-tabs {
-    height 48px
-    display grid
-    place-items center
+    height 49px
   }
 
   .scroll-content {
     //Calc title and tab panel heigh
-    height calc(100vh - 126px)
+    height calc(100vh - 128px)
     overflow-y auto
   }
 
@@ -111,10 +108,6 @@ export default defineComponent({
   }
 
   .selectable {
-    &:hover {
-      transform none
-    }
-
     &:hover .title-item,
     &.selectable--selected .title-item {
       opacity 1

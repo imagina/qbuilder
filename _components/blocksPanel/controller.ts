@@ -22,7 +22,8 @@ export default function controller(props: any, emit: any) {
     blockLibrary: Block[],
     blockTypeSelected: string | null,
     blockTypeConfig: ModuleBlockConfig[],
-    blockSelected: Block | null
+    blockSelected: Block | null,
+    blockTypeTab: string
   }
 
   // States
@@ -32,7 +33,8 @@ export default function controller(props: any, emit: any) {
     blockLibrary: [],
     blockTypeSelected: null,
     blockTypeConfig: [],
-    blockSelected: null
+    blockSelected: null,
+    blockTypeTab: 'global'
   })
 
   // Computed
@@ -72,6 +74,8 @@ export default function controller(props: any, emit: any) {
         methods.getBlockLibrary(),
         methods.getConfigBlocks()
       ])
+      //Set the default block type
+      state.blockTypeSelected = computeds.blockTypes.value[0].systemName
       state.loading = false
     },
     // Obtain the blocks from the same server
@@ -84,8 +88,8 @@ export default function controller(props: any, emit: any) {
       let blocks = await service.getBlockLibrary(true)
       state.blockLibrary = blocks
     },
-    selectBlock(block, type = 'local') {
-      state.blockSelected = {...block, blockType: type}
+    selectBlock(block) {
+      state.blockSelected = block
     },
     getConfigBlocks: async() => {
       const params = {

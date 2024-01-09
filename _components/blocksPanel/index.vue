@@ -28,7 +28,7 @@
           <q-tab-panel name="global" class="q-pa-none">
             <q-item v-for="(block, blockKey) in blocksBySelectedType.library" :key="`libraryKey${blockKey}`" clickable
                     class="bg-trans-item" v-ripple @click="selectBlock(block)">
-              <q-item-section class="relative-position q-ma-sm image-section selectable">
+              <q-item-section :class="`relative-position q-ma-sm image-section selectable ${blockSelected && blockSelected.id == block.id ? 'selectable--selected': ''}`">
                 <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle" />
                 <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle}}</span>
               </q-item-section>
@@ -39,7 +39,7 @@
           <q-tab-panel name="local" class="q-pa-none overflow-hidden">
             <q-item v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`" clickable
                     class="bg-trans-item" v-ripple @click="selectBlock(block)">
-              <q-item-section class="relative-position q-ma-sm image-section selectable">
+              <q-item-section :class="`relative-position q-ma-sm image-section selectable ${blockSelected && blockSelected.id == block.id ? 'selectable--selected': ''}`">
                 <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle" />
                 <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle}}</span>
               </q-item-section>
@@ -56,12 +56,10 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_components/blocksPanel/controller'
-import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
-import handleGrid from "@imagina/qsite/_components/v3/handleGrid/index.vue";
 
 export default defineComponent({
   props: {},
-  components: {handleGrid, iframePost},
+  components: {},
   setup(props, {emit}) {
     return controller(props, emit)
   }

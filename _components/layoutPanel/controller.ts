@@ -8,7 +8,9 @@ import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
 interface MapLayout {
   label: string,
   action?: () => void,
-  children: MapLayoutChildren[]
+  children: MapLayoutChildren[],
+  headerClass?: string,
+  customClass?: string
 }
 
 interface MapLayoutChildren {
@@ -119,6 +121,8 @@ export default function layoutController(props: any, emit: any) {
           // Include to response the layout by entities
           response.push({
             label: `${moduleEntityConfig.entity.label} (${moduleName})`,
+            headerClass: 'expansion-header',
+            customClass: 'expansion-border',
             children: entityLayoutsChildren.sort((a, b) => a.type.localeCompare(b.type))
           })
         })

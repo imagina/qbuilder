@@ -28,10 +28,15 @@ export default {
     return new Promise((resolve, reject) => {
       const baseUrl = proxy.$store.getters['qsiteApp/getSettingValueByName']('ibuilder::blockTemplatesUrl')
       if(!baseUrl) return resolve([])
+      let requestParams = {
+        params: {
+          filter: {allTranslations: true, ...params}
+        }
+      }
 
       //Request
       //@ts-ignore
-      proxy.$axios.get<ResponseBlock>(`${baseUrl}/api${config('apiRoutes.qbuilder.blocks')}`).then((response) => {
+      proxy.$axios.get<ResponseBlock>(`${baseUrl}/api${config('apiRoutes.qbuilder.blocks')}`, requestParams).then((response) => {
         resolve(response.data.data)
       }).catch(error => reject(error))
     })

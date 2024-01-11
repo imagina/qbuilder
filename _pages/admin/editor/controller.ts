@@ -4,6 +4,7 @@ import store from '@imagina/qbuilder/_pages/admin/editor/store'
 import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel/index.vue';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid/index.vue';
+import { Block } from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 export default function editorController() {
   const proxy = getCurrentInstance()!.proxy
@@ -21,7 +22,9 @@ export default function editorController() {
     layoutTab: 'preview',
     loading: false,
     showBlocksPanel: false,
-    blockIndex: -1
+    blockIndex: -1,
+    blockSelected: {},
+    showBlocksForm: false
   })
 
   // Computed
@@ -88,6 +91,10 @@ export default function editorController() {
     openModalSelectBlock(val) {
       state.blockIndex = val.index
       state.showBlocksPanel = true
+    },
+    setBlock(block: Block) {
+      state.blockSelected = block
+      state.showBlocksForm = true
     }
   }
 

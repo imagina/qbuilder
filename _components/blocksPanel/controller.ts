@@ -1,6 +1,7 @@
 import {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} from "vue";
 import service from '@imagina/qbuilder/_components/blocksPanel/services'
 import store from '@imagina/qbuilder/_components/blocksPanel/store'
+import storeEditor from '@imagina/qbuilder/_pages/admin/editor/store'
 import {Block, ModuleBlockConfig, ModulesData} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 interface blockType {
@@ -91,6 +92,7 @@ export default function controller(props: any, emit: any) {
     },
     selectBlock(block) {
       state.blockSelected = block
+      emit('selected', block)
     },
     getConfigBlocks: async() => {
       const params = {
@@ -111,6 +113,7 @@ export default function controller(props: any, emit: any) {
         }
       })
       state.blockTypeConfig = response
+      storeEditor.blockConfigs = response
     }
   }
 

@@ -14,7 +14,11 @@
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
       <!--Over panels-->
       <q-dialog v-model="showBlocksPanel" position="left" content-class="builder-panel-dialog" square>
-        <blocks-panel class="full-height"/>
+        <blocks-panel class="full-height" @selected="setBlock"/>
+      </q-dialog>
+      <!--Over panels-->
+      <q-dialog v-model="showBlocksForm" position="right" content-class="builder-panel-dialog" square>
+        <block-form class="full-height" :block="blockSelected" />
       </q-dialog>
     </div>
     <!-- Preview -->
@@ -67,6 +71,7 @@ import iframePost from "@imagina/qsite/_components/v3/iframePost";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel';
 import blocksPanel from '@imagina/qbuilder/_components/blocksPanel';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid';
+import blockForm from '@imagina/qbuilder/_components/blockForm'
 
 export default defineComponent({
   props: {},
@@ -74,7 +79,8 @@ export default defineComponent({
     layoutPanel,
     blocksPanel,
     iframePost,
-    handleGrid
+    handleGrid,
+    blockForm
   },
   setup() {
     return {...controller()}

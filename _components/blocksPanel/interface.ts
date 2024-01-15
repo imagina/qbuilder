@@ -284,7 +284,23 @@ export interface ModuleBlockConfig {
     systemName: string;
     nameSpace:  string;
     internal:   boolean;
+    content?: SelectContent[];
+    contentFields?: {
+        [key: string]: PropsDynamicField
+    };
+    childBlocks?: ChildBlockConfig;
     attributes: ModuleBlockConfigAttributes;
+}
+
+export interface ChildBlockConfig {
+    itemComponentAttributes: string;
+    productItemComponentAttributes: string;
+}
+
+export interface SelectContent {
+    label: string;
+    value: string;
+    loadOptions: [];
 }
 
 export interface ModuleBlockConfigAttributes {
@@ -309,6 +325,7 @@ export interface PropsDynamicField {
     value?: any;
     type:   string;
     columns?: string;
+    isTranslatable?: boolean;
     props:  any;
     help?:  Help;
 }

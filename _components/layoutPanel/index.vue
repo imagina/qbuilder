@@ -42,6 +42,16 @@ export default defineComponent({
     height calc(100vh - 130px)
     padding 26px 18px 24px 18px
 
+    .expansion-header {
+      font-weight bold
+      color $blue-grey
+    }
+
+    .expansion-border {
+      border 1px solid #c7c7c7
+      border-radius 5px
+    }
+
     .element {
       min-height 58px
     }

@@ -1,6 +1,9 @@
 <template>
   <div id="builderBlockForm" class="bg-white relative-position">
-    <dynamic-form v-model="formBlock" title="Crea un nuevo Bloque (PT)" description="Aqui puedes crear un nuevo bolque (PT)" :blocks="formFields.block"/>
+    <dynamic-form v-model="dataMainBlock" title="Crea un nuevo Bloque (PT)" no-actions
+                  description="Aqui puedes crear un nuevo bolque (PT)" :blocks="formFields.main" />
+<!--Hay un bug  con algunos bloques-->
+    <dynamic-form v-model="dataContentBlock" formType="grid" no-actions :blocks="formFields.contentBlock"/>
   </div>
 </template>
 <script lang="ts">

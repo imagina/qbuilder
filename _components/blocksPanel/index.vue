@@ -4,19 +4,26 @@
       <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.label.blocks') }}</h2>
     </div>
     <!--Block types-->
-    <div class="row">
-      <div class="col-4">
+    <div class="row" v-if="!loading">
+      <div class="col-5">
         <div class="title-tabs"></div>
-        <q-tabs v-model="blockTypeSelected" vertical active-bg-color="primary"
-                active-color="white" indicator-color="primary" class="scroll-content q-pr-sm border-tab">
-          <q-tab v-for="(type, keyItem) in blockTypes" content-class="full-width items-start custom-position" :key="keyItem" :name="type.systemName" :label="type.title" no-caps />
+        <q-tabs v-model="blockTypeSelected" vertical active-bg-color="primary" inline-label active-class="selected-item"
+                active-color="white" indicator-color="primary" class="scroll-content border-tab"
+                content-class="alternating-colors">
+          <q-tab v-for="(type, keyItem) in blockTypes" :key="keyItem" :name="type.systemName"
+                 content-class="custom-position" no-caps>
+            <div class="selection-item ellipsis row justify-between">
+              {{ type.title }}
+              <q-icon name="fa-light fa-arrow-right" class="q-mr-xs" size="16px" color="blue-grey"/>
+            </div>
+          </q-tab>
         </q-tabs>
       </div>
-      <div class="col-8">
+      <div class="col-7">
         <q-tabs v-model="blockTypeTab" align="right" inline-label
                 no-caps indicator-color="transparent" :active-bg-color="tabColor" active-color="white"
                 :content-class="`text-${tabColor} bg-grey-2`">
-          <q-tab name="global" :label="$tr('ibuilder.cms.label.libraryBlocks')" />
+          <q-tab name="global" :label="$tr('ibuilder.cms.label.libraryBlocks')"/>
           <q-tab name="local" :label="$tr('ibuilder.cms.label.localBlocks')"/>
         </q-tabs>
         <q-separator :color="tabColor" size="2px"/>
@@ -28,9 +35,10 @@
           <q-tab-panel name="global" class="q-pa-none">
             <q-item v-for="(block, blockKey) in blocksBySelectedType.library" :key="`libraryKey${blockKey}`" clickable
                     class="bg-trans-item" v-ripple @click="selectBlock(block)">
-              <q-item-section :class="`relative-position q-ma-sm image-section selectable ${blockSelected && blockSelected.id == block.id ? 'selectable--selected': ''}`">
-                <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle" />
-                <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle}}</span>
+              <q-item-section
+                  :class="`relative-position q-ma-sm image-section selectable ${blockSelected && blockSelected.id == block.id ? 'selectable--selected': ''}`">
+                <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle"/>
+                <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle }}</span>
               </q-item-section>
             </q-item>
           </q-tab-panel>
@@ -39,9 +47,10 @@
           <q-tab-panel name="local" class="q-pa-none overflow-hidden">
             <q-item v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`" clickable
                     class="bg-trans-item" v-ripple @click="selectBlock(block)">
-              <q-item-section :class="`relative-position q-ma-sm image-section selectable ${blockSelected && blockSelected.id == block.id ? 'selectable--selected': ''}`">
-                <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle" />
-                <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle}}</span>
+              <q-item-section
+                  :class="`relative-position q-ma-sm image-section selectable ${blockSelected && blockSelected.id == block.id ? 'selectable--selected': ''}`">
+                <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle"/>
+                <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle }}</span>
               </q-item-section>
             </q-item>
           </q-tab-panel>
@@ -74,7 +83,20 @@ export default defineComponent({
     border-right 1px solid $blue-grey-1
 
     .custom-position {
-      align-items: flex-start
+      align-items: center
+      justify-items left
+      width 100%
+    }
+
+    .selection-item {
+      width 100%
+      text-align left
+    }
+
+    .selected-item {
+      .q-icon {
+        color white !important
+      }
     }
   }
 

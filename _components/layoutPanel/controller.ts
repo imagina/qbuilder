@@ -52,8 +52,12 @@ export default function layoutController(props: any, emit: any) {
     getLayouts(crudAction = ''): Promise<boolean> {
       state.loading = true
       return new Promise(resolve => {
+        const params = {
+          filter: {allTranslations: true},
+          include: 'blocks.fields'
+        }
         //Request
-        service.getLayouts(true).then(response => {
+        service.getLayouts(true, params).then(response => {
           state.layouts = response.data
 
           //If the action is create, assign the first layout to the editor and recursiveItem stores

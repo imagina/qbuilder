@@ -14,7 +14,9 @@ export default {
       let requestParams = {
         refresh: refresh,
         params: {
-          filter: {allTranslations: true, ...params}
+          filter: {allTranslations: true},
+          include: 'fields',
+          ...params
         }
       }
       //Request
@@ -30,7 +32,9 @@ export default {
       if(!baseUrl) return resolve([])
       let requestParams = {
         params: {
-          filter: {allTranslations: true, ...params}
+          filter: {allTranslations: true},
+          include: 'fields',
+          ...params
         }
       }
 

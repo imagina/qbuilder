@@ -29,6 +29,71 @@ export default function controller(props: any, emit: any) {
 
   // Computed
   const computeds = {
+    //Return the form content
+    contentfieldsconfig: computed(() => {
+      //Instance the response
+      let response = {
+        show: false,
+        content: [],
+        contentFields: []
+      }
+      //instance the selected block
+      const block = {
+        content: [],
+        contentFields: {},
+        ...(state.configBlock || {}),
+      }
+
+      //Validate if there is content for this form
+      if (block.content.length || Object.keys(block.contentFields).length) {
+        const blockContentFields = !Object.keys(block.contentFields).length ? [] : Object.values(block.contentFields)
+        response = {
+          show: true,
+          content: block.content,
+          contentFields: [{
+            fields: [
+              {
+                name: 'blockTitle',
+                type: 'input',
+                colClass: 'col-12',
+                isTranslatable: true,
+                props : {
+                  label : this.$tr('isite.cms.form.title')
+                }
+              },
+              {
+                name: 'blockSubtitle',
+                type: 'input',
+                colClass: 'col-12',
+                isTranslatable: true,
+                props : {
+                  label : this.$tr('isite.cms.label.subtitle')
+                }
+              },
+              ...blockContentFields.map((field, keyField) => ({
+                ...field, fieldItemId: this.blockId, name: (field.name || keyField)
+              })),
+              //block bg image
+              {
+                name: 'mediasSingle',
+                value: {},
+                type: 'media',
+                colClass: 'col-12',
+                fieldItemId: this.blockId,
+                props: {
+                  label: this.$tr('isite.cms.label.backgroundImage'),
+                  zone: 'blockbgimage',
+                  entity: "Modules\\Ibuilder\\Entities\\Block",
+                  entityId: null
+                }
+              }
+            ]
+          }]
+        }
+      }
+      //Response
+      return response
+    }),
     //Map the info to dynamic form
     formFields: computed(() => {
       //Form about content
@@ -188,6 +253,52 @@ export default function controller(props: any, emit: any) {
         ]
       }
     }),
+    //get body params to iframe
+    getBlockRequestData: computed(() => {
+      console.log({c: state.dataContentBlock})
+      const formEntity = {
+        type: state.dataContentBlock
+      }
+      //Instance the request data
+      const response = this.$clone({
+        ...state.dataMainBlock,
+        component: {
+          nameSpace: state.configBlock?.nameSpace || "",
+          systemName: state.configBlock?.systemName || ""
+        },
+        // ...this.formContentFields,
+        entity: {type: null, id: null, params: {}, ...formEntity},
+        // mediasSingle: this.$clone({
+        //   ...(this.formContentFields.medias_single || this.formContentFields.mediasSingle || {}),
+        //   ...(this.formBlock.mediasSingle || this.formBlock.medias_ingle || {})
+        // }),
+        // mediasMulti: this.$clone({
+        //   ...(this.formContentFields.medias_multi || this.formContentFields.mediasMulti || {}),
+        //   ...(this.formBlock.medias_multi || this.formBlock.mediasMulti || {})
+        // }),
+      })
+      // //Merge translations
+      // this.languageOptions.forEach(lang => {
+      //   response[lang.value] = {
+      //     ...this.formContentFields[lang.value],
+      //     internalTitle: this.formBlock[lang.value]?.internalTitle,
+      //   }
+      // })
+      // // //Remove extra data
+      console.log(response)
+      delete response.componentName
+      // // delete response.helpText
+      // // delete response.medias_single
+      // // delete response.medias_multi
+      // // //Validate the status component attributes
+      // // Object.keys(this.statusChildBlocks).forEach(blockName => {
+      // //   if (!this.statusChildBlocks[blockName]) {
+      // //     response.attributes[blockName] = {}
+      // //   }
+      // // })
+      // //Response
+      // return response
+    }),
 
   }
 
@@ -218,23 +329,24 @@ export default function controller(props: any, emit: any) {
           if (item.value == props.block.entity.type) return item
         })!
       }
-console.warn({response})
+
       // Return load options if they exist
       return response?.loadOptions || null
     },
-    // //Save data
-    // async submitData(saveAndReturn) {
-    //   if (this.$refs.mainForm) {
-    //     this.isValidForm = await this.$refs.mainForm.validateCompleteForm();
-    //   }
-    //   //Send data if form is valid
-    //   if (this.isValidForm) {
-    //     const requestData = this.getBlockRequestData
-    //     this.blockId ? this.updateBlock(requestData, saveAndReturn) : this.createBlock(requestData)
-    //   } else {
-    //     this.$alert.error(this.$tr('isite.cms.message.formInvalid'))
-    //   }
-    // },
+    //Save data
+    async submitData() {
+      console.log(computeds.getBlockRequestData.value)
+      // if (this.$refs.mainForm) {
+      //   this.isValidForm = await this.$refs.mainForm.validateCompleteForm();
+      // }
+      // //Send data if form is valid
+      // if (this.isValidForm) {
+      //   const requestData = this.getBlockRequestData
+      //   this.blockId ? this.updateBlock(requestData, saveAndReturn) : this.createBlock(requestData)
+      // } else {
+      //   this.$alert.error(this.$tr('isite.cms.message.formInvalid'))
+      // }
+    },
   }
 
   // Mounted

@@ -33,7 +33,10 @@
 
           <!-- Global blocks -->
           <q-tab-panel name="global" class="q-pa-none">
-            <q-item v-for="(block, blockKey) in blocksBySelectedType.library" :key="`libraryKey${blockKey}`" clickable
+            <!--Empty Result-->
+            <not-result v-if="!blocksBySelectedType.library.length"  class="q-mt-xl"/>
+            <!--List-->
+            <q-item v-else v-for="(block, blockKey) in blocksBySelectedType.library" :key="`libraryKey${blockKey}`" clickable
                     class="bg-trans-item" v-ripple @click="selectBlock(block)">
               <q-item-section
                   :class="`relative-position q-ma-sm image-section selectable ${blockSelected && blockSelected.id == block.id ? 'selectable--selected': ''}`">
@@ -45,7 +48,10 @@
 
           <!-- Local blocks -->
           <q-tab-panel name="local" class="q-pa-none overflow-hidden">
-            <q-item v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`" clickable
+            <!--Empty Result-->
+            <not-result v-if="!blocksBySelectedType.local.length"  class="q-mt-xl"/>
+            <!--List-->
+            <q-item v-else v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`" clickable
                     class="bg-trans-item" v-ripple @click="selectBlock(block)">
               <q-item-section
                   :class="`relative-position q-ma-sm image-section selectable ${blockSelected && blockSelected.id == block.id ? 'selectable--selected': ''}`">

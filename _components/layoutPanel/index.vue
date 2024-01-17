@@ -12,7 +12,7 @@
         </div>
       </q-btn>
       <q-separator spaced/>
-      <recursive-item :translatable="false" :menu="mapLayouts" right-icon />
+      <recursive-item id="recursiveItemContent" :translatable="false" :menu="mapLayouts" right-icon/>
       <inner-loading :visible="loading"/>
     </div>
   </div>
@@ -41,25 +41,6 @@ export default defineComponent({
     overflow-y auto
     height calc(100vh - 130px)
     padding 26px 18px 24px 18px
-
-    .expansion-header {
-      font-weight bold
-      color $blue-grey
-    }
-
-    .expansion-border {
-      border 1px solid #c7c7c7
-      border-radius 5px
-    }
-
-    .element {
-      min-height 58px
-    }
-
-    .list-selected {
-      color: white
-      background: $primary
-    }
   }
 
   .drawer-title {
@@ -72,4 +53,36 @@ export default defineComponent({
     background-color $primary
     color white
   }
+
+  #recursiveItemContent
+    .expansion-header {
+      font-weight bold
+      color $blue-grey
+    }
+
+    .q-expansion-item__content, .expansion-header
+      background white
+
+    .expansion-border {
+      border 1px solid #c7c7c7
+      border-radius 5px
+      overflow hidden
+      margin-bottom 10px
+    }
+
+    .element {
+      min-height 58px
+    }
+
+    .content-item:nth-child(odd)
+      background-color: $indigo-1
+
+    .content-item:nth-child(even)
+      background-color: white
+
+    .item-is-active
+      background: $blue-8
+
+      .q-item__label, .q-icon
+        color: white
 </style>

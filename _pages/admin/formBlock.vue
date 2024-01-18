@@ -131,20 +131,24 @@
               </div>
               <!--Actions-->
               <div class="box box-auto-height text-right">
-                <q-btn v-if="!blockId" unelevated rounded no-caps type="submit" :label="$tr('isite.cms.label.save')" color="primary"/>
+                <q-btn v-if="!blockId" unelevated rounded no-caps type="submit" :label="$tr('isite.cms.label.save')"
+                       color="primary"/>
                 <div class="q-pa-md" v-else>
                   <q-btn-dropdown
-                    split
-                    color="green"
-                    content-class="bg-green text-white"
-                    rounded
-                    :label="$tr('isite.cms.label.save')"
-                    @click="() => submitData()"
+                      split
+                      color="green"
+                      content-class="bg-green text-white"
+                      rounded
+                      :label="$tr('isite.cms.label.save')"
+                      @click="() => submitData()"
                   >
                     <q-list class="q-pl-sm">
                       <q-item clickable v-close-popup>
                         <q-item-section>
-                          <q-item-label @click="() => saveAndExit()">{{ $tr('isite.cms.message.saveAndReturn') }}</q-item-label>
+                          <q-item-label @click="() => saveAndExit()">{{
+                              $tr('isite.cms.message.saveAndReturn')
+                            }}
+                          </q-item-label>
                         </q-item-section>
                       </q-item>
                     </q-list>
@@ -406,7 +410,8 @@ export default {
             name: childName,
             systemName: childBlocks[childName],
             title: childBlock.title,
-            attributes: childBlock.attributes
+            attributes: childBlock.attributes,
+            contentFields: childBlock.contentFields || {}
           })
         })
         //Set elements of the component
@@ -466,6 +471,13 @@ export default {
         ...(this.selectedBlock?.block || {}),
       }
 
+      //Get the content fields from child blocks
+      var childContentFields = Object.values(block.elements || {})
+          .map(item => item.contentFields || {})
+          .reduce((accumulator, currentObject) => {
+            return {...accumulator, ...currentObject};
+          }, {});
+
       //Validate if there is content for this form
       if (block.content.length || Object.keys(block.contentFields).length) {
         const blockContentFields = !Object.keys(block.contentFields).length ? [] : Object.values(block.contentFields)
@@ -479,8 +491,8 @@ export default {
                 type: 'input',
                 colClass: 'col-12',
                 isTranslatable: true,
-                props : {
-                  label : this.$tr('isite.cms.form.title')
+                props: {
+                  label: this.$tr('isite.cms.form.title')
                 }
               },
               {
@@ -488,13 +500,14 @@ export default {
                 type: 'input',
                 colClass: 'col-12',
                 isTranslatable: true,
-                props : {
-                  label : this.$tr('isite.cms.label.subtitle')
+                props: {
+                  label: this.$tr('isite.cms.label.subtitle')
                 }
               },
               ...blockContentFields.map((field, keyField) => ({
                 ...field, fieldItemId: this.blockId, name: (field.name || keyField)
               })),
+              ...Object.values(childContentFields),
               //block bg image
               {
                 name: 'mediasSingle',
@@ -513,6 +526,7 @@ export default {
           }]
         }
       }
+
       //Response
       return response
     },
@@ -802,7 +816,7 @@ export default {
         this.$alert.error(this.$tr('isite.cms.message.formInvalid'))
       }
     },
-    async saveAndExit(){
+    async saveAndExit() {
       await this.submitData(true);
     },
     //Save Templates Client

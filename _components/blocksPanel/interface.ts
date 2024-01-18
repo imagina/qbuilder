@@ -300,7 +300,7 @@ export interface ChildBlockConfig {
 export interface SelectContent {
     label: string;
     value: string;
-    loadOptions: [];
+    loadOptions?: [];
 }
 
 export interface ModuleBlockConfigAttributes {

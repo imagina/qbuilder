@@ -4,32 +4,16 @@ import {
   ModuleBlockConfig,
   SelectContent,
   Block,
-  Entity,
-  Params
 } from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 interface MainData extends Block {
   componentName: string;
 }
 
-interface ContentData extends Block {
-  type:   string;
-  params: Params | null;
-}
-
-interface ResponseOrderedData {
-  block: MainData;
-  content: ContentData;
-  entity: Entity;
-}
-
 interface StateProps {
   formBlock: MainData | null,
-  dataContentBlock: ContentData | null,
-  contentData: any,
   configBlock: ModuleBlockConfig,
   languageOptions: any,
-  formEntity: any
 }
 
 
@@ -44,11 +28,8 @@ export default function controller(props: any, emit: any) {
   // States
   const state = reactive<StateProps>({
     formBlock: null,
-    dataContentBlock: null,
-    contentData: null,
     configBlock: {} as ModuleBlockConfig,
-    languageOptions: proxy.$store.getters['qsiteApp/getSelectedLocalesSelect'],
-    formEntity: {},
+    languageOptions: proxy.$store.getters['qsiteApp/getSelectedLocalesSelect']
   })
 
   // Computed
@@ -117,51 +98,58 @@ export default function controller(props: any, emit: any) {
     }),
     //Map the info to dynamic form
     formFields: computed(() => {
-      return {
-        block: [
-          {
-            name: "main",
-            fields: {
-              helpText: {
-                type: "banner",
-                colClass: "col-12",
-                props: {
-                  message: "Selecciona un 'Nombre de Sistema' unico que identifique el bloque y luego el componente que quieres perzonalizar..."
-                }
-              },
-              internalTitle: {
-                isTranslatable: true,
-                type: "input",
-                required: true,
-                colClass: "col-12",
-                props: {
-                  label: proxy.$tr("isite.cms.form.title") + "*",
-                  rules: [
-                    val => !!val || proxy.$tr('isite.cms.message.fieldRequired')
-                  ],
-                }
-              },
-              systemName: {
-                type: "input",
-                required: true,
-                colClass: "col-12",
-                props: {
-                  label: proxy.$tr("isite.cms.form.systemName") + "*"
-                }
-              },
-              componentName: {
-                type: "input",
-                required: true,
-                colClass: "col-12",
-                props: {
-                  label: proxy.$tr("isite.cms.label.block") + "*",
-                  readonly: true
-                }
+      const blockForm: any[] = [
+        {
+          name: "main",
+          fields: {
+            helpText: {
+              type: "banner",
+              colClass: "col-12",
+              props: {
+                message: "Selecciona un 'Nombre de Sistema' unico que identifique el bloque y luego el componente que quieres perzonalizar..."
+              }
+            },
+            internalTitle: {
+              isTranslatable: true,
+              type: "input",
+              required: true,
+              colClass: "col-12",
+              props: {
+                label: proxy.$tr("isite.cms.form.title") + "*",
+                rules: [
+                  val => !!val || proxy.$tr('isite.cms.message.fieldRequired')
+                ],
+              }
+            },
+            systemName: {
+              type: "input",
+              required: true,
+              colClass: "col-12",
+              props: {
+                label: proxy.$tr("isite.cms.form.systemName") + "*"
+              }
+            },
+            componentName: {
+              type: "input",
+              required: true,
+              colClass: "col-12",
+              props: {
+                label: proxy.$tr("isite.cms.label.block") + "*",
+                readonly: true
               }
             }
           }
-        ],
-        entity: {
+        },
+      ];
+
+      //instance the selected block
+      const block: ModuleBlockConfig = state.configBlock || {}
+
+      if (block.content?.length) {
+        const entityData = state.formBlock?.entity
+        const loadOptions = methods.loadOptionsContent();
+
+        const entityForm = {
           title: proxy.$tr("isite.cms.label.content"),
           fields: {
             helpText: {
@@ -175,6 +163,7 @@ export default function controller(props: any, emit: any) {
               type: "select",
               require: true,
               colClass: "col-12" ,
+              fakeFieldName: 'entity',
               props: {
                 label: `${proxy.$tr('isite.cms.label.entity')}*`,
                 rules: [
@@ -186,20 +175,22 @@ export default function controller(props: any, emit: any) {
             id: {
               type: "select",
               require: true,
-              vIf: methods.loadOptionsContent() ? true : false,
+              fakeFieldName: 'entity',
+              vIf: !!loadOptions,
               props: {
                 label: `${proxy.$tr('isite.cms.label.record')}*`,
                 rules: [
                   val => !!val || proxy.$tr('isite.cms.message.fieldRequired')
                 ]
               },
-              loadOptions: methods.loadOptionsContent()
+              loadOptions: loadOptions
             },
             params: {
               type: "json",
               require: true,
               colClass: "col-12",
-              vIf: (state.formEntity.type && !methods.loadOptionsContent()) ? true : false,
+              fakeFieldName: 'entity',
+              vIf: (entityData?.type && !!!loadOptions) ? true : false,
               props: {
                 label: proxy.$tr('isite.cms.label.filter'),
                 rules: [
@@ -208,8 +199,12 @@ export default function controller(props: any, emit: any) {
               }
             },
           }
-        },
+        }
+
+        blockForm.push(entityForm)
       }
+
+      return blockForm
     }),
     //get body params to iframe
     getBlockRequestData: computed(() => {
@@ -221,7 +216,7 @@ export default function controller(props: any, emit: any) {
           systemName: state.configBlock?.systemName || ""
         },
         // ...this.formContentFields,
-        entity: {type: null, id: null, params: {}, ...state.formEntity},
+        // entity: {type: null, id: null, params: {}, ...state.formEntity},
         // mediasSingle: this.$clone({
         //   ...(this.formContentFields.medias_single || this.formContentFields.mediasSingle || {}),
         //   ...(this.formBlock.mediasSingle || this.formBlock.medias_ingle || {})
@@ -258,22 +253,6 @@ export default function controller(props: any, emit: any) {
 
   // Methods
   const methods = {
-    //Order the information, so you can use it in the form
-    orderBlockSelect: (): ResponseOrderedData => {
-      const blockSelected = props.block
-      return {
-        block: {
-          ...blockSelected,
-          componentName: blockSelected.component.systemName
-        },
-        content: {
-          ...blockSelected,
-        },
-        entity: {
-          ...blockSelected.entity,
-        }
-      }
-    },
     //Load content options
     loadOptionsContent() {
       let response: SelectContent | null = null
@@ -307,10 +286,10 @@ export default function controller(props: any, emit: any) {
 
   // Mounted
   onMounted(() => {
-    const orderedData = methods.orderBlockSelect()
-    state.formEntity = orderedData.entity
-    state.formBlock = orderedData.block
-    state.dataContentBlock = orderedData.content
+    state.formBlock = {
+      ...proxy.$clone(props.block),
+      componentName: props.block.component.systemName
+    }
 
     //Find the configuration of the block you selected
     state.configBlock =

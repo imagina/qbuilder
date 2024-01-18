@@ -37,7 +37,7 @@ export default function controller(props: any, emit: any) {
     //Return the form content
     contentfieldsconfig: computed(() => {
       //Instance the response
-      let response = {
+      let response: {show: boolean; content: SelectContent[]; contentFields: any[]} = {
         show: false,
         content: [],
         contentFields: []

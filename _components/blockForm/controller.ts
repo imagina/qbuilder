@@ -14,6 +14,8 @@ interface StateProps {
   formBlock: MainData | null,
   configBlock: ModuleBlockConfig,
   languageOptions: any,
+  showModal: boolean,
+  indexBlock: number,
 }
 
 
@@ -29,75 +31,16 @@ export default function controller(props: any, emit: any) {
   const state = reactive<StateProps>({
     formBlock: null,
     configBlock: {} as ModuleBlockConfig,
-    languageOptions: proxy.$store.getters['qsiteApp/getSelectedLocalesSelect']
+    languageOptions: proxy.$store.getters['qsiteApp/getSelectedLocalesSelect'],
+    showModal: false,
+    indexBlock: 1
   })
 
   // Computed
   const computeds = {
-    //Return the form content
-    contentfieldsconfig: computed(() => {
-      //Instance the response
-      let response: {show: boolean; content: SelectContent[]; contentFields: any[]} = {
-        show: false,
-        content: [],
-        contentFields: []
-      }
-      //instance the selected block
-      const block: ModuleBlockConfig = state.configBlock || {}
-
-      //Validate if there is content for this form
-      if (block.content?.length || (block.contentFields && Object.keys(block.contentFields).length)) {
-        const contenFields = block.contentFields ?? {};
-        const blockContentFields = !Object.keys(contenFields).length ? [] : Object.values(contenFields)
-        response = {
-          show: true,
-          content: block.content ?? [],
-          contentFields: [{
-            fields: [
-              {
-                name: 'blockTitle',
-                type: 'input',
-                colClass: 'col-12',
-                isTranslatable: true,
-                props : {
-                  label : proxy.$tr('isite.cms.form.title')
-                }
-              },
-              {
-                name: 'blockSubtitle',
-                type: 'input',
-                colClass: 'col-12',
-                isTranslatable: true,
-                props : {
-                  label : proxy.$tr('isite.cms.label.subtitle')
-                }
-              },
-              ...blockContentFields.map((field, keyField) => ({
-                ...field, fieldItemId: props.block.id, name: (field.name || keyField)
-              })),
-              //block bg image
-              {
-                name: 'mediasSingle',
-                value: {},
-                type: 'media',
-                colClass: 'col-12',
-                fieldItemId: props.block.id,
-                props: {
-                  label: proxy.$tr('isite.cms.label.backgroundImage'),
-                  zone: 'blockbgimage',
-                  entity: "Modules\\Ibuilder\\Entities\\Block",
-                  entityId: null
-                }
-              }
-            ]
-          }]
-        }
-      }
-      //Response
-      return response
-    }),
     //Map the info to dynamic form
     formFields: computed(() => {
+      //Main Content about Block
       const blockForm: any[] = [
         {
           name: "main",
@@ -129,6 +72,25 @@ export default function controller(props: any, emit: any) {
                 label: proxy.$tr("isite.cms.form.systemName") + "*"
               }
             },
+            gridPosition: {
+              value: 'col-md-12',
+              type: "input",
+              required: true,
+              colClass: "col-6",
+              props: {
+                label: `Tamaño en la Grilla (PT)`
+              }
+            },
+            sortOrder: {
+              value: state.indexBlock,
+              type: "input",
+              required: true,
+              colClass: "col-6",
+              props: {
+                label: `Posición en la Grilla (PT)`,
+                readonly: true
+              }
+            },
             componentName: {
               type: "input",
               required: true,
@@ -145,12 +107,13 @@ export default function controller(props: any, emit: any) {
       //instance the selected block
       const block: ModuleBlockConfig = state.configBlock || {}
 
+      //Entity Form
       if (block.content?.length) {
         const entityData = state.formBlock?.entity
         const loadOptions = methods.loadOptionsContent();
 
         const entityForm = {
-          title: proxy.$tr("isite.cms.label.content"),
+          title: proxy.$tr("isite.cms.label.entity"),
           fields: {
             helpText: {
               type: "banner",
@@ -202,6 +165,45 @@ export default function controller(props: any, emit: any) {
         }
 
         blockForm.push(entityForm)
+      }
+
+      //Content Fields about the selected Block
+      if(block.contentFields && Object.keys(block.contentFields).length) {
+        const blockContentFields = Object.values(block.contentFields)
+
+        const firstLevel = {
+          title: block.title,
+          fields: blockContentFields.map((field, keyField) => ({
+              ...field, fieldItemId: props.block.id, name: (field.name || keyField)
+            }))
+        }
+
+        blockForm.push(firstLevel)
+      }
+
+      //Child blocks about the specific block
+      if(block.childBlocks) {
+        const {childBlocks} = block
+        Object.keys(childBlocks).forEach(childKey => {
+          const systemNameChild = childBlocks[childKey]
+
+          const configBlockChild = methods.getBlockConfig(systemNameChild)
+
+
+          if(configBlockChild?.contentFields) {
+            const blockContentFields = Object.values(configBlockChild.contentFields)
+
+            const childConfigFields = {
+              title: `${configBlockChild.title ?? ''}`,
+              name: `${childKey}`,
+              fields: blockContentFields.map((field, keyField) => ({
+                  ...field, fakeFieldName: childKey, name: (field.name || keyField)
+                }))
+            }
+
+            blockForm.push(childConfigFields)
+          }
+        })
       }
 
       return blockForm
@@ -268,9 +270,16 @@ export default function controller(props: any, emit: any) {
       // Return load options if they exist
       return response?.loadOptions || null
     },
+    //Find Config about Block
+    getBlockConfig(systemName: string) {
+      return storeEditor.blockConfigs?.find(
+        block => block?.systemName === systemName
+      ) ?? {} as ModuleBlockConfig;
+    },
     //Save data
     async submitData() {
-      console.log(computeds.getBlockRequestData.value)
+      console.warn(state.formBlock, props.block);
+      // console.log(computeds.getBlockRequestData.value)
       // if (this.$refs.mainForm) {
       //   this.isValidForm = await this.$refs.mainForm.validateCompleteForm();
       // }
@@ -286,16 +295,16 @@ export default function controller(props: any, emit: any) {
 
   // Mounted
   onMounted(() => {
+    const index = props.index + 1
+    state.indexBlock = index
+
     state.formBlock = {
       ...proxy.$clone(props.block),
-      componentName: props.block.component.systemName
+      componentName: props.block.component?.systemName
     }
 
-    //Find the configuration of the block you selected
-    state.configBlock =
-      storeEditor.blockConfigs?.find(
-        block => block.systemName === props.block.component.systemName
-      ) ?? {} as ModuleBlockConfig;
+    //Search the selected block configuration
+    state.configBlock = methods.getBlockConfig(props.block.component?.systemName)
   })
 
   // Watch

@@ -293,8 +293,9 @@ export interface ModuleBlockConfig {
 }
 
 export interface ChildBlockConfig {
-    itemComponentAttributes: string;
-    productItemComponentAttributes: string;
+    blockAttribute?: string;
+    itemComponentAttributes?: string;
+    productItemComponentAttributes?: string;
 }
 
 export interface SelectContent {

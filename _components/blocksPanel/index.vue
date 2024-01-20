@@ -47,7 +47,7 @@
           </q-tab-panel>
 
           <!-- Local blocks -->
-          <q-tab-panel name="local" class="q-pa-none overflow-hidden">
+          <q-tab-panel name="local" :class="`q-pa-none ${!blocksBySelectedType.local.length ? 'overflow-hidden' : ''}`">
             <!--Empty Result-->
             <not-result v-if="!blocksBySelectedType.local.length"  class="q-mt-xl"/>
             <!--List-->

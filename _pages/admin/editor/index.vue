@@ -17,9 +17,9 @@
         <blocks-panel class="full-height" @selected="setBlock"/>
       </q-dialog>
       <!--Over panels-->
-      <q-dialog v-model="showBlocksForm" position="right" content-class="builder-panel-dialog" square>
-        <block-form class="full-height" :block="blockSelected" />
-      </q-dialog>
+      <master-modal v-model="showBlockForm" title="Contenido del Bloque (PT)" custom-position modalWidthSize="650px">
+        <block-form :block="blockSelected" :index="blockIndex" />
+      </master-modal>
     </div>
     <!-- Preview -->
     <div class="preview-content" :style="`width: calc(100% - ${store.panelWidth})`">
@@ -72,10 +72,12 @@ import layoutPanel from '@imagina/qbuilder/_components/layoutPanel';
 import blocksPanel from '@imagina/qbuilder/_components/blocksPanel';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid';
 import blockForm from '@imagina/qbuilder/_components/blockForm'
+import masterSynchronizable from "@imagina/qsite/_components/master/masterSynchronizable.vue";
 
 export default defineComponent({
   props: {},
   components: {
+    masterSynchronizable,
     layoutPanel,
     blocksPanel,
     iframePost,

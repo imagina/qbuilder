@@ -4,7 +4,7 @@ import store from '@imagina/qbuilder/_pages/admin/editor/store'
 import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel/index.vue';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid/index.vue';
-import { Block } from '@imagina/qbuilder/_components/blocksPanel/interface'
+import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 export default function editorController() {
   const proxy = getCurrentInstance()!.proxy
@@ -24,7 +24,7 @@ export default function editorController() {
     showBlocksPanel: false,
     blockIndex: -1,
     blockSelected: {},
-    showBlocksForm: false
+    showBlockForm: false
   })
 
   // Computed
@@ -36,6 +36,14 @@ export default function editorController() {
 
   // Methods
   const methods = {
+    getData: async() => {
+      state.loading = true
+      await Promise.all([
+        methods.getConfigBlocks()
+      ])
+
+      state.loading = false
+    },
     previewPage() {
       if (state.layoutTab === 'preview') {
         setTimeout(() => {
@@ -94,12 +102,48 @@ export default function editorController() {
     },
     setBlock(block: Block) {
       state.blockSelected = block
-      state.showBlocksForm = true
+      state.showBlockForm = true
+    },
+    //Get all config Blocks
+    getConfigBlocks: async() => {
+      //Set the principal Block that exist in all blocks
+      const principalBlock = 'x-ibuilder::block'
+
+      const params = {
+        filter: {allTranslations: true, configNameByModule: 'blocks'}
+      }
+
+      //Get configs
+      const config = await service.getModuleBlocks(true, params)
+      const response: ModuleBlockConfig[] = []
+      //Filter only items with values
+      Object.keys(config).forEach(moduleName => {
+        if (config[moduleName]) {
+          // Loop modules of config
+          const modules = config[moduleName]
+          for (const key in modules) {
+
+            const module = modules[key]
+            //Added blockConfig in all configs like child
+            if(module.systemName !== principalBlock) {
+              module.childBlocks = {
+                blockAttribute: principalBlock,
+                ...(module.childBlocks || {})
+              }
+            }
+
+            //Save data of modules
+            response.push(module)
+          }
+        }
+      })
+      store.blockConfigs = response
     }
   }
 
   // Mounted
   onMounted(() => {
+    methods.getData()
   })
 
   onUnmounted(() => {

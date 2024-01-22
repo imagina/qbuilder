@@ -2,7 +2,10 @@ import {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} f
 import service from '@imagina/qbuilder/_components/blocksPanel/services'
 import store from '@imagina/qbuilder/_components/blocksPanel/store'
 import storeEditor from '@imagina/qbuilder/_pages/admin/editor/store'
-import {Block, ModuleBlockConfig, ModulesData} from '@imagina/qbuilder/_components/blocksPanel/interface'
+import {
+  Block,
+  ModuleBlockConfig
+} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 interface blockType {
   title: string
@@ -22,7 +25,6 @@ export default function controller(props: any, emit: any) {
     localBlocks: Block[],
     blockLibrary: Block[],
     blockTypeSelected: string | null,
-    blockTypeConfig: ModuleBlockConfig[],
     blockSelected: Block | null,
     blockTypeTab: string
   }
@@ -33,7 +35,6 @@ export default function controller(props: any, emit: any) {
     localBlocks: [],
     blockLibrary: [],
     blockTypeSelected: null,
-    blockTypeConfig: [],
     blockSelected: null,
     blockTypeTab: 'global'
   })
@@ -45,7 +46,7 @@ export default function controller(props: any, emit: any) {
       // todo: obtener el name/title de cada bloque según el sistemName
       const setBlockTypes: Set<string> = new Set([...state.localBlocks, ...state.blockLibrary].map(item => item.component.systemName))
 
-      const configs: ModuleBlockConfig[] = state.blockTypeConfig
+      const configs: ModuleBlockConfig[] = storeEditor.blockConfigs
       const blockTypes: string[] = Array.from(setBlockTypes)
       const response: blockType[] = []
 
@@ -73,8 +74,7 @@ export default function controller(props: any, emit: any) {
       state.loading = true
       await Promise.all([
         methods.getLocalBlocks(),
-        methods.getBlockLibrary(),
-        methods.getConfigBlocks()
+        methods.getBlockLibrary()
       ])
       //Set the default block type
       state.blockTypeSelected = computeds.blockTypes.value[0].systemName
@@ -93,27 +93,6 @@ export default function controller(props: any, emit: any) {
     selectBlock(block) {
       state.blockSelected = block
       emit('selected', block)
-    },
-    getConfigBlocks: async() => {
-      const params = {
-        filter: {allTranslations: true, configNameByModule: 'blocks'}
-      }
-
-      const config = await service.getModuleBlocks(true, params)
-      const response: ModuleBlockConfig[] = []
-      //Filter only items with values
-      Object.keys(config).forEach(moduleName => {
-        if (config[moduleName]) {
-          // Loop modules of config
-          const modules = config[moduleName]
-          for (const key in modules) {
-            //Save data of modules
-            response.push(modules[key])
-          }
-        }
-      })
-      state.blockTypeConfig = response
-      storeEditor.blockConfigs = response
     }
   }
 

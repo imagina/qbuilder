@@ -17,7 +17,7 @@ export default function controller(props: any, emit: any) {
 
   // Refs
   const refs = {
-    // refKey: ref(defaultValue)
+    refBlockForm: ref(null)
   }
 
   interface StateProps {
@@ -92,7 +92,7 @@ export default function controller(props: any, emit: any) {
     },
     selectBlock(block) {
       state.blockSelected = block
-      emit('selected', block)
+      refs.refBlockForm.value.fillBlockData(block, 1)
     }
   }
 

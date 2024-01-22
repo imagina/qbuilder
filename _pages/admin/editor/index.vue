@@ -14,12 +14,8 @@
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
       <!--Over panels-->
       <q-dialog v-model="showBlocksPanel" position="left" content-class="builder-panel-dialog" square>
-        <blocks-panel class="full-height" @selected="setBlock"/>
+        <blocks-panel class="full-height"/>
       </q-dialog>
-      <!--Over panels-->
-      <master-modal v-model="showBlockForm" title="Contenido del Bloque (PT)" custom-position modalWidthSize="650px">
-        <block-form :block="blockSelected" :index="blockIndex" />
-      </master-modal>
     </div>
     <!-- Preview -->
     <div class="preview-content" :style="`width: calc(100% - ${store.panelWidth})`">
@@ -71,18 +67,14 @@ import iframePost from "@imagina/qsite/_components/v3/iframePost";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel';
 import blocksPanel from '@imagina/qbuilder/_components/blocksPanel';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid';
-import blockForm from '@imagina/qbuilder/_components/blockForm'
-import masterSynchronizable from "@imagina/qsite/_components/master/masterSynchronizable.vue";
 
 export default defineComponent({
   props: {},
   components: {
-    masterSynchronizable,
+    iframePost,
     layoutPanel,
     blocksPanel,
-    iframePost,
-    handleGrid,
-    blockForm
+    handleGrid
   },
   setup() {
     return {...controller()}

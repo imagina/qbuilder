@@ -29,11 +29,12 @@ export default function controller(props: any, emit: any) {
 
   // States
   const state = reactive<StateProps>({
+    block: null,
+    indexBlock: 1,
+    showModal: false,
     formBlock: null,
     configBlock: {} as ModuleBlockConfig,
-    languageOptions: proxy.$store.getters['qsiteApp/getSelectedLocalesSelect'],
-    showModal: false,
-    indexBlock: 1
+    languageOptions: proxy.$store.getters['qsiteApp/getSelectedLocalesSelect']
   })
 
   // Computed
@@ -174,7 +175,7 @@ export default function controller(props: any, emit: any) {
         const firstLevel = {
           title: block.title,
           fields: blockContentFields.map((field, keyField) => ({
-              ...field, fieldItemId: props.block.id, name: (field.name || keyField)
+              ...field, fieldItemId: state.block.id, name: (field.name || keyField)
             }))
         }
 
@@ -255,6 +256,21 @@ export default function controller(props: any, emit: any) {
 
   // Methods
   const methods = {
+    //Fill Block data
+    fillBlockData(selectedBlock, index){
+      state.block = proxy.$clone(selectedBlock)
+      state.indexBlock = proxy.$clone(index)
+
+      state.formBlock = {
+        ...proxy.$clone(selectedBlock),
+        componentName: selectedBlock.component?.systemName
+      }
+
+      //Search the selected block configuration
+      state.configBlock = methods.getBlockConfig(selectedBlock.component?.systemName)
+
+      state.showModal = true
+    },
     //Load content options
     loadOptionsContent() {
       let response: SelectContent | null = null
@@ -263,7 +279,7 @@ export default function controller(props: any, emit: any) {
       if (state.configBlock?.content) {
         // Find the element that matches the given entity type
         response = state.configBlock.content.find(item => {
-          if (item.value == props.block.entity.type) return item
+          if (item.value == state.block.entity.type) return item
         })!
       }
 
@@ -278,7 +294,7 @@ export default function controller(props: any, emit: any) {
     },
     //Save data
     async submitData() {
-      console.warn(state.formBlock, props.block);
+      console.warn(state.formBlock, state.block);
       // console.log(computeds.getBlockRequestData.value)
       // if (this.$refs.mainForm) {
       //   this.isValidForm = await this.$refs.mainForm.validateCompleteForm();
@@ -295,16 +311,6 @@ export default function controller(props: any, emit: any) {
 
   // Mounted
   onMounted(() => {
-    const index = props.index + 1
-    state.indexBlock = index
-
-    state.formBlock = {
-      ...proxy.$clone(props.block),
-      componentName: props.block.component?.systemName
-    }
-
-    //Search the selected block configuration
-    state.configBlock = methods.getBlockConfig(props.block.component?.systemName)
   })
 
   // Watch

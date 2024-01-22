@@ -1,15 +1,14 @@
 <template>
-  <dynamic-form v-model="formBlock" formType="grid" :blocks="formFields" @submit="submitData" />
+  <master-modal v-model="showModal" title="Contenido del Bloque (PT)" custom-position modalWidthSize="650px">
+    <dynamic-form v-model="formBlock" formType="grid" :blocks="formFields" @submit="submitData"/>
+  </master-modal>
 </template>
 <script lang="ts">
 import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_components/blockForm/controller'
 
 export default defineComponent({
-  props: {
-    block: { type: Object },
-    index: { type: Number, default: 0}
-  },
+  props: {},
   components: {},
   setup(props, {emit}) {
     return controller(props, emit)

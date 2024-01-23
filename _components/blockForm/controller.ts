@@ -104,9 +104,11 @@ export default function controller(props: any, emit: any) {
                 readonly: true
               }
             },
-            componentName: {
+            name: {
               type: "input",
+              name: "systemName",
               required: true,
+              fakeFieldName: 'component',
               colClass: "col-12",
               props: {
                 label: proxy.$tr("isite.cms.label.block") + "*",
@@ -272,10 +274,7 @@ export default function controller(props: any, emit: any) {
       state.block = proxy.$clone(selectedBlock)
       state.indexBlock = proxy.$clone(index)
 
-      state.formBlock = {
-        ...proxy.$clone(selectedBlock),
-        componentName: selectedBlock.component?.systemName
-      }
+      state.formBlock = proxy.$clone(selectedBlock)
 
       //Search the selected block configuration
       state.configBlock = methods.getBlockConfig(selectedBlock.component?.systemName)

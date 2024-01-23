@@ -5,17 +5,20 @@ import {
   SelectContent,
   Block,
 } from '@imagina/qbuilder/_components/blocksPanel/interface'
+import dynamicForm from '@imagina/qsite/_components/master/dynamicForm.vue'
 
 interface MainData extends Block {
   componentName: string;
 }
 
 interface StateProps {
+  block: Block,
+  indexBlock: number,
+  showModal: boolean,
   formBlock: MainData | null,
   configBlock: ModuleBlockConfig,
   languageOptions: any,
-  showModal: boolean,
-  indexBlock: number,
+  modalActions: any[]
 }
 
 
@@ -24,17 +27,26 @@ export default function controller(props: any, emit: any) {
 
   // Refs
   const refs = {
-    // refKey: ref(defaultValue)
+    refForm: ref<typeof dynamicForm>()
   }
 
   // States
   const state = reactive<StateProps>({
-    block: null,
+    block: {} as Block,
     indexBlock: 1,
     showModal: false,
     formBlock: null,
     configBlock: {} as ModuleBlockConfig,
-    languageOptions: proxy.$store.getters['qsiteApp/getSelectedLocalesSelect']
+    languageOptions: proxy.$store.getters['qsiteApp/getSelectedLocalesSelect'],
+    modalActions: [
+      {
+        props: {
+          label: proxy.$tr('isite.cms.label.save'),
+          color: 'green',
+        },
+        action: () => refs.refForm.value?.changeStep('next', true)
+      }
+    ]
   })
 
   // Computed
@@ -45,6 +57,7 @@ export default function controller(props: any, emit: any) {
       const blockForm: any[] = [
         {
           name: "main",
+          title: 'Sistema (PT)',
           fields: {
             helpText: {
               type: "banner",
@@ -54,7 +67,7 @@ export default function controller(props: any, emit: any) {
               }
             },
             internalTitle: {
-              isTranslatable: true,
+              // isTranslatable: true,
               type: "input",
               required: true,
               colClass: "col-12",
@@ -175,7 +188,7 @@ export default function controller(props: any, emit: any) {
         const firstLevel = {
           title: block.title,
           fields: blockContentFields.map((field, keyField) => ({
-              ...field, fieldItemId: state.block.id, name: (field.name || keyField)
+              ...field, fieldItemId: state.block?.id, name: (field.name || keyField)
             }))
         }
 
@@ -237,7 +250,6 @@ export default function controller(props: any, emit: any) {
       //   }
       // })
       // // //Remove extra data
-      console.log(response)
       delete response.componentName
       // // delete response.helpText
       // // delete response.medias_single
@@ -279,7 +291,7 @@ export default function controller(props: any, emit: any) {
       if (state.configBlock?.content) {
         // Find the element that matches the given entity type
         response = state.configBlock.content.find(item => {
-          if (item.value == state.block.entity.type) return item
+          if (item.value == state.block?.entity?.type) return item
         })!
       }
 

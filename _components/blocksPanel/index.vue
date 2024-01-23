@@ -76,10 +76,12 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_components/blocksPanel/controller'
-import blockForm from '@imagina/qbuilder/_components/blockForm'
+import blockForm from '@imagina/qbuilder/_components/blockForm/index.vue'
 
 export default defineComponent({
-  props: {},
+  props: {
+    index: {type: Number, default: 0}
+  },
   components: {blockForm},
   setup(props, {emit}) {
     return controller(props, emit)

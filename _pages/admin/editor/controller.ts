@@ -22,9 +22,8 @@ export default function editorController() {
     layoutTab: 'preview',
     loading: false,
     showBlocksPanel: false,
-    blockIndex: -1,
-    blockSelected: {},
-    showBlockForm: false
+    blockIndex: 0,
+    blockSelected: {}
   })
 
   // Computed
@@ -93,16 +92,15 @@ export default function editorController() {
       state.showBlocksPanel = false
     },
     changeLayout(layout) {
-      state.blockIndex = -1
+      state.blockIndex = 0
       refs.handleGrid?.value?.setState(layout.blocks)
     },
     openModalSelectBlock(val) {
-      state.blockIndex = val.index
+      state.blockIndex = Number(val.index) + 1
       state.showBlocksPanel = true
     },
     setBlock(block: Block) {
       state.blockSelected = block
-      state.showBlockForm = true
     },
     //Get all config Blocks
     getConfigBlocks: async() => {

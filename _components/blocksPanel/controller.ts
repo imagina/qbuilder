@@ -2,6 +2,7 @@ import {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} f
 import service from '@imagina/qbuilder/_components/blocksPanel/services'
 import store from '@imagina/qbuilder/_components/blocksPanel/store'
 import storeEditor from '@imagina/qbuilder/_pages/admin/editor/store'
+import blockForm from '@imagina/qbuilder/_components/blockForm/index.vue'
 import {
   Block,
   ModuleBlockConfig
@@ -17,7 +18,7 @@ export default function controller(props: any, emit: any) {
 
   // Refs
   const refs = {
-    refBlockForm: ref(null)
+    refBlockForm: ref<InstanceType<typeof blockForm>>()
   }
 
   interface StateProps {
@@ -92,7 +93,7 @@ export default function controller(props: any, emit: any) {
     },
     selectBlock(block) {
       state.blockSelected = block
-      refs.refBlockForm.value.fillBlockData(block, 1)
+      refs.refBlockForm?.value?.fillBlockData(block, props.index)
     }
   }
 

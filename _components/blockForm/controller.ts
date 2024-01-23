@@ -57,17 +57,17 @@ export default function controller(props: any, emit: any) {
       const blockForm: any[] = [
         {
           name: "main",
-          title: 'Sistema (PT)',
+          title: proxy.$tr("ibuilder.cms.label.system"),
           fields: {
             helpText: {
               type: "banner",
               colClass: "col-12",
               props: {
-                message: "Selecciona un 'Nombre de Sistema' unico que identifique el bloque y luego el componente que quieres perzonalizar..."
+                message: proxy.$tr("ibuilder.cms.label.bannerMessage")
               }
             },
             internalTitle: {
-              // isTranslatable: true,
+              isTranslatable: true,
               type: "input",
               required: true,
               colClass: "col-12",
@@ -92,16 +92,15 @@ export default function controller(props: any, emit: any) {
               required: true,
               colClass: "col-6",
               props: {
-                label: `Tamaño en la Grilla (PT)`
+                label: `${proxy.$tr('isite.cms.label.gridPosition')} *`
               }
             },
             sortOrder: {
               value: state.indexBlock,
               type: "input",
-              required: true,
               colClass: "col-6",
               props: {
-                label: `Posición en la Grilla (PT)`,
+                label: proxy.$tr("ibuilder.cms.label.sortPosition"),
                 readonly: true
               }
             },
@@ -188,7 +187,7 @@ export default function controller(props: any, emit: any) {
         const firstLevel = {
           title: block.title,
           fields: blockContentFields.map((field, keyField) => ({
-              ...field, fieldItemId: state.block?.id, name: (field.name || keyField)
+              ...field, fieldItemId: state.block?.id, fakeFieldName: 'mainComponentAttributes', name: (field.name || keyField)
             }))
         }
 

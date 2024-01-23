@@ -1,5 +1,5 @@
 <template>
-  <master-modal v-model="showModal" title="Contenido del Bloque (PT)" custom-position modalWidthSize="650px" :actions="modalActions">
+  <master-modal v-model="showModal" :title="$tr('ibuilder.cms.label.blockContent')" custom-position modalWidthSize="650px" :actions="modalActions">
     <dynamic-form v-model="formBlock" formType="grid" :blocks="formFields" @submit="submitData"
                   no-actions ref="refForm"/>
   </master-modal>

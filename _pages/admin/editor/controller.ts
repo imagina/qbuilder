@@ -125,7 +125,7 @@ export default function editorController() {
             //Added blockConfig in all configs like child
             if(module.systemName !== principalBlock) {
               module.childBlocks = {
-                blockComponentAttributes: principalBlock,
+                mainblock: principalBlock,
                 ...(module.childBlocks || {})
               }
             }

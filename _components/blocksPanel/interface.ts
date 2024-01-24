@@ -293,7 +293,7 @@ export interface ModuleBlockConfig {
 }
 
 export interface ChildBlockConfig {
-    blockComponentAttributes?: string;
+    mainblock?: string;
     itemComponentAttributes?: string;
     productItemComponentAttributes?: string;
 }

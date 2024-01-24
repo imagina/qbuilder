@@ -189,7 +189,7 @@ export default function controller(props: any, emit: any) {
         const firstLevel = {
           title: block.title,
           fields: blockContentFields.map((field, keyField) => ({
-              ...field, fieldItemId: state.block?.id, fakeFieldName: 'mainComponentAttributes', name: (field.name || keyField)
+              ...field, fieldItemId: state.block?.id, fakeFieldName: 'componentAttributes', name: (field.name || keyField)
             }))
         }
 

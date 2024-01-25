@@ -22,7 +22,10 @@ export default function editorController() {
     layoutTab: 'preview',
     loading: false,
     showBlocksPanel: false,
-    blockIndex: 0,
+    infoBlock: {
+      blockIndex: 0,
+      layoutId: null
+    },
     blockSelected: {}
   })
 
@@ -87,16 +90,17 @@ export default function editorController() {
     },
     createBlock(block) {
       //Se crea el nuevo bloque
-      refs.handleGrid?.value?.onCreate(state.blockIndex ,block)
+      refs.handleGrid?.value?.onCreate(block.sortOrder ,block)
       // Se cierra la ventana
       state.showBlocksPanel = false
     },
     changeLayout(layout) {
-      state.blockIndex = 0
+      state.infoBlock.blockIndex = 0
+      state.infoBlock.layoutId = layout.id
       refs.handleGrid?.value?.setState(layout.blocks)
     },
     openModalSelectBlock(val) {
-      state.blockIndex = Number(val.index) + 1
+      state.infoBlock.blockIndex = Number(val.index) + 1
       state.showBlocksPanel = true
     },
     setBlock(block: Block) {

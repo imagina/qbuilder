@@ -68,7 +68,7 @@
       </div>
     </div>
     <!--Block Form-->
-    <block-form ref="refBlockForm" />
+    <block-form ref="refBlockForm" @created="emitCreated" />
     <!--Loading-->
     <inner-loading :visible="loading"/>
   </div>
@@ -80,7 +80,8 @@ import blockForm from '@imagina/qbuilder/_components/blockForm/index.vue'
 
 export default defineComponent({
   props: {
-    index: {type: Number, default: 0}
+    index: {type: Number, default: 0},
+    layoutId: {type: Number, default: 0}
   },
   components: {blockForm},
   setup(props, {emit}) {

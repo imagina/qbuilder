@@ -62,6 +62,8 @@ export default defineComponent({
 
     .q-expansion-item__content, .expansion-header
       background white
+    .q-expansion-item__content
+      padding 0
 
     .expansion-border {
       border 1px solid #c7c7c7

@@ -17,6 +17,9 @@
         <blocks-panel class="full-height" @created="createBlock"
                       :index="infoBlock.blockIndex" :layout-id="infoBlock.layoutId"/>
       </q-dialog>
+
+      <!--Block Form-->
+      <block-form ref="refBlockForm" @updated="updatedBlock" />
       <!--block attrs from panels-->
       <q-dialog v-model="showBlockAttributesForm" title="editBlockAttributes (PT)"
                 position="left" content-class="builder-panel-dialog" square>
@@ -50,7 +53,7 @@
             <iframe-post :id="`iframeLayout${store.layoutSelected.id}`" ref="refIframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none overflow-hidden">
-            <handle-grid v-model="store.layoutSelected.blocks" order-by="sortOrder" title-field="internalTitle"
+            <handle-grid v-model="blocks" order-by="sortOrder" title-field="internalTitle"
                          :can-add-new-item="true" ref="handleGrid" @create="(val) => openModalSelectBlock(val)"
                          :actions="gridBlockActions"/>
           </q-tab-panel>
@@ -74,11 +77,13 @@ import iframePost from "@imagina/qsite/_components/v3/iframePost";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel';
 import blocksPanel from '@imagina/qbuilder/_components/blocksPanel';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid';
+import blockForm from "@imagina/qbuilder/_components/blockContentForm/index.vue";
 import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm'
 
 export default defineComponent({
   props: {},
   components: {
+    blockForm,
     iframePost,
     layoutPanel,
     blocksPanel,

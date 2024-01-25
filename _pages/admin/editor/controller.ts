@@ -4,6 +4,7 @@ import store from '@imagina/qbuilder/_pages/admin/editor/store'
 import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel/index.vue';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid/index.vue';
+import blockForm from '@imagina/qbuilder/_components/blockContentForm/index.vue'
 import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm';
 import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
@@ -16,11 +17,13 @@ export default function editorController() {
     crudLayout: ref(null),
     refPanel: ref<InstanceType<typeof layoutPanel>>(),
     handleGrid: ref<InstanceType<typeof handleGrid>>(),
+    refBlockForm: ref<InstanceType<typeof blockForm>>(),
     blockAttributesForm: ref<InstanceType<typeof blockAttributesForm>>(),
   }
 
   // States
   const state = reactive({
+    blocks: [],
     layoutTab: 'preview',
     loading: false,
     showBlocksPanel: false,
@@ -34,7 +37,11 @@ export default function editorController() {
 
   // Computed
   const computeds = {
-    storeSelectedLayout: computed(() => store.layoutSelected),
+    storeSelectedLayout: computed(() => {
+      //@ts-ignore
+      state.blocks = store.layoutSelected?.blocks;
+      return store.layoutSelected
+    }),
     tabColor: computed(() => state.layoutTab == 'preview' ? 'purple' : 'orange'),
     titleTab: computed(() => store.layoutSelected?.title ?? proxy.$tr('ibuilder.cms.layout')),
     gridBlockActions: computed(() => {
@@ -44,7 +51,7 @@ export default function editorController() {
           icon: 'fa-regular fa-book',
           color: '',
           action: (data) => {
-            console.warn(">>>> Contenido", data)
+            refs.refBlockForm.value?.updateData(data)
           }
         },
         blockAttriutes : {
@@ -76,7 +83,7 @@ export default function editorController() {
           if(refs.refIframePost?.value?.loadIframe && store.layoutSelected)
             refs.refIframePost.value.loadIframe(
                 `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
-                store.layoutSelected
+              store.layoutSelected
             )
         }, 300)
       }
@@ -84,24 +91,27 @@ export default function editorController() {
     saveLayout() {
       state.loading = true
       const layout = store.layoutSelected!
+      const blocks = state.blocks
 
       proxy.$crud.update('apiRoutes.qbuilder.layouts', layout.id, layout).then(response => {
-        methods.saveBlocks(layout.blocks)
+        methods.saveBlocks(blocks)
       }).catch(error => {
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')})
         state.loading = false
       })
     },
     saveBlocks(blocks: any[]) {
-      const requestParams = {notToSnakeCase: ["component", "entity", "attributes"]}
       const blockPromise: Promise<any>[] = []
       for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
+        //Ignore snake_case
+        const requestParams = {notToSnakeCase: [...(Object.keys(block.attributes) ?? []), "component", "entity", "attributes"]}
         blockPromise.push(proxy.$crud.update('apiRoutes.qbuilder.blocks', block.id, block, requestParams))
       }
 
       Promise.all(blockPromise).then(async () => {
-        state.loading = await refs.refPanel?.value?.getLayouts() || false;
+        await refs.refPanel?.value?.refreshLayouts()
+        state.loading = false;
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
       }).catch(error => {
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
@@ -112,13 +122,14 @@ export default function editorController() {
       state.loading = true
       state.loading = await refs.refPanel?.value?.getLayouts(crudAction) || false;
     },
-    async createBlock(block) {
+    createBlock(block) {
       // Se cierra la ventana
       state.showBlocksPanel = false
-      state.loading = true
-      //Se vuelve a llamar el layout
-      await refs.refPanel?.value?.refreshLayouts()
-      state.loading = false;
+      refs.handleGrid?.value?.updateSortOrder()
+      //Wait the change load
+      setTimeout(() => {
+        methods.saveLayout();
+      }, 100);
     },
     changeLayout(layout) {
       state.infoBlock.blockIndex = 0
@@ -166,7 +177,11 @@ export default function editorController() {
         }
       })
       store.blockConfigs = response
-    }
+    },
+    //Updated Info in HandleGrid
+    updatedBlock(block) {
+      refs.handleGrid?.value?.updateItem(block)
+    },
   }
 
   // Mounted

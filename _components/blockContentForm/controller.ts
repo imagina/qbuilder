@@ -6,7 +6,7 @@ import {
   Block,
 } from '@imagina/qbuilder/_components/blocksPanel/interface'
 import dynamicForm from '@imagina/qsite/_components/master/dynamicForm.vue'
-import service from '@imagina/qbuilder/_components/blockForm/services'
+import service from '@imagina/qbuilder/_components/blockContentForm/services'
 
 interface MainData extends Block {
   componentName: string;

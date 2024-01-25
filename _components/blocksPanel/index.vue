@@ -76,7 +76,7 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_components/blocksPanel/controller'
-import blockForm from '@imagina/qbuilder/_components/blockForm/index.vue'
+import blockForm from '@imagina/qbuilder/_components/blockContentForm/index.vue'
 
 export default defineComponent({
   props: {

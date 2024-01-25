@@ -4,6 +4,7 @@ import store from '@imagina/qbuilder/_pages/admin/editor/store'
 import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel/index.vue';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid/index.vue';
+import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm';
 import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 export default function editorController() {
@@ -14,7 +15,8 @@ export default function editorController() {
     refIframePost: ref<InstanceType<typeof iframePost>>(),
     crudLayout: ref(null),
     refPanel: ref<InstanceType<typeof layoutPanel>>(),
-    handleGrid: ref<InstanceType<typeof handleGrid>>()
+    handleGrid: ref<InstanceType<typeof handleGrid>>(),
+    blockAttributesForm: ref<InstanceType<typeof blockAttributesForm>>(),
   }
 
   // States
@@ -22,6 +24,7 @@ export default function editorController() {
     layoutTab: 'preview',
     loading: false,
     showBlocksPanel: false,
+    showBlockAttributesForm: false,
     infoBlock: {
       blockIndex: 0,
       layoutId: null
@@ -38,7 +41,7 @@ export default function editorController() {
       return {
         blockContent : {
           label : 'Contenido (PT)',
-          icon: 'fa-light fa-book',
+          icon: 'fa-regular fa-book',
           color: '',
           action: (data) => {
             console.warn(">>>> Contenido", data)
@@ -46,10 +49,11 @@ export default function editorController() {
         },
         blockAttriutes : {
           label : 'Attibutes (PT)',
-          icon: 'fa-light fa-palette',
+          icon: 'fa-regular fa-palette',
           color: '',
           action: (data) => {
-            console.warn(">>>> Attributes", data)
+            refs.blockAttributesForm?.value?.edit(data)
+            state.showBlockAttributesForm = true
           }
         }
       }

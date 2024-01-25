@@ -7,6 +7,7 @@ import {
 } from '@imagina/qbuilder/_components/blocksPanel/interface'
 import dynamicForm from '@imagina/qsite/_components/master/dynamicForm.vue'
 import service from '@imagina/qbuilder/_components/blockContentForm/services'
+import {helper} from '@imagina/qsite/_plugins/helper'
 
 interface MainData extends Block {
   componentName: string;
@@ -14,6 +15,7 @@ interface MainData extends Block {
 
 interface StateProps {
   block: Block,
+  idBlock: number | null,
   indexBlock: number,
   layoutId: number,
   showModal: boolean,
@@ -36,6 +38,7 @@ export default function controller(props: any, emit: any) {
   // States
   const state = reactive<StateProps>({
     block: {} as Block,
+    idBlock: null,
     indexBlock: 1,
     layoutId: 0,
     showModal: false,
@@ -125,25 +128,37 @@ export default function controller(props: any, emit: any) {
       //Entity Form
       if (block.content?.length) blockForm.push(methods.getEntityForm())
 
-      //Content Fields about the selected Block
-      if(block.contentFields && Object.keys(block.contentFields).length) blockForm.push(methods.getContentForm(block))
-
-      //Child blocks about the specific block
-      if(block.childBlocks) {
-        blockForm = [...blockForm, ...(methods.getChildBlocksForm(block))]
-      }
-
       return blockForm
     }),
     //get body params to iframe
     getBlockRequestData: computed(() => {
-      //Instance the request data
-      const response: any = proxy.$clone({
-        ...(state.formBlock ?? {}),
-        systemName: proxy.$uid(),
-        attributes: {...(state.block.attributes ?? {})},
-        sortOrder: state.indexBlock,
-        layoutId: state.layoutId
+      // Determine which object to use as base
+      const baseObject = state.idBlock ? { ...state.block, ...state.formBlock } : state.formBlock;
+
+      // Clone the base object
+      let response: any = proxy.$clone({
+        ...baseObject,
+        ...(state.idBlock ? {} : {
+          systemName: proxy.$uid(),
+          attributes: { ...(state.block?.attributes ?? {}) },
+          sortOrder: state.indexBlock,
+          layoutId: state.layoutId
+        })
+      });
+
+      //Merge translations
+      state.languageOptions.forEach(lang => {
+        const locale = lang.value
+        const formLocaleData = state.formBlock ?? {}
+        response[locale] = {
+          ...state.block[locale],
+          ...(formLocaleData[locale] ?? {}),
+        }
+
+        response = {
+          ...response,
+          ...(formLocaleData[locale] ?? {}),
+        }
       })
 
       //Remove extra data
@@ -156,12 +171,29 @@ export default function controller(props: any, emit: any) {
 
   // Methods
   const methods = {
-    //Fill Block data
-    fillBlockData(selectedBlock, {index, layoutId}){
+    //Fill in data for creation with selected block
+    fillData(selectedBlock, {index, layoutId}){
+      // Cloning and setting selected block data
       state.block = proxy.$clone(selectedBlock)
       state.indexBlock = proxy.$clone(index)
       state.layoutId = proxy.$clone(layoutId)
 
+      // Cloning and setting form block data
+      state.formBlock = proxy.$clone(selectedBlock)
+
+      // Retrieving and setting block configuration
+      state.configBlock = methods.getBlockConfig(selectedBlock.component?.systemName)
+
+      // Displaying the modal
+      state.showModal = true
+    },
+    //Fill in data for update with selected block
+    updateData(selectedBlock){
+      // Cloning and setting selected block data
+      state.block = proxy.$clone(selectedBlock)
+      //Get Block id to Update
+      state.idBlock = proxy.$clone(selectedBlock.id)
+      //Get data to pass to Form
       state.formBlock = proxy.$clone(selectedBlock)
 
       //Search the selected block configuration
@@ -249,64 +281,26 @@ export default function controller(props: any, emit: any) {
         }
       }
     },
-    //Get EntityForm
-    getContentForm(block: ModuleBlockConfig) {
-      //Get values of Content fields
-      const blockContentFields = Object.values(block?.contentFields ?? {})
-
-      //Return structure of Form componentAttributes
-      return {
-        title: block.title,
-        //Map the content Fields and added fakeFieldName like 'componentAttributes'
-        fields: blockContentFields.map((field, keyField) => ({
-          ...field, fieldItemId: state.block?.id, fakeFieldName: 'componentAttributes', name: (field.name || keyField)
-        }))
-      }
-    },
-    //Get Child blocks about the specific block
-    getChildBlocksForm(block) {
-      const {childBlocks} = block
-      const response: any[] = []
-
-      //Loop childBlocks
-      Object.keys(childBlocks).forEach(childKey => {
-        const systemNameChild = childBlocks[childKey]
-
-        //Get the config of childBlock
-        const configBlockChild = methods.getBlockConfig(systemNameChild)
-
-        //Check if exist Content Fields in Child Block
-        if(configBlockChild?.contentFields) {
-          const blockContentFields = Object.values(configBlockChild.contentFields)
-
-          //Create Form to Child Block
-          const childConfigFields = {
-            title: `${configBlockChild.title ?? ''}`,
-            name: `${childKey}`,
-            fields: blockContentFields.map((field, keyField) => ({
-              ...field, fakeFieldName: childKey, name: (field.name || keyField)
-            }))
-          }
-
-          response.push(childConfigFields)
-        }
-      })
-
-      //Return from for all childBlocks
-      return response
-    },
     //Save data
     async submitData() {
       const requestData = computeds.getBlockRequestData.value
-      await methods.createBlock(requestData)
+      const keysNotToSnakeCase = [...(Object.keys(requestData.attributes) ?? []), "component", "entity", "attributes"]
+      //Request params
+      const requestParams = {notToSnakeCase: keysNotToSnakeCase}
+
+      if(state.idBlock) {
+        state.showModal = false;
+        state.idBlock = null;
+        emit('updated', requestData)
+      } else {
+        await methods.createBlock(requestData, requestParams)
+      }
     },
     //Create Block
-    async createBlock(data) {
+    async createBlock(data, params) {
       state.loading = true
-      //Request params
-      const requestParams = {notToSnakeCase: ["component", "entity", "attributes"]}
 
-      service.createBlock( data, requestParams).then(response => {
+      service.createBlock( data, params).then(response => {
         state.loading = false
         state.showModal = false;
         emit('created', response)

@@ -7,7 +7,7 @@
 </template>
 <script lang="ts">
 import {defineComponent} from 'vue'
-import controller from '@imagina/qbuilder/_components/blockForm/controller'
+import controller from '@imagina/qbuilder/_components/blockContentForm/controller'
 
 export default defineComponent({
   props: {},

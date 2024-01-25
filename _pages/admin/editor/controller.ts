@@ -108,11 +108,13 @@ export default function editorController() {
       state.loading = true
       state.loading = await refs.refPanel?.value?.getLayouts(crudAction) || false;
     },
-    createBlock(block) {
-      //Se crea el nuevo bloque
-      refs.handleGrid?.value?.onCreate(block.sortOrder ,block)
+    async createBlock(block) {
       // Se cierra la ventana
       state.showBlocksPanel = false
+      state.loading = true
+      //Se vuelve a llamar el layout
+      await refs.refPanel?.value?.refreshLayouts()
+      state.loading = false;
     },
     changeLayout(layout) {
       state.infoBlock.blockIndex = 0

@@ -2,7 +2,7 @@ import {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} f
 import service from '@imagina/qbuilder/_components/blocksPanel/services'
 import store from '@imagina/qbuilder/_components/blocksPanel/store'
 import storeEditor from '@imagina/qbuilder/_pages/admin/editor/store'
-import blockForm from '@imagina/qbuilder/_components/blockForm/index.vue'
+import blockForm from '@imagina/qbuilder/_components/blockContentForm/index.vue'
 import {
   Block,
   ModuleBlockConfig

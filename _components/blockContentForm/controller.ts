@@ -6,7 +6,7 @@ import {
   Block,
 } from '@imagina/qbuilder/_components/blocksPanel/interface'
 import dynamicForm from '@imagina/qsite/_components/master/dynamicForm.vue'
-import service from '@imagina/qbuilder/_components/blockForm/services'
+import service from '@imagina/qbuilder/_components/blockContentForm/services'
 
 interface MainData extends Block {
   componentName: string;
@@ -83,14 +83,6 @@ export default function controller(props: any, emit: any) {
                 ],
               }
             },
-            systemName: {
-              type: "input",
-              required: true,
-              colClass: "col-12",
-              props: {
-                label: proxy.$tr("isite.cms.form.systemName") + "*"
-              }
-            },
             gridPosition: {
               value: 'col-md-12',
               type: "input",
@@ -113,9 +105,8 @@ export default function controller(props: any, emit: any) {
                 ],
               }
             },
-            name: {
+            systemName: {
               type: "input",
-              name: "systemName",
               required: true,
               fakeFieldName: 'component',
               colClass: "col-12",
@@ -149,6 +140,7 @@ export default function controller(props: any, emit: any) {
       //Instance the request data
       const response: any = proxy.$clone({
         ...(state.formBlock ?? {}),
+        systemName: proxy.$uid(),
         attributes: {...(state.block.attributes ?? {})},
         sortOrder: state.indexBlock,
         layoutId: state.layoutId

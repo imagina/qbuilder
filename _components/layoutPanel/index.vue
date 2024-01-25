@@ -4,13 +4,19 @@
       <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.layouts') }}</h2>
     </div>
     <div class="drawer-body relative-position">
-      <q-btn @click="createItem" outline rounded class="full-width q-mb-sm text-capitalize" color="primary" no-caps
-             padding="md md">
-        <q-icon size="xs" left name="fa-solid fa-plus"/>
-        <div class="text-center">
-          {{ $tr('ibuilder.cms.newLayout') }}
-        </div>
-      </q-btn>
+      <!--Buttons actions-->
+      <div class="flex q-gutter-xs justify-between">
+        <q-btn @click="createItem" outline rounded class="q-mb-sm text-capitalize" color="primary" no-caps
+               padding="md md">
+          <q-icon size="xs" left name="fa-solid fa-plus"/>
+          <div class="text-center">
+            {{ $tr('ibuilder.cms.newLayout') }}
+          </div>
+        </q-btn>
+        <q-btn @click="refreshLayouts" outline rounded class="q-mb-sm" size="md" color="primary"
+               no-caps icon="fa-light fa-rotate-right" />
+      </div>
+
       <q-separator spaced/>
       <recursive-item id="recursiveItemContent" :translatable="false" :menu="mapLayouts" right-icon/>
       <inner-loading :visible="loading"/>

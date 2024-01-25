@@ -1,4 +1,4 @@
-import {computed, reactive, ref, onMounted, toRefs, getCurrentInstance, watch} from "vue";
+import {computed, reactive, ref, onMounted, toRefs, getCurrentInstance, watch, onUnmounted} from "vue";
 import service from "@imagina/qbuilder/_components/layoutPanel/services";
 import store from "@imagina/qbuilder/_pages/admin/editor/store";
 import recursiveStore from "@imagina/qsite/_components/v3/recursiveItem/store";
@@ -142,8 +142,8 @@ export default function layoutController(props: any, emit: any) {
         const setLayout = () => {
           const layout = state.layouts.find(i => i.id === layoutSelected.id)
           if (!layout) return resolve(true)
-          store.layoutSelected = layout
-          emit('selected', layout);
+          store.layoutSelected = proxy.$clone(layout)
+          emit('selected', proxy.$clone(layout));
           resolve(true)
         }
 
@@ -164,6 +164,19 @@ export default function layoutController(props: any, emit: any) {
           })
         }
       })
+    },
+    //Send layout petition
+    async refreshLayouts() {
+      await methods.getLayouts();
+
+      if(store.layoutSelected && store.layoutSelected.id) {
+        const layoutSelected = state.layouts.find(layout => layout.id === store.layoutSelected?.id)
+
+        if(!!layoutSelected) {
+          store.layoutSelected = proxy.$clone(layoutSelected);
+          emit('selected', proxy.$clone(layoutSelected));
+        }
+      }
     }
   }
 

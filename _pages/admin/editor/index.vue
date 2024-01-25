@@ -14,7 +14,8 @@
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
       <!--Over panels-->
       <q-dialog v-model="showBlocksPanel" position="left" content-class="builder-panel-dialog" square>
-        <blocks-panel class="full-height" :index="blockIndex"/>
+        <blocks-panel class="full-height" @created="createBlock"
+                      :index="infoBlock.blockIndex" :layout-id="infoBlock.layoutId"/>
       </q-dialog>
     </div>
     <!-- Preview -->

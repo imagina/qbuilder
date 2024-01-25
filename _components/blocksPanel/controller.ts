@@ -93,7 +93,13 @@ export default function controller(props: any, emit: any) {
     },
     selectBlock(block) {
       state.blockSelected = block
-      refs.refBlockForm?.value?.fillBlockData(block, props.index)
+      refs.refBlockForm?.value?.fillBlockData(block, props)
+    },
+    // Emit event when the block is created
+    emitCreated(block) {
+      console.log(block)
+      state.blockSelected = null
+      emit('created', block);
     }
   }
 

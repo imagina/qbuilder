@@ -20,6 +20,11 @@
 
       <!--Block Form-->
       <block-form ref="refBlockForm" @updated="updatedBlock" />
+      <!--block attrs from panels-->
+      <q-dialog v-model="showBlockAttributesForm" title="editBlockAttributes (PT)"
+                position="left" content-class="builder-panel-dialog" square>
+        <block-attributes-form id="blockAttrsFormDialog" ref="blockAttributesForm"/>
+      </q-dialog>
     </div>
     <!-- Preview -->
     <div class="preview-content" :style="`width: calc(100% - ${store.panelWidth})`">
@@ -73,6 +78,7 @@ import layoutPanel from '@imagina/qbuilder/_components/layoutPanel';
 import blocksPanel from '@imagina/qbuilder/_components/blocksPanel';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid';
 import blockForm from "@imagina/qbuilder/_components/blockContentForm/index.vue";
+import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm'
 
 export default defineComponent({
   props: {},
@@ -81,7 +87,8 @@ export default defineComponent({
     iframePost,
     layoutPanel,
     blocksPanel,
-    handleGrid
+    handleGrid,
+    blockAttributesForm
   },
   setup() {
     return {...controller()}
@@ -111,8 +118,14 @@ export default defineComponent({
   .q-dialog__inner
     padding 0
     max-height 100vh
+    max-width 100vw
 
     > div:first-child
-      height 100vh !important
       max-height 100vh
+      height 100vh !important
+
+  #blockAttrsFormDialog
+    width 90vw !important
+    max-width 100vw
+
 </style>

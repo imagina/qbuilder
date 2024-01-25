@@ -5,6 +5,7 @@ import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel/index.vue';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid/index.vue';
 import blockForm from '@imagina/qbuilder/_components/blockContentForm/index.vue'
+import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm';
 import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 export default function editorController() {
@@ -16,7 +17,8 @@ export default function editorController() {
     crudLayout: ref(null),
     refPanel: ref<InstanceType<typeof layoutPanel>>(),
     handleGrid: ref<InstanceType<typeof handleGrid>>(),
-    refBlockForm: ref<InstanceType<typeof blockForm>>()
+    refBlockForm: ref<InstanceType<typeof blockForm>>(),
+    blockAttributesForm: ref<InstanceType<typeof blockAttributesForm>>(),
   }
 
   // States
@@ -25,6 +27,7 @@ export default function editorController() {
     layoutTab: 'preview',
     loading: false,
     showBlocksPanel: false,
+    showBlockAttributesForm: false,
     infoBlock: {
       blockIndex: 0,
       layoutId: null
@@ -45,7 +48,7 @@ export default function editorController() {
       return {
         blockContent : {
           label : 'Contenido (PT)',
-          icon: 'fa-light fa-book',
+          icon: 'fa-regular fa-book',
           color: '',
           action: (data) => {
             refs.refBlockForm.value?.updateData(data)
@@ -53,10 +56,11 @@ export default function editorController() {
         },
         blockAttriutes : {
           label : 'Attibutes (PT)',
-          icon: 'fa-light fa-palette',
+          icon: 'fa-regular fa-palette',
           color: '',
           action: (data) => {
-            console.warn(">>>> Attributes", data)
+            refs.blockAttributesForm?.value?.edit(data)
+            state.showBlockAttributesForm = true
           }
         }
       }
@@ -86,16 +90,15 @@ export default function editorController() {
     },
     saveLayout() {
       state.loading = true
+      const layout = store.layoutSelected!
       const blocks = state.blocks
 
-      methods.saveBlocks(blocks)
-
-      // proxy.$crud.update('apiRoutes.qbuilder.layouts', layout.id, layout).then(response => {
-      //
-      // }).catch(error => {
-      //   proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')})
-      //   state.loading = false
-      // })
+      proxy.$crud.update('apiRoutes.qbuilder.layouts', layout.id, layout).then(response => {
+        methods.saveBlocks(blocks)
+      }).catch(error => {
+        proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')})
+        state.loading = false
+      })
     },
     saveBlocks(blocks: any[]) {
       const blockPromise: Promise<any>[] = []

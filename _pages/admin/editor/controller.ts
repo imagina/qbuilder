@@ -33,7 +33,27 @@ export default function editorController() {
   const computeds = {
     storeSelectedLayout: computed(() => store.layoutSelected),
     tabColor: computed(() => state.layoutTab == 'preview' ? 'purple' : 'orange'),
-    titleTab: computed(() => store.layoutSelected?.title ?? proxy.$tr('ibuilder.cms.layout'))
+    titleTab: computed(() => store.layoutSelected?.title ?? proxy.$tr('ibuilder.cms.layout')),
+    gridBlockActions: computed(() => {
+      return {
+        blockContent : {
+          label : 'Contenido (PT)',
+          icon: 'fa-light fa-book',
+          color: '',
+          action: (data) => {
+            console.warn(">>>> Contenido", data)
+          }
+        },
+        blockAttriutes : {
+          label : 'Attibutes (PT)',
+          icon: 'fa-light fa-palette',
+          color: '',
+          action: (data) => {
+            console.warn(">>>> Attributes", data)
+          }
+        }
+      }
+    })
   }
 
   // Methods

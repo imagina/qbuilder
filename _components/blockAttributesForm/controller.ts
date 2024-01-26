@@ -6,6 +6,7 @@ import {
   ModuleBlockConfig
 } from '@imagina/qbuilder/_components/blocksPanel/interface'
 import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
+import {debounce} from 'quasar'
 
 interface StateProps {
   block: Block,
@@ -29,7 +30,6 @@ export default function controller(props: any, emit: any) {
       attributes: {}
     } as Block,
     selectedComponentName: 'x-ibuilder::block',
-    selectedChildName: 'mainblock',
     tabName: 'attributes'
   })
 
@@ -94,10 +94,23 @@ export default function controller(props: any, emit: any) {
       }, 300)
     },
     //Get name of the block in Attributes
-    getName(systemName) {
-      const block = computeds.blockConfig.value;
+    getComponentName(systemName) {
+      const block = computeds.blockConfig.value?.childBlocks ?? {};
       return Object.keys(block).find(key => block[key] === systemName);
-    }
+    },
+    mergeDataForm: debounce((data) => {
+      const nameOfAttribute = methods.getComponentName(state.selectedComponentName);
+
+      if(nameOfAttribute) {
+        state.block = {
+          ...state.block,
+          attributes: {
+            ...state.block.attributes,
+            [nameOfAttribute]: data
+          }
+        }
+      }
+    }, 500)
   }
 
   // Mounted

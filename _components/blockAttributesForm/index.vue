@@ -33,10 +33,10 @@
               <q-tab-panels v-model="tabName" animated transition-prev="scale"
                             transition-next="scale" class="scroll-content">
                 <q-tab-panel name="attributes" class="q-pa-none">
-                  <dynamic-form v-model="blockDataForm.attributes" :blocks="attributesForm" formType="collapsible" no-actions/>
+                  <dynamic-form v-model="blockDataForm.attributes" @input="mergeDataForm" :blocks="attributesForm" formType="collapsible" no-actions/>
                 </q-tab-panel>
                 <q-tab-panel name="content" class="q-pa-none">
-                  <dynamic-form v-model="blockDataForm" :blocks="contentForm" formType="grid" no-actions/>
+                  <dynamic-form v-model="blockDataForm" @input="mergeDataForm" :blocks="contentForm" formType="grid" no-actions/>
                 </q-tab-panel>
               </q-tab-panels>
             </div>

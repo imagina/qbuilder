@@ -1,6 +1,6 @@
 <template>
   <div id="builderBlockPanel" class="bg-white relative-position">
-    <div class="drawer-title q-py-lg q-px-md">
+    <div class="drawer-title q-py-md q-px-md">
       <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.label.blocks') }}</h2>
     </div>
     <!--Block types-->

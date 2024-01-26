@@ -23,7 +23,7 @@
       <!--block attrs from panels-->
       <q-dialog v-model="showBlockAttributesForm" title="editBlockAttributes (PT)"
                 position="left" content-class="builder-panel-dialog" square>
-        <block-attributes-form id="blockAttrsFormDialog" ref="blockAttributesForm"/>
+        <block-attributes-form ref="blockAttributesForm"/>
       </q-dialog>
     </div>
     <!-- Preview -->
@@ -124,8 +124,8 @@ export default defineComponent({
       max-height 100vh
       height 100vh !important
 
-  #blockAttrsFormDialog
-    width 90vw !important
+  #blockAttributesForm
+    width 100vw !important
     max-width 100vw
 
 </style>

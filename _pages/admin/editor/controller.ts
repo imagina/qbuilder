@@ -46,21 +46,21 @@ export default function editorController() {
     titleTab: computed(() => store.layoutSelected?.title ?? proxy.$tr('ibuilder.cms.layout')),
     gridBlockActions: computed(() => {
       return {
-        blockContent : {
-          label : 'Contenido (PT)',
+        blockContent: {
+          label: 'Contenido (PT)',
           icon: 'fa-regular fa-book',
           color: '',
           action: (data) => {
             refs.refBlockForm.value?.updateData(data)
           }
         },
-        blockAttriutes : {
-          label : 'Attibutes (PT)',
+        blockAttriutes: {
+          label: 'Attibutes (PT)',
           icon: 'fa-regular fa-palette',
           color: '',
           action: (data) => {
-            refs.blockAttributesForm?.value?.edit(data)
             state.showBlockAttributesForm = true
+            setTimeout(() => refs.blockAttributesForm?.value?.edit(data), 500)
           }
         }
       }
@@ -69,7 +69,7 @@ export default function editorController() {
 
   // Methods
   const methods = {
-    getData: async() => {
+    getData: async () => {
       state.loading = true
       await Promise.all([
         methods.getConfigBlocks()
@@ -80,7 +80,7 @@ export default function editorController() {
     previewPage() {
       if (state.layoutTab === 'preview') {
         setTimeout(() => {
-          if(refs.refIframePost?.value?.loadIframe && store.layoutSelected)
+          if (refs.refIframePost?.value?.loadIframe && store.layoutSelected)
             refs.refIframePost.value.loadIframe(
                 `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
               store.layoutSelected
@@ -144,7 +144,7 @@ export default function editorController() {
       state.blockSelected = block
     },
     //Get all config Blocks
-    getConfigBlocks: async() => {
+    getConfigBlocks: async () => {
       //Set the principal Block that exist in all blocks
       const principalBlock = 'x-ibuilder::block'
 
@@ -164,7 +164,7 @@ export default function editorController() {
 
             const module = modules[key]
             //Added blockConfig in all configs like child
-            if(module.systemName !== principalBlock) {
+            if (module.systemName !== principalBlock) {
               module.childBlocks = {
                 mainblock: principalBlock,
                 ...(module.childBlocks || {})

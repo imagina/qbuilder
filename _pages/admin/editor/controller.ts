@@ -1,15 +1,15 @@
-import {computed, onMounted, onUnmounted, reactive, ref, toRefs, watch, getCurrentInstance} from "vue";
+import Vue, {computed, onMounted, onUnmounted, reactive, ref, toRefs, watch, getCurrentInstance} from "vue";
 import service from '@imagina/qbuilder/_pages/admin/editor/services'
 import store from '@imagina/qbuilder/_pages/admin/editor/store'
 import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 import layoutPanel from '@imagina/qbuilder/_components/layoutPanel/index.vue';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid/index.vue';
 import blockForm from '@imagina/qbuilder/_components/blockContentForm/index.vue'
-import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm';
+import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm/index.vue';
 import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 export default function editorController() {
-  const proxy = getCurrentInstance()!.proxy
+  const proxy = (getCurrentInstance() as { proxy: Vue }).proxy as Vue
 
   // Refs
   const refs = {

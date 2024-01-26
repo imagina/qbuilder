@@ -33,10 +33,10 @@
               <q-tab-panels v-model="tabName" animated transition-prev="scale"
                             transition-next="scale" class="scroll-content">
                 <q-tab-panel name="attributes" class="q-pa-none">
-                  <dynamic-form :blocks="attributesForm" formType="collapsible" no-actions/>
+                  <dynamic-form v-model="blockDataForm.attributes" :blocks="attributesForm" formType="collapsible" no-actions/>
                 </q-tab-panel>
                 <q-tab-panel name="content" class="q-pa-none">
-                  <dynamic-form :blocks="contentForm" formType="grid" no-actions/>
+                  <dynamic-form v-model="blockDataForm" :blocks="contentForm" formType="grid" no-actions/>
                 </q-tab-panel>
               </q-tab-panels>
             </div>
@@ -44,17 +44,20 @@
         </div>
       </div>
       <!--Preview-->
-      <div id="previewContent" class="col-8">preview..</div>
+      <div id="previewContent" class="col-8">
+        <iframe-post :id="`iframeBlock${block.id}`" ref="refIframePost"/>
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts">
 import {defineComponent} from 'vue'
 import controller from '@imagina/qbuilder/_components/blockAttributesForm/controller'
+import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 
 export default defineComponent({
   props: {},
-  components: {},
+  components: {iframePost},
   setup(props, {emit}) {
     return controller(props, emit)
   }
@@ -69,11 +72,18 @@ export default defineComponent({
       border-right 1px solid $blue-grey-1
 
     #formPanelsContent
-      height: calc(100vh - 108px)
+      height: calc(100vh - 110px)
       overflow-y: scroll
 
   #previewContent
     background-color $blue-grey-1
     padding 30px 85px
     overflow scroll
+    display flex
+    align-items center
+
+    #iframePostcomponent
+      display flex
+      align-items center
+      height 700px
 </style>

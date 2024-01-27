@@ -11,9 +11,12 @@ import {debounce} from 'quasar'
 interface StateProps {
   block: Block,
   selectedComponentKey: string
+  oldSelectedComponentKey: string
   tabName: 'attributes' | 'content',
+  oldTabName: string,
   formAttributes: any,
-  formContent: any
+  formContent: any,
+  panelWidth: string
 }
 
 export default function controller(props: any, emit: any) {
@@ -27,10 +30,13 @@ export default function controller(props: any, emit: any) {
   // States
   const state = reactive<StateProps>({
     block: {} as Block,
-    selectedComponentKey: null,
+    selectedComponentKey: 'componentAttributes',
+    oldSelectedComponentKey: '',
     tabName: 'attributes',
+    oldTabName: '',
     formAttributes: {},
-    formContent: {}
+    formContent: {},
+    panelWidth: '550px'
   })
 
   // Computed
@@ -87,6 +93,7 @@ export default function controller(props: any, emit: any) {
 
       //Set fakeFieldName
       for (const [fieldName, field] of Object.entries(fields)) {
+        //@ts-ignore
         fields[fieldName] = {...field, fakeFieldName: computeds.selectedComponent.value.componentKey}
       }
 
@@ -99,8 +106,7 @@ export default function controller(props: any, emit: any) {
   const methods = {
     edit: (block) => {
       state.block = block
-      // Todo: Revisar, esto es para disparar el watch y setear la data en los form en cada cambio del tab
-      setTimeout(() => state.selectedComponentKey = 'componentAttributes', 1000)
+      methods.setVModels(state.block, state.block.attributes[state.selectedComponentKey])
     },
     //Show the block preview
     previewBlock() {
@@ -115,16 +121,35 @@ export default function controller(props: any, emit: any) {
     //Merge the data from forms into blockdata
     mergeDataForm: debounce((data) => {
       let componentKey = computeds.selectedComponent.value?.componentKey
-      if (componentKey) {
+
+      //Check that you haven't changed tabs
+      if ((componentKey && componentKey === state.oldSelectedComponentKey) && (state.tabName == state.oldTabName)) {
         //Merge The data according to tabName
         if (state.tabName == 'attributes') {
-          state.block.attributes[componentKey] = proxy.$clone({
-            ...state.block.attributes[componentKey],
-            ...state.formAttributes
-          })
+          //Trigger state.block watch
+          state.block = {
+            ...state.block,
+            attributes: {
+              ...state.block.attributes,
+              [componentKey]: proxy.$clone({
+                ...state.block.attributes[componentKey],
+                ...state.formAttributes
+              })
+            }
+          }
         } else state.block = proxy.$clone(proxy.$helper.deepMergeObjects(state.block, state.formContent))
+      } else {
+        state.oldSelectedComponentKey = componentKey
+        state.oldTabName = proxy.$clone(state.tabName)
       }
-    }, 3000)
+    }, 2000),
+    //Set v-model states
+    setVModels: (dataForm, dataAttributes) => {
+      proxy.$nextTick(() => {
+        state.formAttributes = proxy.$clone(dataAttributes)
+        state.formContent = proxy.$clone(dataForm)
+      })
+    }
   }
 
   // Mounted
@@ -133,12 +158,21 @@ export default function controller(props: any, emit: any) {
 
   // Watch - TODO: Revisar esto debería de setear la data existente del bloque en cada cambio de selectedComponentKey para los formularios
   watch(() => state.selectedComponentKey, (newField, oldField) => {
-    state.formAttributes = proxy.$clone(state.block.attributes[state.selectedComponentKey])
-    state.formContent = proxy.$clone(state.block)
+    //Set the previous tab where it was
+    state.oldSelectedComponentKey = oldField
+    methods.setVModels(state.block, state.block.attributes[newField])
+
   });
 
   watch(() => state.block, (newField, oldField) => {
+
     methods.previewBlock();
+  });
+
+  //Set the previous tab where it was
+  watch(() => state.tabName, (newField, oldField) => {
+
+    state.oldTabName = oldField
   });
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}

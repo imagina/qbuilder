@@ -6,14 +6,14 @@
     <div class="drawer-body relative-position">
       <!--Buttons actions-->
       <div class="flex q-gutter-xs justify-between">
-        <q-btn @click="createItem" outline rounded class="q-mb-sm text-capitalize" color="primary" no-caps
-               padding="md md">
+        <q-btn @click="createItem" outline rounded class="q-mb-sm text-capitalize heigth-button" color="primary" no-caps
+               padding="sm lg">
           <q-icon size="xs" left name="fa-solid fa-plus"/>
-          <div class="text-center">
+          <div class="text-center text-weight-bold">
             {{ $tr('ibuilder.cms.newLayout') }}
           </div>
         </q-btn>
-        <q-btn @click="refreshLayouts" outline rounded class="q-mb-sm" size="md" color="primary"
+        <q-btn @click="refreshLayouts" outline rounded class="q-mb-sm" size="sm" color="primary"
                no-caps icon="fa-light fa-rotate-right" />
       </div>
 
@@ -47,6 +47,10 @@ export default defineComponent({
     overflow-y auto
     height calc(100vh - 130px)
     padding 26px 18px 24px 18px
+
+    .heigth-button {
+      height 50px
+    }
   }
 
   .drawer-title {

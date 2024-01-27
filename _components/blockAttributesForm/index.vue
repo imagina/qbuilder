@@ -8,14 +8,14 @@
       <div id="panelContent" class="col-4">
         <div class="row">
           <div id="componentsNameContent" class="col-4 q-pt-xl">
-            <q-tabs v-model="selectedComponentName" vertical active-bg-color="primary" inline-label active-color="white"
+            <q-tabs v-model="selectedComponentKey" vertical active-bg-color="primary" inline-label active-color="white"
                     indicator-color="primary" class="scroll-content" content-class="alternating-colors">
-              <q-tab v-for="(component, keyItem) in componentsConfig" :key="keyItem" :name="component.systemName"
+              <q-tab v-for="(component, keyItem) in componentsConfig" :key="keyItem" :name="component.componentKey"
                      content-class="full-width" no-caps>
                 <div class="full-width row justify-between items-center">
                   {{ component.title }}
                   <q-icon name="fa-light fa-arrow-right" class="q-mr-xs" size="16px"
-                          :color="selectedComponentName == component.systemName ? 'white' : 'blue-grey'"/>
+                          :color="selectedComponentKey == component.systemName ? 'white' : 'blue-grey'"/>
                 </div>
               </q-tab>
             </q-tabs>
@@ -33,10 +33,10 @@
               <q-tab-panels v-model="tabName" animated transition-prev="scale"
                             transition-next="scale" class="scroll-content">
                 <q-tab-panel name="attributes" class="q-pa-none">
-                  <dynamic-form v-model="blockDataForm.attributes" @input="mergeDataForm" :blocks="attributesForm" formType="collapsible" no-actions/>
+                  <dynamic-form v-model="formAttributes" @input="mergeDataForm" :blocks="attributesForm" formType="collapsible" no-actions/>
                 </q-tab-panel>
                 <q-tab-panel name="content" class="q-pa-none">
-                  <dynamic-form v-model="blockDataForm" @input="mergeDataForm" :blocks="contentForm" formType="grid" no-actions/>
+                  <dynamic-form v-model="formContent" @input="mergeDataForm" :blocks="contentForm" formType="grid" no-actions/>
                 </q-tab-panel>
               </q-tab-panels>
             </div>

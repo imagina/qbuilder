@@ -10,9 +10,10 @@ import {debounce} from 'quasar'
 
 interface StateProps {
   block: Block,
-  blockDataForm: Block,
-  selectedComponentName: string
-  tabName: 'attributes'
+  selectedComponentKey: string
+  tabName: 'attributes' | 'content',
+  formAttributes: any,
+  formContent: any
 }
 
 export default function controller(props: any, emit: any) {
@@ -26,11 +27,10 @@ export default function controller(props: any, emit: any) {
   // States
   const state = reactive<StateProps>({
     block: {} as Block,
-    blockDataForm: {
-      attributes: {}
-    } as Block,
-    selectedComponentName: 'x-ibuilder::block',
-    tabName: 'attributes'
+    selectedComponentKey: null,
+    tabName: 'attributes',
+    formAttributes: {},
+    formContent: {}
   })
 
   // Computed
@@ -40,6 +40,7 @@ export default function controller(props: any, emit: any) {
     // returns the block config from state.block
     blockConfig: computed<ModuleBlockConfig | null | undefined>(() => {
       if (!state.block.id) return null
+      //Response
       return storeEditor.blockConfigs.find(config => {
         return config.systemName == state.block.component?.systemName
       })
@@ -47,17 +48,32 @@ export default function controller(props: any, emit: any) {
     // Returns the block configs of the block and its child blocks
     componentsConfig: computed<ModuleBlockConfig[]>(() => {
       if (!computeds.blockConfig.value) return []
+
+      //Get the child blocks syste Names
       const childBlocksSystemName = Object.values(computeds.blockConfig.value.childBlocks || {})
-      return [
-        computeds.blockConfig.value,
-        ...storeEditor.blockConfigs.filter(config => {
-          return childBlocksSystemName.includes(config.systemName)
-        })
-      ]
+
+      //Merge the selected block with its child blocks
+      let configBlocks = [computeds.blockConfig.value, ...storeEditor.blockConfigs.filter(config => {
+        return childBlocksSystemName.includes(config.systemName)
+      })]
+
+      //Set localFormName
+      configBlocks = configBlocks.map(configBlock => {
+        configBlock.componentKey = 'componentAttributes'
+        //Define bockKey
+        for (const [name, systemName] of Object.entries(computeds.blockConfig.value.childBlocks)) {
+          if (systemName == configBlock.systemName) configBlock.componentKey = name
+        }
+        //Response
+        return configBlock
+      })
+
+      //Response
+      return configBlocks
     }),
     //Return the config of selected component
     selectedComponent: computed(() => {
-      return computeds.componentsConfig.value.find(comp => comp.systemName == state.selectedComponentName)
+      return computeds.componentsConfig.value.find(comp => comp.componentKey == state.selectedComponentKey)
     }),
     //Return the config of dynamic-form to attributes
     attributesForm: computed(() => {
@@ -67,13 +83,15 @@ export default function controller(props: any, emit: any) {
     //Return the config of dynamic-form to attributes
     contentForm: computed(() => {
       if (!computeds.selectedComponent.value) return []
-      return [
-        {
-          name : 'maincontent',
-          title: 'Contenido (PT)',
-          fields: computeds.selectedComponent.value.contentFields || {}
-        }
-      ]
+      let fields = computeds.selectedComponent.value.contentFields || {}
+
+      //Set fakeFieldName
+      for (const [fieldName, field] of Object.entries(fields)) {
+        fields[fieldName] = {...field, fakeFieldName: computeds.selectedComponent.value.componentKey}
+      }
+
+      //Response
+      return [{name: 'maincontent', title: 'Contenido (PT)', fields: fields}]
     })
   }
 
@@ -81,9 +99,10 @@ export default function controller(props: any, emit: any) {
   const methods = {
     edit: (block) => {
       state.block = block
-      //Set block data
-      state.blockDataForm = proxy.$clone(block)
+      // Todo: Revisar, esto es para disparar el watch y setear la data en los form en cada cambio del tab
+      setTimeout(() => state.selectedComponentKey = 'componentAttributes', 1000)
     },
+    //Show the block preview
     previewBlock() {
       setTimeout(() => {
         if (refs.refIframePost?.value?.loadIframe && state.block.id)
@@ -91,33 +110,33 @@ export default function controller(props: any, emit: any) {
             `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
             state.block
           )
-      }, 300)
+      }, 2500)
     },
-    //Get name of the block in Attributes
-    getComponentName(systemName) {
-      const block = computeds.blockConfig.value?.childBlocks ?? {};
-      return Object.keys(block).find(key => block[key] === systemName);
-    },
+    //Merge the data from forms into blockdata
     mergeDataForm: debounce((data) => {
-      const nameOfAttribute = methods.getComponentName(state.selectedComponentName);
-
-      if(nameOfAttribute) {
-        state.block = {
-          ...state.block,
-          attributes: {
-            ...state.block.attributes,
-            [nameOfAttribute]: data
-          }
-        }
+      let componentKey = computeds.selectedComponent.value?.componentKey
+      if (componentKey) {
+        //Merge The data according to tabName
+        if (state.tabName == 'attributes') {
+          state.block.attributes[componentKey] = proxy.$clone({
+            ...state.block.attributes[componentKey],
+            ...state.formAttributes
+          })
+        } else state.block = proxy.$clone(proxy.$helper.deepMergeObjects(state.block, state.formContent))
       }
-    }, 500)
+    }, 3000)
   }
 
   // Mounted
   onMounted(() => {
   })
 
-  // Watch
+  // Watch - TODO: Revisar esto debería de setear la data existente del bloque en cada cambio de selectedComponentKey para los formularios
+  watch(() => state.selectedComponentKey, (newField, oldField) => {
+    state.formAttributes = proxy.$clone(state.block.attributes[state.selectedComponentKey])
+    state.formContent = proxy.$clone(state.block)
+  });
+
   watch(() => state.block, (newField, oldField) => {
     methods.previewBlock();
   });

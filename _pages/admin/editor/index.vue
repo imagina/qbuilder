@@ -19,11 +19,12 @@
       </q-dialog>
 
       <!--Block Form-->
-      <block-form ref="refBlockForm" @updated="updatedBlock" />
+      <block-form ref="refBlockForm" @updated="updatedBlock"/>
       <!--block attrs from panels-->
       <q-dialog v-model="showBlockAttributesForm" title="editBlockAttributes (PT)"
-                position="left" content-class="builder-panel-dialog" square>
-        <block-attributes-form ref="blockAttributesForm"/>
+                position="left" content-class="builder-panel-dialog" square persistent>
+        <block-attributes-form ref="blockAttributesForm" @input="handleBlockAttributesEdit"
+                               @cancel="handleBlockAttributesEdit"/>
       </q-dialog>
     </div>
     <!-- Preview -->

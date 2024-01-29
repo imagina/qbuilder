@@ -97,6 +97,25 @@ export default function controller(props: any, emit: any) {
 
       //Response
       return [{name: 'maincontent', title: 'Contenido (PT)', fields: fields}]
+    }),
+    // General Actions
+    generalActions: computed(() => {
+      return [
+        {
+          props: {
+            label: 'Discart (PT)',
+            color: 'grey-5',
+          },
+          action: () => emit('cancel')
+        },
+        {
+          props : {
+            label: 'Aplicar (PT)',
+            color: 'green',
+          },
+          action: () => emit('input', proxy.$clone(state.block))
+        }
+      ]
     })
   }
 

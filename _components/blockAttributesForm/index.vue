@@ -48,6 +48,11 @@
             </div>
           </div>
         </div>
+        <!-- Actions -->
+        <div id="actionsContent" class="row">
+          <q-btn v-for="(btn, keyBtn) in generalActions" :key="keyBtn" unelevated square
+                 @click="btn.action" class="col-6" v-bind="btn.props"/>
+        </div>
       </div>
       <!--Preview-->
       <div id="previewContent" :style="`width: calc(100% - ${panelWidth})`">
@@ -78,7 +83,7 @@ export default defineComponent({
       border-right 1px solid $blue-grey-1
 
     #formPanelsContent
-      height: calc(100vh - 110px)
+      height: calc(100vh - 146px)
       overflow-y: scroll
 
   #previewContent
@@ -92,4 +97,8 @@ export default defineComponent({
     #iframePostcomponent
       display flex
       align-items center
+
+  #actionsContent
+    .q-btn
+      border-radius 0 !important
 </style>

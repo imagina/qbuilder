@@ -182,6 +182,13 @@ export default function editorController() {
     updatedBlock(block) {
       refs.handleGrid?.value?.updateItem(block)
     },
+    //Hanfle the block attributes form
+    handleBlockAttributesEdit(data = null){
+      state.showBlockAttributesForm = false
+      if(data){
+        // todo: logic to save the changes into layout...
+      }
+    }
   }
 
   // Mounted

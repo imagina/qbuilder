@@ -9,6 +9,7 @@ import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 import {debounce} from 'quasar'
 
 interface StateProps {
+  debounce: Number,
   block: Block,
   selectedComponentKey: string
   oldSelectedComponentKey: string
@@ -29,6 +30,7 @@ export default function controller(props: any, emit: any) {
 
   // States
   const state = reactive<StateProps>({
+    debounce: 2000,//Seconds to debounce the preview request
     block: {} as Block,
     selectedComponentKey: 'componentAttributes',
     oldSelectedComponentKey: '',
@@ -109,7 +111,7 @@ export default function controller(props: any, emit: any) {
       methods.setVModels(state.block, state.block.attributes[state.selectedComponentKey])
     },
     //Show the block preview
-    previewBlock() {
+    previewBlock: debounce(() => {
       setTimeout(() => {
         if (refs.refIframePost?.value?.loadIframe && state.block.id)
           refs.refIframePost.value.loadIframe(
@@ -117,9 +119,9 @@ export default function controller(props: any, emit: any) {
             state.block
           )
       }, 2500)
-    },
+    }, state.debounce),
     //Merge the data from forms into blockdata
-    mergeDataForm: debounce((data) => {
+    mergeDataForm(data) {
       let componentKey = computeds.selectedComponent.value?.componentKey
 
       //Check that you haven't changed tabs
@@ -127,22 +129,16 @@ export default function controller(props: any, emit: any) {
         //Merge The data according to tabName
         if (state.tabName == 'attributes') {
           //Trigger state.block watch
-          state.block = {
-            ...state.block,
-            attributes: {
-              ...state.block.attributes,
-              [componentKey]: proxy.$clone({
-                ...state.block.attributes[componentKey],
-                ...state.formAttributes
-              })
-            }
-          }
+          state.block.attributes[componentKey] = proxy.$clone({
+            ...state.block.attributes[componentKey],
+            ...state.formAttributes
+          })
         } else state.block = proxy.$clone(proxy.$helper.deepMergeObjects(state.block, state.formContent))
       } else {
         state.oldSelectedComponentKey = componentKey
         state.oldTabName = proxy.$clone(state.tabName)
       }
-    }, 2000),
+    },
     //Set v-model states
     setVModels: (dataForm, dataAttributes) => {
       proxy.$nextTick(() => {
@@ -165,9 +161,8 @@ export default function controller(props: any, emit: any) {
   });
 
   watch(() => state.block, (newField, oldField) => {
-
     methods.previewBlock();
-  });
+  }, {deep: true});
 
   //Set the previous tab where it was
   watch(() => state.tabName, (newField, oldField) => {

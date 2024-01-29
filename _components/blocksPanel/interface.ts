@@ -327,6 +327,7 @@ export interface PropsDynamicField {
     type:   string;
     columns?: string;
     isTranslatable?: boolean;
+    fakeFieldName?: string;
     props:  any;
     help?:  Help;
 }

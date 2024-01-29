@@ -83,7 +83,7 @@ export default function editorController() {
           if (refs.refIframePost?.value?.loadIframe && store.layoutSelected)
             refs.refIframePost.value.loadIframe(
                 `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
-              store.layoutSelected
+              {...store.layoutSelected, blocks: state.blocks}
             )
         }, 300)
       }

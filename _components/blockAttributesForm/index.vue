@@ -5,9 +5,9 @@
     </div>
     <div class="row q-col-gutter-x-md">
       <!--Panel-->
-      <div id="panelContent" class="col-4">
+      <div id="panelContent" :style="`width: ${panelWidth}`">
         <div class="row">
-          <div id="componentsNameContent" class="col-4 q-pt-xl">
+          <div id="componentsNameContent" class="q-pt-xl" :style="`width: 30%`">
             <q-tabs v-model="selectedComponentKey" vertical active-bg-color="primary" inline-label active-color="white"
                     indicator-color="primary" class="scroll-content" content-class="alternating-colors">
               <q-tab v-for="(component, keyItem) in componentsConfig" :key="keyItem" :name="component.componentKey"
@@ -20,9 +20,9 @@
               </q-tab>
             </q-tabs>
           </div>
-          <div class="col-8">
+          <div :style="`width: 70%`">
             <!--Tabs-->
-            <q-tabs v-model="tabName" align="right" inline-label no-caps indicator-color="transparent"
+            <q-tabs v-model="tabName" inline-label no-caps indicator-color="transparent" class="full-width"
                     :active-bg-color="tabColor" active-color="white" :content-class="`text-${tabColor} bg-grey-2`">
               <q-tab name="attributes" label="Attributes (PT)"/>
               <q-tab name="content" label="Content (PT)"/>
@@ -44,7 +44,7 @@
         </div>
       </div>
       <!--Preview-->
-      <div id="previewContent" class="col-8">
+      <div id="previewContent" :style="`width: calc(100% - ${panelWidth})`">
         <iframe-post :id="`iframeBlock${block.id}`" ref="refIframePost"/>
       </div>
     </div>
@@ -81,9 +81,9 @@ export default defineComponent({
     overflow scroll
     display flex
     align-items center
+    height 80%
 
     #iframePostcomponent
       display flex
       align-items center
-      height 700px
 </style>

@@ -9,13 +9,14 @@
         <div class="row">
           <div id="componentsNameContent" class="q-pt-xl" :style="`width: 30%`">
             <q-tabs v-model="selectedComponentKey" vertical active-bg-color="primary" inline-label active-color="white"
-                    indicator-color="primary" class="scroll-content" content-class="alternating-colors">
+                    indicator-color="primary" class="scroll-content" content-class="alternating-colors"
+                    @input="handleAllowEditIndicator">
               <q-tab v-for="(component, keyItem) in componentsConfig" :key="keyItem" :name="component.componentKey"
                      content-class="full-width" no-caps>
                 <div class="full-width row justify-between items-center">
                   {{ component.title }}
                   <q-icon name="fa-light fa-arrow-right" class="q-mr-xs" size="16px"
-                          :color="selectedComponentKey == component.systemName ? 'white' : 'blue-grey'"/>
+                          :color="selectedComponentKey == component.componentKey ? 'white' : 'blue-grey'"/>
                 </div>
               </q-tab>
             </q-tabs>
@@ -23,22 +24,27 @@
           <div :style="`width: 70%`">
             <!--Tabs-->
             <q-tabs v-model="tabName" inline-label no-caps indicator-color="transparent" class="full-width"
-                    :active-bg-color="tabColor" active-color="white" :content-class="`text-${tabColor} bg-grey-2`">
+                    :active-bg-color="tabColor" active-color="white" :content-class="`text-${tabColor} bg-grey-2`"
+                    @input="handleAllowEditIndicator">
               <q-tab name="attributes" label="Attributes (PT)"/>
               <q-tab name="content" label="Content (PT)"/>
             </q-tabs>
             <q-separator :color="tabColor" size="2px"/>
             <!--Tab panels-->
-            <div id="formPanelsContent" class="q-pa-sm">
+            <div id="formPanelsContent" class="q-pa-sm relative-position">
               <q-tab-panels v-model="tabName" animated transition-prev="scale"
                             transition-next="scale" class="scroll-content">
                 <q-tab-panel name="attributes" class="q-pa-none">
-                  <dynamic-form v-model="formAttributes" @input="mergeDataForm" :blocks="attributesForm" formType="collapsible" no-actions/>
+                  <dynamic-form v-model="formAttributes" @input="mergeDataForm" :blocks="attributesForm"
+                                formType="collapsible" no-actions/>
                 </q-tab-panel>
                 <q-tab-panel name="content" class="q-pa-none">
-                  <dynamic-form v-model="formContent" @input="mergeDataForm" :blocks="contentForm" formType="grid" no-actions/>
+                  <dynamic-form v-model="formContent" @input="mergeDataForm" :blocks="contentForm"
+                                formType="grid" no-actions/>
                 </q-tab-panel>
               </q-tab-panels>
+              <!-- inner loading -->
+              <inner-loading :visible="!allowEdit"/>
             </div>
           </div>
         </div>

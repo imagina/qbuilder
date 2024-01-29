@@ -9,12 +9,10 @@ import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 import {debounce} from 'quasar'
 
 interface StateProps {
-  debounce: Number,
+  allowEdit: Boolean,
   block: Block,
   selectedComponentKey: string
-  oldSelectedComponentKey: string
   tabName: 'attributes' | 'content',
-  oldTabName: string,
   formAttributes: any,
   formContent: any,
   panelWidth: string
@@ -30,15 +28,13 @@ export default function controller(props: any, emit: any) {
 
   // States
   const state = reactive<StateProps>({
-    debounce: 2000,//Seconds to debounce the preview request
+    allowEdit: false, //Indicator to allow edit forms and handle preview
     block: {} as Block,
     selectedComponentKey: 'componentAttributes',
-    oldSelectedComponentKey: '',
     tabName: 'attributes',
-    oldTabName: '',
     formAttributes: {},
     formContent: {},
-    panelWidth: '550px'
+    panelWidth: '650px'
   })
 
   // Computed
@@ -106,26 +102,35 @@ export default function controller(props: any, emit: any) {
 
   // Methods
   const methods = {
+    init: () => {
+      methods.handleAllowEditIndicator()
+    },
+    // Statr to edit the block attributes
     edit: (block) => {
       state.block = block
-      methods.setVModels(state.block, state.block.attributes[state.selectedComponentKey])
+      methods.setVModels()
+      methods.previewBlock()//Call update preview
     },
-    //Show the block preview
-    previewBlock: debounce(() => {
-      setTimeout(() => {
-        if (refs.refIframePost?.value?.loadIframe && state.block.id)
-          refs.refIframePost.value.loadIframe(
-            `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
-            state.block
-          )
-      }, 2500)
-    }, state.debounce),
+    //Set v-model states
+    setVModels: () => {
+      proxy.$nextTick(() => {
+        state.formAttributes = state.block.attributes[state.selectedComponentKey]
+        state.formContent = state.block
+      })
+    },
+    // Handle the allowEdit indicator
+    handleAllowEditIndicator: () => {
+      state.allowEdit = false
+      methods.enableAllowEditIndicator()
+    },
+    // AS a Debounce enable the edit the forms
+    enableAllowEditIndicator: debounce(() => state.allowEdit = true, 1000),
     //Merge the data from forms into blockdata
-    mergeDataForm(data) {
-      let componentKey = computeds.selectedComponent.value?.componentKey
+    mergeDataForm() {
+      if (state.allowEdit) {
+        let componentKey = computeds.selectedComponent.value?.componentKey
 
-      //Check that you haven't changed tabs
-      if ((componentKey && componentKey === state.oldSelectedComponentKey) && (state.tabName == state.oldTabName)) {
+        //Check that you haven't changed tabs
         //Merge The data according to tabName
         if (state.tabName == 'attributes') {
           //Trigger state.block watch
@@ -134,41 +139,28 @@ export default function controller(props: any, emit: any) {
             ...state.formAttributes
           })
         } else state.block = proxy.$clone(proxy.$helper.deepMergeObjects(state.block, state.formContent))
-      } else {
-        state.oldSelectedComponentKey = componentKey
-        state.oldTabName = proxy.$clone(state.tabName)
+
+        //Call update preview
+        methods.previewBlock()
       }
     },
-    //Set v-model states
-    setVModels: (dataForm, dataAttributes) => {
-      proxy.$nextTick(() => {
-        state.formAttributes = proxy.$clone(dataAttributes)
-        state.formContent = proxy.$clone(dataForm)
-      })
-    }
+    //Show the block preview
+    previewBlock: debounce(() => {
+      if (refs.refIframePost?.value?.loadIframe && state.block.id)
+        refs.refIframePost.value.loadIframe(
+          `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
+          state.block
+        )
+    }, 2000)
   }
 
   // Mounted
   onMounted(() => {
+    methods.init()
   })
 
   // Watch - TODO: Revisar esto debería de setear la data existente del bloque en cada cambio de selectedComponentKey para los formularios
-  watch(() => state.selectedComponentKey, (newField, oldField) => {
-    //Set the previous tab where it was
-    state.oldSelectedComponentKey = oldField
-    methods.setVModels(state.block, state.block.attributes[newField])
-
-  });
-
-  watch(() => state.block, (newField, oldField) => {
-    methods.previewBlock();
-  }, {deep: true});
-
-  //Set the previous tab where it was
-  watch(() => state.tabName, (newField, oldField) => {
-
-    state.oldTabName = oldField
-  });
+  watch(() => state.selectedComponentKey, methods.setVModels);
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}
 }

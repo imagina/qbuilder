@@ -96,22 +96,26 @@ export default function controller(props: any, emit: any) {
       }
 
       //Response
-      return [{name: 'maincontent', title: 'Contenido (PT)', fields: fields}]
+      return [{name: 'maincontent', title: proxy.$tr('ibuilder.cms.label.content'), fields: fields}]
     }),
     // General Actions
     generalActions: computed(() => {
       return [
         {
           props: {
-            label: 'Discart (PT)',
-            color: 'grey-5',
+            label: proxy.$tr('ibuilder.cms.label.discard'),
+            color: 'grey-7',
+            outline: true,
+            rounded: true,
+            class: 'q-mr-sm'
           },
-          action: () => emit('cancel')
+          action: methods.discardChanges
         },
         {
           props : {
-            label: 'Aplicar (PT)',
+            label: proxy.$tr('ibuilder.cms.label.apply'),
             color: 'green',
+            rounded: true
           },
           action: () => emit('input', proxy.$clone(state.block))
         }
@@ -126,7 +130,7 @@ export default function controller(props: any, emit: any) {
     },
     // Statr to edit the block attributes
     edit: (block) => {
-      state.block = block
+      state.block = proxy.$clone(block);
       methods.setVModels()
       methods.previewBlock()//Call update preview
     },
@@ -170,7 +174,33 @@ export default function controller(props: any, emit: any) {
           `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
           state.block
         )
-    }, 2000)
+    }, 2000),
+    //Define alert action when click button discard
+    discardChanges() {
+      proxy.$alert.warning({
+        mode: 'modal',
+        title: proxy.$tr('ibuilder.cms.label.sureDiscardBlock'),
+        message: proxy.$tr('ibuilder.cms.label.descriptionSureDiscardBlock'),
+        actions: [
+          {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
+          {
+            label: proxy.$tr('isite.cms.label.accept'),
+            color: 'green',
+            handler: () => emit('cancel')
+          },
+        ]
+      })
+    },
+    //Verify if Has fields
+    hasFields(obj) {
+      //Checks if you have at least one object in the array
+      if(!obj.length) return false
+      //Look for the fields key, which is an object and get the keys
+      const keys = Object.keys(obj[0]?.fields ?? {})
+
+      //Returns if you have one or more fields in fields
+      return keys.length > 0
+    }
   }
 
   // Mounted

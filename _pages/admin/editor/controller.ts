@@ -47,7 +47,7 @@ export default function editorController() {
     gridBlockActions: computed(() => {
       return {
         blockContent: {
-          label: 'Contenido (PT)',
+          label: proxy.$tr('ibuilder.cms.label.content'),
           icon: 'fa-regular fa-book',
           color: '',
           action: (data) => {
@@ -55,7 +55,7 @@ export default function editorController() {
           }
         },
         blockAttriutes: {
-          label: 'Attibutes (PT)',
+          label: proxy.$tr('ibuilder.cms.label.attributes'),
           icon: 'fa-regular fa-palette',
           color: '',
           action: (data) => {
@@ -185,8 +185,9 @@ export default function editorController() {
     //Hanfle the block attributes form
     handleBlockAttributesEdit(data = null){
       state.showBlockAttributesForm = false
+      //Update block when finish edition
       if(data){
-        // todo: logic to save the changes into layout...
+        methods.updatedBlock(data)
       }
     }
   }

@@ -49,6 +49,16 @@
 
           <!-- Local blocks -->
           <q-tab-panel name="local" :class="`q-pa-none ${!blocksBySelectedType.local.length ? 'overflow-hidden' : ''}`">
+            <!--Buttons actions-->
+            <div class="flex q-mt-sm q-px-lg">
+              <q-btn @click="selectBlock({component: {systemName: blockTypeSelected}})" outline rounded class="full-width q-mx-sm text-capitalize"
+                     color="primary" no-caps padding="sm lg">
+                <q-icon size="xs" left name="fa-solid fa-plus"/>
+                <div class="text-center text-weight-bold">
+                  {{ $tr('ibuilder.cms.newBlock') }}
+                </div>
+              </q-btn>
+            </div>
             <!--Empty Result-->
             <not-result v-if="!blocksBySelectedType.local.length" class="q-mt-xl"/>
             <!--List-->

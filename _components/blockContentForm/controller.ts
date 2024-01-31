@@ -146,6 +146,8 @@ export default function controller(props: any, emit: any) {
         })
       });
 
+      if(!response.entity) response.entity = {}
+
       //Merge translations
       state.languageOptions.forEach(lang => {
         const locale = lang.value

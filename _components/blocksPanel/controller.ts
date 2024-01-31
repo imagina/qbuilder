@@ -74,18 +74,12 @@ export default function controller(props: any, emit: any) {
       const blockSelected = storeEditor.blockConfigs.find(config => config.systemName === state.blockTypeSelected)
 
       if(!blockSelected) return {}
-      const attributes = { componentAttributes: {} }
-
-      Object.keys(blockSelected.childBlocks ?? {}).forEach(childKeys => {
-        attributes[childKeys] = {}
-      })
 
       return {
         component: {
           nameSpace: blockSelected.nameSpace,
           systemName: state.blockTypeSelected
         },
-        attributes
       }
     })
   }

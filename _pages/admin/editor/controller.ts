@@ -120,7 +120,7 @@ export default function editorController() {
     },
     async refreshLayouts(crudAction) {
       state.loading = true
-      state.loading = await refs.refPanel?.value?.getLayouts(crudAction) || false;
+      state.loading = await refs.refPanel?.value?.refreshLayouts(crudAction) || false;
     },
     createBlock(block) {
       // Se cierra la ventana

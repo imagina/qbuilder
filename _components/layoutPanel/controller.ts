@@ -166,8 +166,8 @@ export default function layoutController(props: any, emit: any) {
       })
     },
     //Send layout petition
-    async refreshLayouts() {
-      await methods.getLayouts();
+    async refreshLayouts(crudAction = '') {
+      await methods.getLayouts(crudAction);
 
       if(store.layoutSelected && store.layoutSelected.id) {
         const layoutSelected = state.layouts.find(layout => layout.id === store.layoutSelected?.id)

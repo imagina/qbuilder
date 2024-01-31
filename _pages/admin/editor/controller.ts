@@ -64,6 +64,10 @@ export default function editorController() {
           }
         }
       }
+    }),
+    // Return the layout blocks ordered as tree
+    nestedBlocks: computed(() => {
+      return proxy.$array.builTree(state.blocks || [])
     })
   }
 

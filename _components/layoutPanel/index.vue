@@ -68,6 +68,10 @@ export default defineComponent({
     .expansion-header {
       font-weight bold
       color $blue-grey
+
+      &.item-is-active {
+        background: $deep-purple-6
+      }
     }
 
     .q-expansion-item__content, .expansion-header

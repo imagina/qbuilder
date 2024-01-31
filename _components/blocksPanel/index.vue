@@ -37,10 +37,8 @@
             <not-result v-if="!blocksBySelectedType.library.length" class="q-mt-xl"/>
             <!--List-->
             <q-item v-else v-for="(block, blockKey) in blocksBySelectedType.library" :key="`libraryKey${blockKey}`"
-                    clickable
-                    class="bg-trans-item" v-ripple @click="selectBlock(block)">
-              <q-item-section
-                  :class="`relative-position q-ma-sm image-section selectable ${blockSelected && blockSelected.id == block.id ? 'selectable--selected': ''}`">
+                    clickable class="bg-trans-item" v-ripple @click="selectBlock(block)">
+              <q-item-section class="relative-position q-ma-sm image-section selectable">
                 <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle"/>
                 <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle }}</span>
               </q-item-section>
@@ -51,8 +49,8 @@
           <q-tab-panel name="local" :class="`q-pa-none ${!blocksBySelectedType.local.length ? 'overflow-hidden' : ''}`">
             <!--Buttons actions-->
             <div class="flex q-mt-sm q-px-lg">
-              <q-btn @click="selectBlock({component: {systemName: blockTypeSelected}})" outline rounded class="full-width q-mx-sm text-capitalize"
-                     color="primary" no-caps padding="sm lg">
+              <q-btn @click="selectBlock(blockDefault)" outline rounded
+                     class="full-width q-mx-sm text-capitalize" color="primary" no-caps padding="sm lg">
                 <q-icon size="xs" left name="fa-solid fa-plus"/>
                 <div class="text-center text-weight-bold">
                   {{ $tr('ibuilder.cms.newBlock') }}
@@ -63,10 +61,8 @@
             <not-result v-if="!blocksBySelectedType.local.length" class="q-mt-xl"/>
             <!--List-->
             <q-item v-else v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`"
-                    clickable
-                    class="bg-trans-item" v-ripple @click="selectBlock(block)">
-              <q-item-section
-                  :class="`relative-position q-ma-sm image-section selectable ${blockSelected && blockSelected.id == block.id ? 'selectable--selected': ''}`">
+                    clickable class="bg-trans-item" v-ripple @click="selectBlock(block)">
+              <q-item-section class="relative-position q-ma-sm image-section selectable">
                 <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle"/>
                 <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle }}</span>
               </q-item-section>

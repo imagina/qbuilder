@@ -52,7 +52,7 @@ export default function controller(props: any, emit: any) {
       const response: blockType[] = []
 
       for (const config of configs) {
-        if(blockTypes.includes(config.systemName)) {
+        if (blockTypes.includes(config.systemName)) {
           response.push({title: config.title, systemName: config.systemName})
         }
       }
@@ -66,7 +66,28 @@ export default function controller(props: any, emit: any) {
         library: state.blockLibrary.filter(block => block.component.systemName == state.blockTypeSelected)
       }
     }),
-    tabColor: computed(() => state.blockTypeTab == 'global' ? 'purple' : 'orange')
+    tabColor: computed(() => state.blockTypeTab == 'global' ? 'purple' : 'orange'),
+    //Return data of component by default
+    blockDefault: computed(() => {
+      if (!state.blockTypeSelected) return {}
+
+      const blockSelected = storeEditor.blockConfigs.find(config => config.systemName === state.blockTypeSelected)
+
+      if(!blockSelected) return {}
+      const attributes = { componentAttributes: {} }
+
+      Object.keys(blockSelected.childBlocks ?? {}).forEach(childKeys => {
+        attributes[childKeys] = {}
+      })
+
+      return {
+        component: {
+          nameSpace: blockSelected.nameSpace,
+          systemName: state.blockTypeSelected
+        },
+        attributes
+      }
+    })
   }
 
   // Methods

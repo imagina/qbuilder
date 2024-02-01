@@ -438,7 +438,7 @@ export default {
         const requestParams = {notToSnakeCase: this.notToSnakeCase}
         editorStore.state.loading = true
         editorStore.setLastSelectedBlock(this.selectedBlock.id)
-        this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());    
+        this.$crud.update("apiRoutes.qbuilder.blocks", this.selectedBlock.id, data, requestParams).then(() => this.$router.go());
       }
     },
     async createBlock(){
@@ -534,7 +534,7 @@ export default {
       delete response.helpText
       delete response.medias_single
       delete response.medias_multi
-      
+
       response.internalTitle = this.formMainFields[this.$store.state.qsiteApp.defaultLocale].internalTitle;
 
       Object.keys(this.statusChildBlocks).forEach(blockName => {
@@ -566,7 +566,7 @@ export default {
       this.formMainFields = fields;
     },
 
-    setFormContentFields(){      
+    setFormContentFields(){
       const { id, params, type } = this.selectedBlock.entity;
       const fields = {
         id,
@@ -575,7 +575,7 @@ export default {
       }
       this.formEntityFields = fields;
       const extraFieldsBlock = this.blocks.find(block => block.systemName === this.formMainFields.systemName);
-      this.formExtraFields = {...extraFieldsBlock};      
+      this.formExtraFields = {...extraFieldsBlock};
     },
 
     resetFormMainFields(){
@@ -588,12 +588,12 @@ export default {
 
     setElementSelected(elementSelected){
       editorStore.methods.setElementSelected(elementSelected);
-    },    
+    },
   },
 
 };
 </script>
-<style lang="stylus">
+<style lang="sass">
 #builderDrawerBlockForm
   .q-tabs
     border-right: 1px solid $grey-3

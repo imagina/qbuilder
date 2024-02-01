@@ -84,7 +84,7 @@ export default defineComponent({
                  block.systemName.toLowerCase().includes(text) ||
                  block.component.systemName.toLowerCase().includes(text)
         } )
-      }        
+      }
       return this.blocks
     }
   },
@@ -104,7 +104,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="stylus">
+<style lang="sass">
 #builderDrawerBlockList
   .builder_block
     position relative

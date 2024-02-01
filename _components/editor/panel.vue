@@ -49,12 +49,12 @@ export default {
     methods: {}
 }
 </script>
-<style lang="stylus">
+<style lang="sass">
     #panel-editor-component
         position: absolute;
         top: 20%;
         right: 100px;
-        min-height: 500px; 
+        min-height: 500px;
         width: 300px;
         background-color: white;
         border-radius: 10px;

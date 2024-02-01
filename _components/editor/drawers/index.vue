@@ -54,7 +54,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="stylus">
+<style lang="sass">
 #builderEditorDrawers
   .drawer-title
     background-color $primaryBuilder

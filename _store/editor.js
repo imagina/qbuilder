@@ -1,6 +1,8 @@
-import Vue, {reactive, computed} from 'vue';
+import Vue, {reactive, computed, getCurrentInstance} from 'vue';
 import crud from '@imagina/qcrud/_services/baseService.js';
 import helper from '@imagina/qsite/_plugins/helper'
+
+const proxy = getCurrentInstance().appContext.config.globalProperties
 
 //Manage the id of the last selected block before submit
   function setLastSelectedBlock(id){
@@ -38,7 +40,7 @@ const state = reactive({
   formAttributesFields: {},
   statusChildBlocks: {},
   elementSelected: null,
-  attributesKeyTemplate: Vue.prototype.$uid(),
+  attributesKeyTemplate: proxy.$uid(),
   device: 1,
   formMobileAttributesFields: {},
   createMode: false,
@@ -138,7 +140,7 @@ const models = {
 //Getters
 const getters = {
   //Data to show the block preview
-  
+
   dataBlockPreview: computed(() => {
     //Instance the attributes
     const component = {
@@ -172,7 +174,7 @@ const getters = {
         }
       }
     }else{
-      const blockAttributes = state.blocks.find(block => block.component.systemName === state.blockConfig.systemName).attributes || []; 
+      const blockAttributes = state.blocks.find(block => block.component.systemName === state.blockConfig.systemName).attributes || [];
       attributes = {
         ...blockAttributes,
         componentAttributes: {
@@ -221,7 +223,7 @@ const methods = {
     state.createMode = true;
     state.drawers.blocksShow = true;
     //state.drawers.disableSaveButton = true
-    state.attributesKeyTemplate = Vue.prototype.$uid()
+    state.attributesKeyTemplate = proxy.$uid()
   },
   //Get blocks
   getBlocksData: (refresh = false) => {
@@ -274,7 +276,7 @@ const methods = {
     state.selectedBlock = block;
     //setLastSelectedBlock(block.id);
     state.drawers.blocksShow = true
-    state.attributesKeyTemplate = Vue.prototype.$uid()
+    state.attributesKeyTemplate = proxy.$uid()
   },
   //Finish Edit block
   closeBlockShow() {
@@ -309,7 +311,7 @@ const methods = {
     state.drawers.blocksShow = true;
   },
   setStatusChildBlock(element, status){
-    if (element === 'mainblock') element = 'mainBlock'; 
+    if (element === 'mainblock') element = 'mainBlock';
     state.statusChildBlocks[element] = status;
   },
   setBlockConfig(block){

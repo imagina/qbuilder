@@ -42,7 +42,7 @@ export default {
 }
 </script>
 
-<style lang="stylus">
+<style lang="sass">
   .layout-editor
     .q-page-container
       padding-left 0 !important

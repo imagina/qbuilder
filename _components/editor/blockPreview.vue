@@ -84,7 +84,7 @@ export default {
   }
 }
 </script>
-<style lang="stylus">
+<style lang="sass">
 #builderBlockPreview
   height 100%
   width 100%

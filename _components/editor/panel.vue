@@ -49,7 +49,7 @@ export default {
     methods: {}
 }
 </script>
-<style lang="sass">
+<style lang="scss">
     #panel-editor-component
         position: absolute;
         top: 20%;

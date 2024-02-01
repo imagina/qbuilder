@@ -593,7 +593,7 @@ export default {
 
 };
 </script>
-<style lang="sass">
+<style lang="scss">
 #builderDrawerBlockForm
   .q-tabs
     border-right: 1px solid $grey-3

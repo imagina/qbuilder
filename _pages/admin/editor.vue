@@ -64,7 +64,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="sass">
+<style lang="scss">
 #pageBuilderEditor
   padding 34px 100px 34px 100px
   height 100vh

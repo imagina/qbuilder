@@ -84,7 +84,7 @@ export default {
   }
 }
 </script>
-<style lang="sass">
+<style lang="scss">
 #builderBlockPreview
   height 100%
   width 100%

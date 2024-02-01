@@ -42,7 +42,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
   .layout-editor
     .q-page-container
       padding-left 0 !important

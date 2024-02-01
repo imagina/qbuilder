@@ -104,7 +104,7 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="sass">
+<style lang="scss">
 #builderDrawerBlockList
   .builder_block
     position relative

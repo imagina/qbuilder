@@ -866,7 +866,7 @@ export default {
   }
 }
 </script>
-<style lang="sass">
+<style lang="scss">
 #formBlockPage
   .no-child-box
     padding-bottom 0

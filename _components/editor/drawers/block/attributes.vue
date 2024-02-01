@@ -257,7 +257,7 @@ export default {
 }
 </script>
 
-<style scoped lang="sass">
+<style scoped lang="scss">
 #builderDrawerBlockAttributes
 .q-tabs
   min-height 100%

@@ -289,6 +289,7 @@ export interface ModuleBlockConfig {
         [key: string]: PropsDynamicField
     };
     childBlocks?: ChildBlockConfig;
+    allowChildren?: boolean;
     attributes: ModuleBlockConfigAttributes;
 }
 

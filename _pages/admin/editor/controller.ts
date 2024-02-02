@@ -29,45 +29,66 @@ export default function editorController() {
     showBlocksPanel: false,
     showBlockAttributesForm: false,
     infoBlock: {
-      blockIndex: 0,
-      layoutId: null
+      index: 0,
+      layoutId: null,
+      parentId: 0
     },
     blockSelected: {}
   })
 
   // Computed
   const computeds = {
-    storeSelectedLayout: computed(() => {
-      //@ts-ignore
-      state.blocks = store.layoutSelected?.blocks;
-      return store.layoutSelected
-    }),
     tabColor: computed(() => state.layoutTab == 'preview' ? 'purple' : 'orange'),
     titleTab: computed(() => store.layoutSelected?.title ?? proxy.$tr('ibuilder.cms.layout')),
-    gridBlockActions: computed(() => {
-      return {
-        blockContent: {
-          label: proxy.$tr('ibuilder.cms.label.content'),
-          icon: 'fa-regular fa-book',
-          color: '',
-          action: (data) => {
-            refs.refBlockForm.value?.updateData(data)
+    //Get config of handleGrid
+    configHandleGrid: computed(() => {
+      const maxChildEditor = 2;
+
+      const config = {
+        orderBy: "sortOrder",
+        titleField: "internalTitle",
+        canAddNewItem: true,
+        actions: {
+          blockContent: {
+            label: proxy.$tr('ibuilder.cms.label.content'),
+            icon: 'fa-regular fa-book',
+            color: '',
+            action: (data) => {
+              refs.refBlockForm.value?.updateData(data)
+            }
+          },
+          blockAttriutes: {
+            label: proxy.$tr('ibuilder.cms.label.attributes'),
+            icon: 'fa-regular fa-palette',
+            color: '',
+            action: (data) => {
+              state.showBlockAttributesForm = true
+              setTimeout(() => refs.blockAttributesForm?.value?.edit(data), 500)
+            }
           }
         },
-        blockAttriutes: {
-          label: proxy.$tr('ibuilder.cms.label.attributes'),
-          icon: 'fa-regular fa-palette',
-          color: '',
-          action: (data) => {
-            state.showBlockAttributesForm = true
-            setTimeout(() => refs.blockAttributesForm?.value?.edit(data), 500)
-          }
-        }
       }
+
+      const response = methods.generateConfigChilds(maxChildEditor, config)
+
+      return response
     }),
     // Return the layout blocks ordered as tree
     nestedBlocks: computed(() => {
-      return proxy.$array.builTree(state.blocks || [])
+      const blocks = proxy.$clone(store.layoutSelected?.blocks ?? []);
+      const configBlocks =  store.blockConfigs
+        .filter(config => config.allowChildren)
+        .map(config => config.systemName);
+      const result = blocks.map(block => {
+        if(configBlocks.includes(block?.component?.systemName) && !block?.children?.length) {
+          block.children = [];
+        }
+
+        return block
+      })
+
+      //@ts-ignore
+      return proxy.$array.builTree(result || [])
     })
   }
 
@@ -129,19 +150,19 @@ export default function editorController() {
     createBlock(block) {
       // Se cierra la ventana
       state.showBlocksPanel = false
-      refs.handleGrid?.value?.updateSortOrder()
-      //Wait the change load
-      setTimeout(() => {
-        methods.saveLayout();
-      }, 100);
+      // refs.handleGrid?.value?.updateSortOrder()
+      // //Wait the change load
+      // setTimeout(() => {
+      //   methods.saveLayout();
+      // }, 100);
     },
     changeLayout(layout) {
-      state.infoBlock.blockIndex = 0
+      state.infoBlock.index = 0
       state.infoBlock.layoutId = layout.id
-      refs.handleGrid?.value?.setState(layout.blocks)
     },
     openModalSelectBlock(val) {
-      state.infoBlock.blockIndex = Number(val.index) + 1
+      state.infoBlock.index = Number(val.index) + 1
+      state.infoBlock.parentId = val.parentId
       state.showBlocksPanel = true
     },
     setBlock(block: Block) {
@@ -193,6 +214,20 @@ export default function editorController() {
       if(data){
         methods.updatedBlock(data)
       }
+    },
+    //Generate recursive Config
+    generateConfigChilds(maxChildEditor = 0, config = {}) {
+      //Check if finish the recursive
+      if (maxChildEditor <= 0) return config
+
+      //Added same props of childs
+      const childConfig = {
+        ...config,
+        childsFieldName: 'children',
+        childProps: proxy.$clone(methods.generateConfigChilds(maxChildEditor - 1, config))
+      }
+
+      return childConfig
     }
   }
 
@@ -205,11 +240,15 @@ export default function editorController() {
     store.layoutSelected = null
   })
 
-  // Watch
-  watch(computeds.storeSelectedLayout, (newField, oldField) => {
+  watch(() => store.layoutSelected, (newField, oldField) => {
+    proxy.$nextTick(() => {
+      state.blocks = computeds.nestedBlocks.value
+      refs.handleGrid?.value?.setState(computeds.nestedBlocks.value)
+    })
     methods.previewPage();
   });
 
+  // Watch
   watch(() => state.layoutTab, (newField, oldField) => {
     methods.previewPage();
   });

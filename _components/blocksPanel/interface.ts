@@ -22,6 +22,7 @@ export interface Block {
     systemName:       string;
     updatedAt:        Date;
     updatedBy:        number;
+    children?:        Block[];
 }
 
 export interface Attributes {

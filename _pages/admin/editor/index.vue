@@ -14,8 +14,7 @@
              color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
       <!--Over panels-->
       <q-dialog v-model="showBlocksPanel" position="left" content-class="builder-panel-dialog" square>
-        <blocks-panel class="full-height" @created="createBlock"
-                      :index="infoBlock.blockIndex" :layout-id="infoBlock.layoutId"/>
+        <blocks-panel class="full-height" @created="createBlock" v-bind="infoBlock"/>
       </q-dialog>
 
       <!--Block Form-->
@@ -54,9 +53,8 @@
             <iframe-post :id="`iframeLayout${store.layoutSelected.id}`" ref="refIframePost"/>
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none overflow-hidden">
-            <handle-grid v-model="blocks" order-by="sortOrder" title-field="internalTitle"
-                         :can-add-new-item="true" ref="handleGrid" @create="(val) => openModalSelectBlock(val)"
-                         :actions="gridBlockActions"/>
+            <handle-grid v-model="blocks" v-bind="configHandleGrid" ref="handleGrid"
+                         @create="(val) => openModalSelectBlock(val)" />
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->

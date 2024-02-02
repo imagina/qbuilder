@@ -4,21 +4,23 @@
     <div class="text-right q-mb-md">
       <!--Crud Layouts-->
       <crud :crud-data="import('@imagina/qbuilder/_crud/layouts')" type="onlyUpdate" ref="crudLayout"
-            @created="refreshLayouts('created')" @updated="refreshLayouts('updated')"
+            @created="refreshLayouts({crudAction : 'created'})" @updated="refreshLayouts({crudAction : 'updated'})"
       />
     </div>
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
-      <layout-panel @create="crudLayout.create()" @selected="changeLayout" ref="refPanel"/>
-      <q-btn v-if="store.layoutSelected" :label="$tr('isite.cms.label.save')" class="full-width absolute-bottom text-capitalize"
-             color="green" no-caps padding="md md" @click="saveLayout" icon="fas fa-save"/>
+      <!--Layout Panel-->
+      <layout-panel @create="crudLayout.create()" ref="refPanel"/>
+      <!--Save Button-->
+      <q-btn v-if="store.layoutSelected" :label="$tr('isite.cms.label.save')"
+             class="full-width absolute-bottom text-capitalize"
+             color="green" no-caps padding="md md" @click="saveBlocks" icon="fas fa-save"/>
       <!--Over panels-->
       <q-dialog v-model="showBlocksPanel" position="left" content-class="builder-panel-dialog" square>
-        <blocks-panel class="full-height" @created="createBlock" v-bind="infoBlock"/>
+        <blocks-panel class="full-height" @created="handleChangesBlock" v-bind="infoToCreateBlock"/>
       </q-dialog>
-
       <!--Block Form-->
-      <block-form ref="refBlockForm" @updated="updatedBlock"/>
+      <block-form ref="refBlockForm" @updated="handleChangesBlock"/>
       <!--block attrs from panels-->
       <q-dialog v-model="showBlockAttributesForm" :title="$tr('ibuilder.cms.label.editBlockAttributes')"
                 position="left" content-class="builder-panel-dialog" square persistent>
@@ -54,7 +56,7 @@
           </q-tab-panel>
           <q-tab-panel name="builder" class="q-pa-none overflow-hidden">
             <handle-grid v-model="blocks" v-bind="configHandleGrid" ref="handleGrid"
-                         @create="(val) => openModalSelectBlock(val)" />
+                         @create="(val) => handleCreatingBlock(val)"/>
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->

@@ -24,66 +24,62 @@ export default function editorController() {
   // States
   const state = reactive({
     blocks: [],
-    layoutTab: 'preview',
+    layoutTab: 'builder',
     loading: false,
     showBlocksPanel: false,
     showBlockAttributesForm: false,
-    infoBlock: {
+    infoToCreateBlock: {
       index: 0,
       layoutId: null,
       parentId: 0
-    },
-    blockSelected: {}
+    }
   })
 
   // Computed
   const computeds = {
+    // Validate the color by selectedTab
     tabColor: computed(() => state.layoutTab == 'preview' ? 'purple' : 'orange'),
+    //Return the selected layout title to the header of preview section
     titleTab: computed(() => store.layoutSelected?.title ?? proxy.$tr('ibuilder.cms.layout')),
     //Get config of handleGrid
-    configHandleGrid: computed(() => {
-      const maxChildEditor = 2;
-
-      const config = {
-        orderBy: "sortOrder",
-        titleField: "internalTitle",
-        canAddNewItem: true,
-        actions: {
-          blockContent: {
-            label: proxy.$tr('ibuilder.cms.label.content'),
-            icon: 'fa-regular fa-book',
-            color: '',
-            action: (data) => {
-              refs.refBlockForm.value?.updateData(data)
-            }
-          },
-          blockAttriutes: {
-            label: proxy.$tr('ibuilder.cms.label.attributes'),
-            icon: 'fa-regular fa-palette',
-            color: '',
-            action: (data) => {
-              state.showBlockAttributesForm = true
-              setTimeout(() => refs.blockAttributesForm?.value?.edit(data), 500)
-            }
+    configHandleGrid: computed(() => ({
+      orderBy: "sortOrder",
+      titleField: "internalTitle",
+      canAddNewItem: true,
+      actions: {
+        blockContent: {
+          label: proxy.$tr('ibuilder.cms.label.content'),
+          icon: 'fa-regular fa-book',
+          color: '',
+          action: (data) => {
+            refs.refBlockForm.value?.updateData(data)
           }
         },
-      }
-
-      const response = methods.generateConfigChilds(maxChildEditor, config)
-
-      return response
-    }),
+        blockAttriutes: {
+          label: proxy.$tr('ibuilder.cms.label.attributes'),
+          icon: 'fa-regular fa-palette',
+          color: '',
+          action: (data) => {
+            state.showBlockAttributesForm = true
+            setTimeout(() => refs.blockAttributesForm?.value?.edit(data), 500)
+          }
+        }
+      },
+    })),
     // Return the layout blocks ordered as tree
     nestedBlocks: computed(() => {
       const blocks = proxy.$clone(store.layoutSelected?.blocks ?? []);
-      const configBlocks =  store.blockConfigs
+
+      //Get the systemName of the block with allowChildren
+      const configBlocks = store.blockConfigs
         .filter(config => config.allowChildren)
         .map(config => config.systemName);
+
+      // Include the attribute children for draggable component to the needed blocks
       const result = blocks.map(block => {
-        if(configBlocks.includes(block?.component?.systemName) && !block?.children?.length) {
+        if (configBlocks.includes(block?.component?.systemName) && !block?.children?.length) {
           block.children = [];
         }
-
         return block
       })
 
@@ -94,38 +90,71 @@ export default function editorController() {
 
   // Methods
   const methods = {
-    getData: async () => {
+    //Get all config Blocks
+    getConfigBlocks: async () => {
       state.loading = true
-      await Promise.all([
-        methods.getConfigBlocks()
-      ])
 
+      //Instance the request params
+      const requestParams = {filter: {allTranslations: true, configNameByModule: 'blocks'}}
+
+      //Get configs
+      const config = await service.getModuleBlocks(true, requestParams)
+
+      //Map blockConfigs to get an array with all blocks
+      const response: ModuleBlockConfig[] = []
+      const blockConfigsByModule = Object.values(config).filter(item => item)
+      blockConfigsByModule.forEach(configModule => {
+        Object.values(configModule).forEach(blockConfig => {
+          //Added blockConfig to all configs like child
+          if (blockConfig.systemName !== store.mainBlockSystemName) {
+            blockConfig.childBlocks = {
+              mainblock: store.mainBlockSystemName,
+              ...(blockConfig.childBlocks || {})
+            }
+          }
+          //Save data of modules
+          response.push(blockConfig)
+        })
+      })
+
+      store.blockConfigs = response
       state.loading = false
     },
+    // Open the preview
     previewPage() {
       if (state.layoutTab === 'preview') {
         setTimeout(() => {
           if (refs.refIframePost?.value?.loadIframe && store.layoutSelected)
             refs.refIframePost.value.loadIframe(
-                `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
+              `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
               {...store.layoutSelected, blocks: state.blocks}
             )
         }, 300)
       }
     },
-    saveLayout() {
+    // Refresh the layout data
+    async refreshLayouts({crudAction= '', emitSelected= true}) {
       state.loading = true
-      const layout = store.layoutSelected!
-      const blocks = state.blocks
-
-      proxy.$crud.update('apiRoutes.qbuilder.layouts', layout.id, layout).then(response => {
-        methods.saveBlocks(blocks)
-      }).catch(error => {
-        proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')})
-        state.loading = false
-      })
+      state.loading = await refs.refPanel?.value?.refreshLayouts({crudAction, emitSelected}) || false;
     },
-    saveBlocks(blocks: any[]) {
+    //Handle the creation block
+    handleCreatingBlock(val) {
+      state.infoToCreateBlock.index = Number(val.index) + 1
+      state.infoToCreateBlock.layoutId = store.layoutSelected.id
+      state.infoToCreateBlock.parentId = val.parentId
+      state.showBlocksPanel = true
+    },
+    //Handle the created blocks
+    handleChangesBlock(block) {
+      methods.refreshLayouts({emitSelected: false})
+      //TODO: buscar si block ya existe en stateblocks y actualizarlo, si no, agregarlo
+      state.blocks = [...state.blocks, block]
+      state.showBlocksPanel = false
+    },
+    // Save the blocks of layout | TODO:  change to bulck update
+    saveBlocks() {
+      state.loading = true
+      const blocks = state.blocks
       const blockPromise: Promise<any>[] = []
       for (let i = 0; i < blocks.length; i++) {
         const block = blocks[i];
@@ -143,97 +172,16 @@ export default function editorController() {
         state.loading = false;
       });
     },
-    async refreshLayouts(crudAction) {
-      state.loading = true
-      state.loading = await refs.refPanel?.value?.refreshLayouts(crudAction) || false;
-    },
-    createBlock(block) {
-      // Se cierra la ventana
-      state.showBlocksPanel = false
-      // refs.handleGrid?.value?.updateSortOrder()
-      // //Wait the change load
-      // setTimeout(() => {
-      //   methods.saveLayout();
-      // }, 100);
-    },
-    changeLayout(layout) {
-      state.infoBlock.index = 0
-      state.infoBlock.layoutId = layout.id
-    },
-    openModalSelectBlock(val) {
-      state.infoBlock.index = Number(val.index) + 1
-      state.infoBlock.parentId = val.parentId
-      state.showBlocksPanel = true
-    },
-    setBlock(block: Block) {
-      state.blockSelected = block
-    },
-    //Get all config Blocks
-    getConfigBlocks: async () => {
-      //Set the principal Block that exist in all blocks
-      const principalBlock = 'x-ibuilder::block'
 
-      const params = {
-        filter: {allTranslations: true, configNameByModule: 'blocks'}
-      }
-
-      //Get configs
-      const config = await service.getModuleBlocks(true, params)
-      const response: ModuleBlockConfig[] = []
-      //Filter only items with values
-      Object.keys(config).forEach(moduleName => {
-        if (config[moduleName]) {
-          // Loop modules of config
-          const modules = config[moduleName]
-          for (const key in modules) {
-
-            const module = modules[key]
-            //Added blockConfig in all configs like child
-            if (module.systemName !== principalBlock) {
-              module.childBlocks = {
-                mainblock: principalBlock,
-                ...(module.childBlocks || {})
-              }
-            }
-
-            //Save data of modules
-            response.push(module)
-          }
-        }
-      })
-      store.blockConfigs = response
-    },
-    //Updated Info in HandleGrid
-    updatedBlock(block) {
-      refs.handleGrid?.value?.updateItem(block)
-    },
     //Hanfle the block attributes form
-    handleBlockAttributesEdit(data = null){
+    handleBlockAttributesEdit(data = null) {
       state.showBlockAttributesForm = false
-      //Update block when finish edition
-      if(data){
-        methods.updatedBlock(data)
-      }
-    },
-    //Generate recursive Config
-    generateConfigChilds(maxChildEditor = 0, config = {}) {
-      //Check if finish the recursive
-      if (maxChildEditor <= 0) return config
-
-      //Added same props of childs
-      const childConfig = {
-        ...config,
-        childsFieldName: 'children',
-        childProps: proxy.$clone(methods.generateConfigChilds(maxChildEditor - 1, config))
-      }
-
-      return childConfig
     }
   }
 
   // Mounted
   onMounted(() => {
-    methods.getData()
+    methods.getConfigBlocks()
   })
 
   onUnmounted(() => {

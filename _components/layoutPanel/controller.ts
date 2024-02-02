@@ -166,13 +166,12 @@ export default function layoutController(props: any, emit: any) {
       })
     },
     //Send layout petition
-    async refreshLayouts(crudAction = '') {
+    async refreshLayouts({crudAction = '', emitSelected = true}) {
       await methods.getLayouts(crudAction);
-
-      if(store.layoutSelected && store.layoutSelected.id) {
+      if (store.layoutSelected && store.layoutSelected.id) {
         const layoutSelected = state.layouts.find(layout => layout.id === store.layoutSelected?.id)
 
-        if(!!layoutSelected) {
+        if (emitSelected && !!layoutSelected) {
           store.layoutSelected = proxy.$clone(layoutSelected);
           emit('selected', proxy.$clone(layoutSelected));
         }

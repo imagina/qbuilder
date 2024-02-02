@@ -32,7 +32,8 @@
                       transition-next="scale" class="scroll-content">
 
           <!-- Global blocks -->
-          <q-tab-panel name="global" class="q-pa-none">
+          <q-tab-panel name="global"
+                       :class="`q-pa-none ${!blocksBySelectedType.library.length ? 'overflow-hidden' : ''}`">
             <!--Empty Result-->
             <not-result v-if="!blocksBySelectedType.library.length" class="q-mt-xl"/>
             <!--List-->
@@ -87,7 +88,8 @@ import blockForm from '@imagina/qbuilder/_components/blockContentForm/index.vue'
 export default defineComponent({
   props: {
     index: {type: Number, default: 0},
-    layoutId: {type: Number, default: 0}
+    layoutId: {type: Number, default: 0},
+    parentId: {type: Number, default: 0}
   },
   components: {blockForm},
   setup(props, {emit}) {

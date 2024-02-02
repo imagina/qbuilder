@@ -44,20 +44,10 @@ export default function controller(props: any, emit: any) {
   const computeds = {
     //Return the existing blocks to list
     blockTypes: computed(() => {
-      // todo: obtener el name/title de cada bloque según el sistemName
-      const setBlockTypes: Set<string> = new Set([...state.localBlocks, ...state.blockLibrary].map(item => item.component.systemName))
-
       const configs: ModuleBlockConfig[] = storeEditor.blockConfigs
-      const blockTypes: string[] = Array.from(setBlockTypes)
-      const response: blockType[] = []
+        .filter(config => !config.internal)
 
-      for (const config of configs) {
-        if (blockTypes.includes(config.systemName)) {
-          response.push({title: config.title, systemName: config.systemName})
-        }
-      }
-
-      return response
+      return configs
     }),
     // return the blocks by selected type
     blocksBySelectedType: computed(() => {

@@ -43,8 +43,10 @@ export default {
 </script>
 
 <style lang="scss">
-  .layout-editor
-    .q-page-container
-      padding-left 0 !important
-      overflow: hidden
+  .layout-editor {
+    .q-page-container {
+      padding-left: 0 !important;
+      overflow: hidden;
+    }
+  }
 </style>

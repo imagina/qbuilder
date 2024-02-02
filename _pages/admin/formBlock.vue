@@ -867,11 +867,14 @@ export default {
 }
 </script>
 <style lang="scss">
-#formBlockPage
-  .no-child-box
-    padding-bottom 0
+#formBlockPage {
+  .no-child-box {
+    padding-bottom: 0;
 
-    .box
-      box-shadow none
-      padding 0
+    .box {
+      box-shadow: none;
+      padding: 0;
+    }
+  }
+}
 </style>

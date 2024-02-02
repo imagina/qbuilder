@@ -47,6 +47,26 @@ export default function editorController() {
       titleField: "internalTitle",
       canAddNewItem: true,
       actions: {
+        blockDelete: {
+          label: proxy.$tr('isite.cms.label.delete'),
+          icon: 'fa-regular fa-trash',
+          color: 'red',
+          action: (data) => {
+            proxy.$alert.error({
+              mode: 'modal',
+              title: data.internalTitle,
+              message: proxy.$tr('isite.cms.message.deleteRecord'),
+              actions: [
+                {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
+                {
+                  label: proxy.$tr('isite.cms.label.accept'),
+                  color: 'green',
+                  handler: () => methods.deleteBlock(data)
+                },
+              ]
+            })
+          }
+        },
         blockContent: {
           label: proxy.$tr('ibuilder.cms.label.content'),
           icon: 'fa-regular fa-book',
@@ -133,7 +153,7 @@ export default function editorController() {
       }
     },
     // Refresh the layout data
-    async refreshLayouts({crudAction= '', emitSelected= true}) {
+    async refreshLayouts({crudAction = '', emitSelected = true}) {
       state.loading = true
       state.loading = await refs.refPanel?.value?.refreshLayouts({crudAction, emitSelected}) || false;
     },
@@ -145,11 +165,18 @@ export default function editorController() {
       state.showBlocksPanel = true
     },
     //Handle the created blocks
-    handleChangesBlock(block) {
+    handleChangesBlock(block, wasDeleted = false) {
       methods.refreshLayouts({emitSelected: false})
+
       //TODO: buscar si block ya existe en stateblocks y actualizarlo, si no, agregarlo
-      state.blocks = [...state.blocks, block]
+      let blockIndex = state.blocks.findIndex(item => item.id == block.id)
+      if (blockIndex >= 0) {
+        if (wasDeleted) state.blocks.splice(blockIndex, 1)
+        else state.blocks.splice(blockIndex, 1, block)
+      } else state.blocks = [...state.blocks, block]
+
       state.showBlocksPanel = false
+      state.showBlockAttributesForm = false
     },
     // Save the blocks of layout | TODO:  change to bulck update
     saveBlocks() {
@@ -172,10 +199,12 @@ export default function editorController() {
         state.loading = false;
       });
     },
-
-    //Hanfle the block attributes form
-    handleBlockAttributesEdit(data = null) {
-      state.showBlockAttributesForm = false
+    //Remove block from layout
+    async deleteBlock(block) {
+      state.loading = true
+      await service.deleteblock(block.id)
+      methods.handleChangesBlock(block, true)
+      state.loading = false
     }
   }
 

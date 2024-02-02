@@ -24,8 +24,7 @@
       <!--block attrs from panels-->
       <q-dialog v-model="showBlockAttributesForm" :title="$tr('ibuilder.cms.label.editBlockAttributes')"
                 position="left" content-class="builder-panel-dialog" square persistent>
-        <block-attributes-form ref="blockAttributesForm" @input="handleBlockAttributesEdit"
-                               @cancel="handleBlockAttributesEdit"/>
+        <block-attributes-form ref="blockAttributesForm" @input="handleChangesBlock" @cancel="handleChangesBlock"/>
       </q-dialog>
     </div>
     <!-- Preview -->

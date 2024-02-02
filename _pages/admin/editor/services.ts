@@ -28,4 +28,12 @@ export default {
       }).catch(error => reject(error))
     })
   },
+  //Delete block
+  deleteblock(blockId): Promise<any> {
+    return new Promise((resolve, reject) => {
+      baseService.delete('apiRoutes.qbuilder.blocks', blockId).then(response => {
+        resolve(true)
+      }).catch(error => reject(error))
+    })
+  },
 }

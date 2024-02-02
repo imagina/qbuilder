@@ -10,7 +10,7 @@
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
       <!--Layout Panel-->
-      <layout-panel @create="crudLayout.create()" ref="refPanel"/>
+      <layout-panel @create="crudLayout.create()" ref="refPanel" @selected="layoutTab = 'builder'"/>
       <!--Save Button-->
       <q-btn v-if="store.layoutSelected" :label="$tr('isite.cms.label.save')"
              class="full-width absolute-bottom text-capitalize"
@@ -41,8 +41,8 @@
         <q-tabs v-if="store.layoutSelected" v-model="layoutTab" align="right" inline-label
                 no-caps indicator-color="transparent" :active-bg-color="tabColor" active-color="white"
                 :content-class="`text-${tabColor} bg-grey-2`">
-          <q-tab name="preview" :label="$tr('ibuilder.cms.label.preview')" icon="fa-light fa-eye"/>
           <q-tab name="builder" :label="$tr('ibuilder.cms.label.grid')" icon="fa-light fa-border-none"/>
+          <q-tab name="preview" :label="$tr('ibuilder.cms.label.preview')" icon="fa-light fa-eye" @click="previewPage"/>
         </q-tabs>
       </div>
       <q-separator :color="tabColor" size="3px"/>

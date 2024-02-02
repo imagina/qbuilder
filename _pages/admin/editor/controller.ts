@@ -217,18 +217,5 @@ export default function editorController() {
     store.layoutSelected = null
   })
 
-  watch(() => store.layoutSelected, (newField, oldField) => {
-    proxy.$nextTick(() => {
-      state.blocks = computeds.nestedBlocks.value
-      refs.handleGrid?.value?.setState(computeds.nestedBlocks.value)
-    })
-    methods.previewPage();
-  });
-
-  // Watch
-  watch(() => state.layoutTab, (newField, oldField) => {
-    methods.previewPage();
-  });
-
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}
 }

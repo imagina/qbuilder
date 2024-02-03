@@ -28,6 +28,19 @@ export default {
       }).catch(error => reject(error))
     })
   },
+  //Bulk update blocks
+  blocksBulkUpdate(blocks): Promise<any> {
+    return new Promise((resolve, reject) => {
+      //Request params
+      const requestParams = {
+        notToSnakeCase: [...(Object.keys(blocks[0].attributes) ?? []), "component", "entity", "attributes"]
+      }
+      //Request
+      baseService.update('apiRoutes.qbuilder.blocks', 'bulk/update', blocks, requestParams).then(response => {
+        resolve(true)
+      }).catch(error => reject(error))
+    })
+  },
   //Delete block
   deleteblock(blockId): Promise<any> {
     return new Promise((resolve, reject) => {

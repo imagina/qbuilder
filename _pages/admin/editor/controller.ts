@@ -201,25 +201,15 @@ export default function editorController() {
       state.showBlockAttributesForm = false
     },
     // Save the blocks of layout | TODO:  change to bulck update
-    saveBlocks() {
+    async saveBlocks() {
       state.loading = true
-      const blocks = state.blocks
-      const blockPromise: Promise<any>[] = []
-      for (let i = 0; i < blocks.length; i++) {
-        const block = blocks[i];
-        //Ignore snake_case
-        const requestParams = {notToSnakeCase: [...(Object.keys(block.attributes) ?? []), "component", "entity", "attributes"]}
-        blockPromise.push(proxy.$crud.update('apiRoutes.qbuilder.blocks', block.id, block, requestParams))
-      }
-
-      Promise.all(blockPromise).then(async () => {
-        await refs.refPanel?.value?.refreshLayouts({})
-        state.loading = false;
+      await service.blocksBulkUpdate(state.blocks).then(response => {
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
+        state.loading = false
       }).catch(error => {
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
-        state.loading = false;
-      });
+        state.loading = false
+      })
     },
     //Remove block from layout
     async deleteBlock(block) {

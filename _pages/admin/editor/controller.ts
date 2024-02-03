@@ -23,6 +23,7 @@ interface StateProps {
   infoToCreateBlock: PropInfoToCreateBlock,
   gridBlocks: Block[]
 }
+
 export default function editorController() {
   const proxy = (getCurrentInstance() as { proxy: Vue }).proxy as Vue
 
@@ -86,7 +87,6 @@ export default function editorController() {
         blockContent: {
           label: proxy.$tr('ibuilder.cms.label.content'),
           icon: 'fa-regular fa-book',
-          color: '',
           action: (data) => {
             refs.refBlockForm.value?.updateData(data)
           }
@@ -94,7 +94,6 @@ export default function editorController() {
         blockAttriutes: {
           label: proxy.$tr('ibuilder.cms.label.attributes'),
           icon: 'fa-regular fa-palette',
-          color: '',
           action: (data) => {
             state.showBlockAttributesForm = true
             setTimeout(() => refs.blockAttributesForm?.value?.edit(data), 500)
@@ -181,9 +180,9 @@ export default function editorController() {
     },
     //Handle the creation block
     handleCreatingBlock(val) {
-      state.infoToCreateBlock.index = Number(val.index) + 1
+      state.infoToCreateBlock.index = val ? val.children.length : state.gridBlocks.length
+      state.infoToCreateBlock.parentId = val?.id || 0
       state.infoToCreateBlock.layoutId = store.layoutSelected?.id || null
-      state.infoToCreateBlock.parentId = val.parentId
       state.showBlocksPanel = true
     },
     //Handle the created blocks
@@ -242,12 +241,13 @@ export default function editorController() {
 
   watch(() => state.gridBlocks, (newValue, oldValue): void => {
     //@ts-ignore
-    state.blocks = proxy.$array.destroyTree(proxy.$clone(newValue))
+    state.blocks = proxy.$array.destroyNestedItems(proxy.$clone(newValue))
     console.warn(">>>>>>>> Watch GrdiBlocks: ", state.blocks.map(item => ({
       id: item.id,
       sortOrder: item.sortOrder,
       parentId: item.parentId,
       title: item.internalTitle,
+      gridPosition: item.gridPosition
     })))
   }, {deep: true})
 

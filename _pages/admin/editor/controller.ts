@@ -32,7 +32,8 @@ export default function editorController() {
       index: 0,
       layoutId: null,
       parentId: 0
-    }
+    },
+    gridBlocks: []
   })
 
   // Computed
@@ -85,27 +86,7 @@ export default function editorController() {
           }
         }
       },
-    })),
-    // Return the layout blocks ordered as tree
-    nestedBlocks: computed(() => {
-      const blocks = proxy.$clone(store.layoutSelected?.blocks ?? []);
-
-      //Get the systemName of the block with allowChildren
-      const configBlocks = store.blockConfigs
-        .filter(config => config.allowChildren)
-        .map(config => config.systemName);
-
-      // Include the attribute children for draggable component to the needed blocks
-      const result = blocks.map(block => {
-        if (configBlocks.includes(block?.component?.systemName) && !block?.children?.length) {
-          block.children = [];
-        }
-        return block
-      })
-
-      //@ts-ignore
-      return proxy.$array.builTree(result || [])
-    })
+    }))
   }
 
   // Methods
@@ -157,6 +138,32 @@ export default function editorController() {
       state.loading = true
       state.loading = await refs.refPanel?.value?.refreshLayouts({crudAction, emitSelected}) || false;
     },
+    // Handle the layout selected
+    handleLayoutSelected() {
+      state.blocks = proxy.$clone(store.layoutSelected.blocks)
+      methods.setTheGridBlocks()
+      state.layoutTab = 'builder'
+    },
+    // Set the grid blocks
+    setTheGridBlocks() {
+      const blocks = proxy.$clone(state.blocks ?? []);
+
+      //Get the systemName of the block with allowChildren
+      const configBlocks = store.blockConfigs
+        .filter(config => config.allowChildren)
+        .map(config => config.systemName);
+
+      // Include the attribute children for draggable component to the needed blocks
+      const result = blocks.map(block => {
+        if (configBlocks.includes(block?.component?.systemName) && !block?.children?.length) {
+          block.children = [];
+        }
+        return block
+      }).sort((a, b) => a['sortOrder'] - b['sortOrder'])
+
+      //@ts-ignore
+      state.gridBlocks = proxy.$array.builTree(result || [])
+    },
     //Handle the creation block
     handleCreatingBlock(val) {
       state.infoToCreateBlock.index = Number(val.index) + 1
@@ -175,6 +182,7 @@ export default function editorController() {
         else state.blocks.splice(blockIndex, 1, block)
       } else state.blocks = [...state.blocks, block]
 
+      methods.setTheGridBlocks()
       state.showBlocksPanel = false
       state.showBlockAttributesForm = false
     },
@@ -216,6 +224,16 @@ export default function editorController() {
   onUnmounted(() => {
     store.layoutSelected = null
   })
+
+  watch(() => state.gridBlocks, (newValue, oldValue): void => {
+    state.blocks = proxy.$array.destroyTree(proxy.$clone(newValue))
+    console.warn(">>>>>>>> Watch GrdiBlocks", state.blocks.map(item => ({
+      id: item.id,
+      sortOrder: item.sortOrder,
+      parentId: item.parentId,
+      title: item.internalTitle,
+    })))
+  }, {deep: true})
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}
 }

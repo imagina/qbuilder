@@ -10,7 +10,7 @@
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
       <!--Layout Panel-->
-      <layout-panel @create="crudLayout.create()" ref="refPanel" @selected="layoutTab = 'builder'"/>
+      <layout-panel @create="crudLayout.create()" ref="refPanel" @selected="handleLayoutSelected"/>
       <!--Save Button-->
       <q-btn v-if="store.layoutSelected" :label="$tr('isite.cms.label.save')"
              class="full-width absolute-bottom text-capitalize"
@@ -31,6 +31,7 @@
     <div class="preview-content" :style="`width: calc(100% - ${store.panelWidth})`">
       <!--Header-->
       <div class="preview-content__actions row justify-between items-center">
+        <!--Title and edit button-->
         <div class="q-px-md q-py-sm text-primary text-h6">
           <q-btn v-if="store.layoutSelected" size="xs" padding="sm" class="q-mr-sm" unelevated outline
                  @click="crudLayout.update(store.layoutSelected)" icon="fa-light fa-edit" round color="cyan">
@@ -38,6 +39,7 @@
           </q-btn>
           {{ titleTab }}
         </div>
+        <!--Tabs to preview/builder-->
         <q-tabs v-if="store.layoutSelected" v-model="layoutTab" align="right" inline-label
                 no-caps indicator-color="transparent" :active-bg-color="tabColor" active-color="white"
                 :content-class="`text-${tabColor} bg-grey-2`">
@@ -46,16 +48,18 @@
         </q-tabs>
       </div>
       <q-separator :color="tabColor" size="3px"/>
-      <!--Box with layout-->
+      <!--Builder layout-->
       <div class="preview-content__box">
         <q-tab-panels v-if="store.layoutSelected" v-model="layoutTab" animated transition-prev="scale"
                       transition-next="scale">
+          <!--Builder-->
+          <q-tab-panel name="builder" class="q-pa-none overflow-hidden">
+            <handle-grid :elements="gridBlocks" v-bind="configHandleGrid" ref="handleGrid"
+                         @create="(val) => handleCreatingBlock(val)"/>
+          </q-tab-panel>
+          <!--Preview-->
           <q-tab-panel name="preview" class="q-pa-none">
             <iframe-post :id="`iframeLayout${store.layoutSelected.id}`" ref="refIframePost"/>
-          </q-tab-panel>
-          <q-tab-panel name="builder" class="q-pa-none overflow-hidden">
-            <handle-grid v-model="blocks" v-bind="configHandleGrid" ref="handleGrid"
-                         @create="(val) => handleCreatingBlock(val)"/>
           </q-tab-panel>
         </q-tab-panels>
         <!--Message to choose a layout-->
@@ -109,8 +113,6 @@ export default defineComponent({
     &__actions
       background-color white
 
-    //border-bottom 1px solid lightgrey
-
     &__box
       background-color white
 
@@ -127,5 +129,4 @@ export default defineComponent({
   #blockAttributesForm
     width 100vw !important
     max-width 100vw
-
 </style>

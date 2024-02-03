@@ -11,6 +11,7 @@ export interface Block {
     es:               LanguageBlock;
     files:            any[];
     gridPosition:     string;
+    parentId:         number;
     id:               number;
     internalTitle:    string;
     layoutId:         number;

@@ -8,6 +8,21 @@ import blockForm from '@imagina/qbuilder/_components/blockContentForm/index.vue'
 import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm/index.vue';
 import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
+interface PropInfoToCreateBlock {
+  index: number,
+  layoutId: number | null,
+  parentId: number
+}
+
+interface StateProps {
+  blocks: Block[];
+  layoutTab: 'builder' | 'preview',
+  loading: boolean,
+  showBlocksPanel: boolean,
+  showBlockAttributesForm: boolean,
+  infoToCreateBlock: PropInfoToCreateBlock,
+  gridBlocks: Block[]
+}
 export default function editorController() {
   const proxy = (getCurrentInstance() as { proxy: Vue }).proxy as Vue
 
@@ -22,7 +37,7 @@ export default function editorController() {
   }
 
   // States
-  const state = reactive({
+  const state = reactive<StateProps>({
     blocks: [],
     layoutTab: 'builder',
     loading: false,
@@ -140,7 +155,7 @@ export default function editorController() {
     },
     // Handle the layout selected
     handleLayoutSelected() {
-      state.blocks = proxy.$clone(store.layoutSelected.blocks)
+      state.blocks = proxy.$clone(store.layoutSelected?.blocks || [])
       methods.setTheGridBlocks()
       state.layoutTab = 'builder'
     },
@@ -167,7 +182,7 @@ export default function editorController() {
     //Handle the creation block
     handleCreatingBlock(val) {
       state.infoToCreateBlock.index = Number(val.index) + 1
-      state.infoToCreateBlock.layoutId = store.layoutSelected.id
+      state.infoToCreateBlock.layoutId = store.layoutSelected?.id || null
       state.infoToCreateBlock.parentId = val.parentId
       state.showBlocksPanel = true
     },
@@ -199,7 +214,7 @@ export default function editorController() {
       }
 
       Promise.all(blockPromise).then(async () => {
-        await refs.refPanel?.value?.refreshLayouts()
+        await refs.refPanel?.value?.refreshLayouts({})
         state.loading = false;
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
       }).catch(error => {
@@ -226,8 +241,9 @@ export default function editorController() {
   })
 
   watch(() => state.gridBlocks, (newValue, oldValue): void => {
+    //@ts-ignore
     state.blocks = proxy.$array.destroyTree(proxy.$clone(newValue))
-    console.warn(">>>>>>>> Watch GrdiBlocks", state.blocks.map(item => ({
+    console.warn(">>>>>>>> Watch GrdiBlocks: ", state.blocks.map(item => ({
       id: item.id,
       sortOrder: item.sortOrder,
       parentId: item.parentId,

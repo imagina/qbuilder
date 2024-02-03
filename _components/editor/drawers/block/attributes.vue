@@ -258,16 +258,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
-#builderDrawerBlockAttributes
-.q-tabs
-  min-height 100%
+#builderDrawerBlockAttributes {
+  .q-tabs {
+    min-height: 100%;
+  }
 
-.q-tab
-  width: max-content
-  float: right
-  border-radius 10px 0 0 10px
+  .q-tab {
+    width: max-content;
+    float: right;
+    border-radius: 10px 0 0 10px;
+  }
 
-.q-card
-  &:hover
-    border-color: $primary
+  .q-card:hover {
+    border-color: $primary;
+  }
+}
 </style>

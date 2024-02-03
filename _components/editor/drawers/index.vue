@@ -55,26 +55,31 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-#builderEditorDrawers
-  .drawer-title
-    background-color $primaryBuilder
-    color white
-    font-size 18px
-    display flex
-    align-items center
-    justify-content space-between
-
-  .q-page-container{
-    padding-left 0 !important
+#builderEditorDrawers {
+  .drawer-title {
+    background-color: $primaryBuilder;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
-  .padding-drawer-content
-    padding 16px 24px
+  .q-page-container {
+    padding-left: 0 !important;
+  }
 
-  .q-drawer
-    padding: 0px !important
-    border-right: 0px
+  .padding-drawer-content {
+    padding: 16px 24px;
+  }
 
-  .q-drawer-container
-    padding: 0px !important
+  .q-drawer {
+    padding: 0px !important;
+    border-right: 0px;
+  }
+
+  .q-drawer-container {
+    padding: 0px !important;
+  }
+}
 </style>

@@ -105,18 +105,21 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-#builderDrawerBlockList
-  .builder_block
-    position relative
+#builderDrawerBlockList {
+  .builder_block {
+    position: relative;
 
-    &__image
-      width 100%
-      height 150px
+    &__image {
+      width: 100%;
+      height: 150px;
+    }
 
-    &__title
-      position absolute
-      bottom 0
-      width 100%
-      background-color rgba($grey-9, 0.5)
-
+    &__title {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background-color: rgba($grey-9, 0.5);
+    }
+  }
+}
 </style>

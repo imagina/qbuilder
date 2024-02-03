@@ -594,13 +594,16 @@ export default {
 };
 </script>
 <style lang="scss">
-#builderDrawerBlockForm
-  .q-tabs
-    border-right: 1px solid $grey-3
-    min-height 100%
+#builderDrawerBlockForm {
+  .q-tabs {
+    border-right: 1px solid $grey-3;
+    min-height: 100%;
+  }
 
-  .q-tab
-    width: max-content
-    float: right
-    border-radius 10px 0 0 10px
+  .q-tab {
+    width: max-content;
+    float: right;
+    border-radius: 10px 0 0 10px;
+  }
+}
 </style>

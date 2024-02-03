@@ -65,30 +65,34 @@ export default defineComponent({
 })
 </script>
 <style lang="scss">
-#pageBuilderEditor
-  padding 34px 100px 34px 100px
-  height 100vh
-  width calc(100% - 500px)
-  transform translateX(540px)
+#pageBuilderEditor {
+  padding: 34px 100px 34px 100px;
+  height: 100vh;
+  width: calc(100% - 500px);
+  transform: translateX(540px);
+}
 
-  .editor-options{
-    width 100%
-    display flex
-    align-items center
-    justify-content space-between
-    background-color #5333ed
-    padding 16px 24px 16px 24px
+.editor-options {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #5333ed;
+  padding: 16px 24px 16px 24px;
+}
+
+#editorContent {
+  width: 100%;
+  height: 100%;
+}
+
+#frameContent {
+  width: 100%;
+  height: calc(100vh - 100px);
+
+  iframe {
+    min-width: 100%;
+    min-height: 100%;
   }
-
-  #editorContent
-    width 100%
-    height 100%
-
-  #frameContent
-    width: 100%
-    height: calc(100vh - 100px)
-
-    iframe
-      min-width 100%
-      min-height 100%
+}
 </style>

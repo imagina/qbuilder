@@ -17,14 +17,17 @@
              color="green" no-caps padding="md md" @click="saveBlocks" icon="fas fa-save"/>
       <!--Over panels-->
       <q-dialog v-model="showBlocksPanel" position="left" content-class="builder-panel-dialog" square>
-        <blocks-panel class="full-height" @created="handleChangesBlock" v-bind="infoToCreateBlock"/>
+        <blocks-panel @created="block => handleChangesBlock({block, refreshLayouts: true})"
+                      class="full-height" v-bind="infoToCreateBlock"/>
       </q-dialog>
       <!--Block Form-->
-      <block-form ref="refBlockForm" @updated="handleChangesBlock"/>
+      <block-form ref="refBlockForm" @updated="block => handleChangesBlock({block})"/>
       <!--block attrs from panels-->
       <q-dialog v-model="showBlockAttributesForm" :title="$tr('ibuilder.cms.label.editBlockAttributes')"
                 position="left" content-class="builder-panel-dialog" square persistent>
-        <block-attributes-form ref="blockAttributesForm" @input="handleChangesBlock" @cancel="handleChangesBlock"/>
+        <block-attributes-form ref="blockAttributesForm"
+                               @cancel="() => handleChangesBlock({})"
+                               @input="block => handleChangesBlock({block})"/>
       </q-dialog>
     </div>
     <!-- Preview -->

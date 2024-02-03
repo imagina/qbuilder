@@ -186,17 +186,19 @@ export default function editorController() {
       state.showBlocksPanel = true
     },
     //Handle the created blocks
-    handleChangesBlock(block, wasDeleted = false) {
-      methods.refreshLayouts({emitSelected: false})
+    handleChangesBlock({block = null, wasDeleted = false, refreshLayouts = false}) {
+      if (block) {
+        //Refresh de layoutPanel data
+        if (refreshLayouts) methods.refreshLayouts({emitSelected: false})
+        //TODO: buscar si block ya existe en stateblocks y actualizarlo, si no, agregarlo
+        let blockIndex = state.blocks.findIndex(item => item.id == block.id)
+        if (blockIndex >= 0) {
+          if (wasDeleted) state.blocks.splice(blockIndex, 1)
+          else state.blocks.splice(blockIndex, 1, block)
+        } else state.blocks = [...state.blocks, block]
 
-      //TODO: buscar si block ya existe en stateblocks y actualizarlo, si no, agregarlo
-      let blockIndex = state.blocks.findIndex(item => item.id == block.id)
-      if (blockIndex >= 0) {
-        if (wasDeleted) state.blocks.splice(blockIndex, 1)
-        else state.blocks.splice(blockIndex, 1, block)
-      } else state.blocks = [...state.blocks, block]
-
-      methods.setTheGridBlocks()
+        methods.setTheGridBlocks()
+      }
       state.showBlocksPanel = false
       state.showBlockAttributesForm = false
     },
@@ -215,7 +217,7 @@ export default function editorController() {
     async deleteBlock(block) {
       state.loading = true
       await service.deleteblock(block.id)
-      methods.handleChangesBlock(block, true)
+      methods.handleChangesBlock({block, wasDeleted: true, refreshLayouts: true})
       state.loading = false
     }
   }
@@ -232,13 +234,6 @@ export default function editorController() {
   watch(() => state.gridBlocks, (newValue, oldValue): void => {
     //@ts-ignore
     state.blocks = proxy.$array.destroyNestedItems(proxy.$clone(newValue))
-    console.warn(">>>>>>>> Watch GrdiBlocks: ", state.blocks.map(item => ({
-      id: item.id,
-      sortOrder: item.sortOrder,
-      parentId: item.parentId,
-      title: item.internalTitle,
-      gridPosition: item.gridPosition
-    })))
   }, {deep: true})
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}

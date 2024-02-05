@@ -6,14 +6,14 @@
     <div class="drawer-body relative-position">
       <!--Buttons actions-->
       <div class="flex q-gutter-xs justify-between">
-        <q-btn @click="createItem" outline rounded class="q-mb-sm text-capitalize heigth-button" color="primary" no-caps
+        <q-btn @click="$emit('create')" outline rounded class="q-mb-sm text-capitalize heigth-button" color="primary" no-caps
                padding="sm lg">
           <q-icon size="xs" left name="fa-solid fa-plus"/>
           <div class="text-center text-weight-bold">
             {{ $tr('ibuilder.cms.newLayout') }}
           </div>
         </q-btn>
-        <q-btn @click="refreshLayouts" outline rounded class="q-mb-sm" size="sm" color="primary"
+        <q-btn @click="handleRefresh" outline rounded class="q-mb-sm" size="sm" color="primary"
                no-caps icon="fa-light fa-rotate-right" />
       </div>
 

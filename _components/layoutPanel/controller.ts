@@ -1,4 +1,4 @@
-import {computed, reactive, ref, onMounted, toRefs, getCurrentInstance, watch, onUnmounted} from "vue";
+import Vue, {computed, reactive, ref, onMounted, toRefs, getCurrentInstance, watch, onUnmounted} from "vue";
 import service from "@imagina/qbuilder/_components/layoutPanel/services";
 import store from "@imagina/qbuilder/_pages/admin/editor/store";
 import recursiveStore from "@imagina/qsite/_components/v3/recursiveItem/store";
@@ -23,25 +23,25 @@ interface MapLayoutChildren {
   icon: string
 }
 
+//State Props Interface
+interface StateProps {
+  layouts: Layout[],
+  mapLayouts: MapLayout[]
+  loading: Boolean,
+}
+
 export default function layoutController(props: any, emit: any) {
-  const proxy = getCurrentInstance()!.proxy
+  const proxy = (getCurrentInstance() as { proxy: Vue }).proxy as Vue
   // Refs
   const refs = {
     // key: ref(defaultValue)
   }
 
-  //State Props Interface
-  interface StateProps {
-    loading: Boolean,
-    layouts: Layout[],
-    mapLayouts: MapLayout[]
-  }
-
   // States
   const state = reactive<StateProps>({
-    loading: false,
     layouts: [],
-    mapLayouts: []
+    mapLayouts: [],
+    loading: false
   })
 
   // Computed
@@ -49,7 +49,8 @@ export default function layoutController(props: any, emit: any) {
 
   // Methods
   const methods = {
-    getLayouts(crudAction = ''): Promise<boolean> {
+    //Get Layouts
+    getLayouts(): Promise<boolean> {
       state.loading = true
       return new Promise(resolve => {
         const params = {
@@ -59,22 +60,6 @@ export default function layoutController(props: any, emit: any) {
         //Request
         service.getLayouts(true, params).then(response => {
           state.layouts = response.data
-
-          //If the action is create, assign the first layout to the editor and recursiveItem stores
-          if (crudAction == 'created') {
-            const firstLayout = state.layouts[0]
-            recursiveStore.itemSelected = firstLayout;
-            store.layoutSelected = firstLayout
-          } else if (crudAction == 'updated') {
-            //If an update is made, find the layout
-            const layout = state.layouts.find(i => i.id == store.layoutSelected?.id)
-
-            //Reload the layout that was updated
-            if (layout) {
-              store.layoutSelected = layout
-            }
-          }
-
           //Every time the service is called, the layouts will be remapped
           state.mapLayouts = methods.orderedItems()
           state.loading = false
@@ -85,8 +70,27 @@ export default function layoutController(props: any, emit: any) {
         })
       })
     },
-    createItem() {
-      emit('create')
+    //Refresh layout petition
+    async refreshLayouts({crudAction = '', emitSelected = true}) {
+      emit('refresh', true)
+      //Update layout
+      await methods.getLayouts();
+
+      //If the action is create, assign the first layout to the editor and recursiveItem stores
+      if (crudAction == 'created') {
+        const firstLayout = state.layouts[0]
+        recursiveStore.itemSelected = firstLayout;
+        store.layoutSelected = firstLayout
+      } else if (store.layoutSelected && store.layoutSelected.id) {
+        const layoutSelected = state.layouts.find(layout => layout.id === store.layoutSelected?.id)
+
+        if (emitSelected && !!layoutSelected) {
+          store.layoutSelected = proxy.$clone(layoutSelected);
+          emit('selected', proxy.$clone(layoutSelected));
+        }
+      }
+
+      emit('refresh', false)
     },
     //Get the configs from builder.layout
     builderConfig() {
@@ -165,18 +169,22 @@ export default function layoutController(props: any, emit: any) {
         }
       })
     },
-    //Send layout petition
-    async refreshLayouts({crudAction = '', emitSelected = true}) {
-      await methods.getLayouts(crudAction);
-      if (store.layoutSelected && store.layoutSelected.id) {
-        const layoutSelected = state.layouts.find(layout => layout.id === store.layoutSelected?.id)
-
-        if (emitSelected && !!layoutSelected) {
-          store.layoutSelected = proxy.$clone(layoutSelected);
-          emit('selected', proxy.$clone(layoutSelected));
-        }
-      }
-    }
+    //Warning to Refresh Layout
+    handleRefresh() {
+      proxy.$alert.warning({
+        mode: 'modal',
+        title: proxy.$tr('ibuilder.cms.label.sureRefreshLayout'),
+        message: proxy.$tr('ibuilder.cms.label.descriptionSureRefreshLayout'),
+        actions: [
+          {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
+          {
+            label: proxy.$tr('isite.cms.label.accept'),
+            color: 'green',
+            handler: () => methods.refreshLayouts({})
+          },
+        ]
+      })
+    },
   }
 
   // Mounted

@@ -10,7 +10,8 @@
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
       <!--Layout Panel-->
-      <layout-panel @create="crudLayout.create()" ref="refPanel" @selected="handleLayoutSelected"/>
+      <layout-panel @create="crudLayout.create()" ref="refPanel" @selected="handleLayoutSelected"
+        @refresh="(val) => loading = val"/>
       <!--Save Button-->
       <q-btn v-if="store.layoutSelected" :label="$tr('isite.cms.label.save')"
              class="full-width absolute-bottom text-capitalize"

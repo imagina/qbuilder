@@ -171,19 +171,22 @@ export default function layoutController(props: any, emit: any) {
     },
     //Warning to Refresh Layout
     handleRefresh() {
-      proxy.$alert.warning({
-        mode: 'modal',
-        title: proxy.$tr('ibuilder.cms.label.sureRefreshLayout'),
-        message: proxy.$tr('ibuilder.cms.label.descriptionSureRefreshLayout'),
-        actions: [
-          {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
-          {
-            label: proxy.$tr('isite.cms.label.accept'),
-            color: 'green',
-            handler: () => methods.refreshLayouts({})
-          },
-        ]
-      })
+      if(store.layoutSelected) {
+        proxy.$alert.warning({
+          mode: 'modal',
+          title: proxy.$tr('ibuilder.cms.label.sureRefreshLayout'),
+          message: proxy.$tr('ibuilder.cms.label.descriptionSureRefreshLayout'),
+          actions: [
+            {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
+            {
+              label: proxy.$tr('isite.cms.label.accept'),
+              color: 'green',
+              handler: () => methods.refreshLayouts({})
+            },
+          ]
+        })
+      } else methods.refreshLayouts({})
+
     },
   }
 

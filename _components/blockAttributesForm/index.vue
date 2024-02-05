@@ -1,7 +1,7 @@
 <template>
   <div id="blockAttributesForm" class="bg-white">
     <div class="drawer-title q-py-md q-px-md bg-primary text-white">
-      <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.blockEdit') }}</h2>
+      <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.blockEdit') }} - ID: {{ block.id }}</h2>
     </div>
     <div class="row q-col-gutter-x-md relative-position">
       <!--Panel-->

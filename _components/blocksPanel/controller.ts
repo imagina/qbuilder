@@ -1,4 +1,4 @@
-import {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} from "vue";
+import Vue, {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} from "vue";
 import service from '@imagina/qbuilder/_components/blocksPanel/services'
 import store from '@imagina/qbuilder/_components/blocksPanel/store'
 import storeEditor from '@imagina/qbuilder/_pages/admin/editor/store'
@@ -13,31 +13,31 @@ interface blockType {
   systemName: string
 }
 
+interface StateProps {
+  localBlocks: Block[],
+  blockLibrary: Block[],
+  blockTypeSelected: string | null,
+  blockSelected: Block | null,
+  blockTypeTab: string
+  loading: Boolean,
+}
+
 export default function controller(props: any, emit: any) {
-  const proxy = getCurrentInstance()!.proxy
+  const proxy = (getCurrentInstance() as { proxy: Vue }).proxy as Vue
 
   // Refs
   const refs = {
     refBlockForm: ref<InstanceType<typeof blockForm>>()
   }
 
-  interface StateProps {
-    loading: Boolean,
-    localBlocks: Block[],
-    blockLibrary: Block[],
-    blockTypeSelected: string | null,
-    blockSelected: Block | null,
-    blockTypeTab: string
-  }
-
   // States
   const state = reactive<StateProps>({
-    loading: false,
     localBlocks: [],
     blockLibrary: [],
     blockTypeSelected: null,
     blockSelected: null,
-    blockTypeTab: 'global'
+    blockTypeTab: 'global',
+    loading: false
   })
 
   // Computed

@@ -24,6 +24,12 @@ interface StateProps {
   gridBlocks: Block[]
 }
 
+interface PropsHandleChangesBlock {
+  block: null | Block,
+  wasDeleted: boolean,
+  refreshLayouts: boolean
+}
+
 export default function editorController() {
   const proxy = (getCurrentInstance() as { proxy: Vue }).proxy as Vue
 
@@ -186,7 +192,7 @@ export default function editorController() {
       state.showBlocksPanel = true
     },
     //Handle the created blocks
-    handleChangesBlock({block = null, wasDeleted = false, refreshLayouts = false}) {
+    handleChangesBlock({block = null, wasDeleted = false, refreshLayouts = false}: PropsHandleChangesBlock) {
       if (block) {
         //Refresh de layoutPanel data
         if (refreshLayouts) methods.refreshLayouts({emitSelected: false})

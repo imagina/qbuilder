@@ -29,11 +29,11 @@ export default {
     })
   },
   //Bulk update blocks
-  blocksBulkUpdate(blocks): Promise<any> {
+  blocksBulkUpdate(blocks, ignoreKeyToSnakeCase: string[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
       //Request params
       const requestParams = {
-        notToSnakeCase: [...(Object.keys(blocks[0].attributes) ?? []), "component", "entity", "attributes"]
+        notToSnakeCase: [...ignoreKeyToSnakeCase,"component", "entity", "attributes"]
       }
       //Request
       baseService.update('apiRoutes.qbuilder.blocks', 'bulk/update', blocks, requestParams).then(response => {

@@ -211,8 +211,9 @@ export default function editorController() {
     // Save the blocks of layout | TODO:  change to bulck update
     async saveBlocks() {
       state.loading = true
-      await service.blocksBulkUpdate(state.blocks).then(response => {
+      await service.blocksBulkUpdate(state.blocks, store.ignoreConfigKeys).then(response => {
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
+        methods.refreshLayouts({})
         state.loading = false
       }).catch(error => {
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});

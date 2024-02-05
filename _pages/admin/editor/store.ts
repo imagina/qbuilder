@@ -46,5 +46,12 @@ export default computed(() => ({
   get mainBlockSystemName() {
     return state.mainBlockSystemName
   },
+  get ignoreConfigKeys() {
+    const childKeysConfig = new Set(state.blockConfigs.reduce((acc, current) => {
+      return [...Object.keys(current.childBlocks ?? {}), ...acc]
+    }, ["componentAttributes"]))
+
+    return Array.from(childKeysConfig)
+  }
 
 })).value

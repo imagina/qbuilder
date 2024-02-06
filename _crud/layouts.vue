@@ -31,11 +31,12 @@ export default {
             },
           },
           systemName: {
-            value: null,
+            value: this.$uid(),
             type: 'input',
             required: true,
             props: {
-              label: this.$tr('isite.cms.form.systemName')
+              label: this.$tr('isite.cms.form.systemName'),
+              vIf: false
             }
           },
           entityType: {

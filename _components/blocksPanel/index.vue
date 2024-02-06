@@ -151,13 +151,8 @@ export default defineComponent({
   }
 
   .selectable {
-    &:hover .title-item,
-    &.selectable--selected .title-item {
-      opacity 1
-    }
-
     .title-item {
-      opacity 0
+      opacity 1
       position absolute
       bottom 0
       background rgba(0, 0, 0, 0.75)

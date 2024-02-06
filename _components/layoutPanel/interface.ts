@@ -1,4 +1,5 @@
 import {Block} from '@imagina/qbuilder/_components/blocksPanel/interface'
+import {MediaFiles} from "@imagina/qbuilder/_pages/admin/editor/interface";
 
 export interface Layout {
   blocks:         Block[];
@@ -16,4 +17,5 @@ export interface Layout {
   type:           string | null;
   updatedAt:      Date;
   updatedBy:      number;
+  mediaFiles:     MediaFiles;
 }

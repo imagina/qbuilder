@@ -10,7 +10,7 @@
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
       <!--Layout Panel-->
-      <layout-panel @create="crudLayout.create()" ref="refPanel" @selected="handleLayoutSelected"
+      <layout-panel @create="() => showLayoutPanel = true" ref="refPanel" @selected="handleLayoutSelected"
         @refresh="(val) => loading = val"/>
       <!--Save Button-->
       <q-btn v-if="store.layoutSelected" :label="$tr('isite.cms.label.save')"
@@ -29,6 +29,11 @@
         <block-attributes-form ref="blockAttributesForm"
                                @cancel="() => handleChangesBlock({})"
                                @input="block => handleChangesBlock({block})"/>
+      </q-dialog>
+      <!--Layout panel-->
+      <q-dialog v-model="showLayoutPanel" position="left" content-class="builder-panel-dialog" square>
+        <layout-library-panel @creating="layout => crudLayout.create(layout)"
+                      class="full-height"/>
       </q-dialog>
     </div>
     <!-- Preview -->
@@ -87,6 +92,7 @@ import blocksPanel from '@imagina/qbuilder/_components/blocksPanel';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid';
 import blockForm from "@imagina/qbuilder/_components/blockContentForm/index.vue";
 import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm'
+import layoutLibraryPanel from '@imagina/qbuilder/_components/layoutLibraryPanel'
 
 export default defineComponent({
   props: {},
@@ -96,7 +102,8 @@ export default defineComponent({
     layoutPanel,
     blocksPanel,
     handleGrid,
-    blockAttributesForm
+    blockAttributesForm,
+    layoutLibraryPanel
   },
   setup() {
     return {...controller()}

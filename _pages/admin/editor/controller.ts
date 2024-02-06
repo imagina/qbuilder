@@ -19,6 +19,7 @@ interface StateProps {
   layoutTab: 'builder' | 'preview',
   loading: boolean,
   showBlocksPanel: boolean,
+  showLayoutPanel: boolean,
   showBlockAttributesForm: boolean,
   infoToCreateBlock: PropInfoToCreateBlock,
   gridBlocks: Block[]
@@ -49,6 +50,7 @@ export default function editorController() {
     layoutTab: 'builder',
     loading: false,
     showBlocksPanel: false,
+    showLayoutPanel: false,
     showBlockAttributesForm: false,
     infoToCreateBlock: {
       index: 0,

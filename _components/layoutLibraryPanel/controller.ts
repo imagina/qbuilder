@@ -1,6 +1,7 @@
 import Vue, {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} from "vue";
 import service from '@imagina/qbuilder/_components/layoutLibraryPanel/services'
 import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
+import {Block} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 interface StateProps {
   layoutLibrary: Layout[],
@@ -73,14 +74,15 @@ export default function controller(props: any, emit: any) {
     //Trigger to select Layout
     selectedLayout(layout) {
       let newLayout = {
-        blocks: []
-      }
+        blocks: [] as Block[]
+      } as Layout
 
       if(layout) {
         newLayout = proxy.$clone(layout)
+        //@ts-ignore
         newLayout.systemName = proxy.$uid();
-        newLayout.default = null;
-        newLayout.id = null;
+        delete newLayout.default;
+        delete newLayout.id
       }
 
       emit('creating', newLayout);

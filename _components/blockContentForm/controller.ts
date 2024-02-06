@@ -18,7 +18,7 @@ interface StateProps {
   idBlock: number | null,
   indexBlock: number,
   layoutId: number,
-  parentId: number,
+  parentSystemName: string | null,
   showModal: boolean,
   formBlock: MainData | null,
   configBlock: ModuleBlockConfig,
@@ -42,7 +42,7 @@ export default function controller(props: any, emit: any) {
     idBlock: null,
     indexBlock: 1,
     layoutId: 0,
-    parentId: 0,
+    parentSystemName: null,
     showModal: false,
     formBlock: null,
     configBlock: {} as ModuleBlockConfig,
@@ -144,7 +144,7 @@ export default function controller(props: any, emit: any) {
           systemName: proxy.$uid(),
           attributes: { ...(state.block?.attributes ?? {}) },
           sortOrder: state.indexBlock,
-          parentId: state.parentId,
+          parentSystemName: state.parentSystemName,
           layoutId: state.layoutId
         })
       });
@@ -177,12 +177,12 @@ export default function controller(props: any, emit: any) {
   // Methods
   const methods = {
     //Fill in data for creation with selected block
-    fillData(selectedBlock, {index, layoutId, parentId}){
+    fillData(selectedBlock, {index, layoutId, parentSystemName}){
       // Cloning and setting selected block data
       state.block = proxy.$clone(selectedBlock)
       state.indexBlock = proxy.$clone(index)
       state.layoutId = proxy.$clone(layoutId)
-      state.parentId = proxy.$clone(parentId)
+      state.parentSystemName = proxy.$clone(parentSystemName)
 
       // Cloning and setting form block data
       state.formBlock = proxy.$clone(selectedBlock)

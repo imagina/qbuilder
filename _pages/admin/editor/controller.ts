@@ -12,7 +12,7 @@ import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
 interface PropInfoToCreateBlock {
   index: number,
   layoutId: number | null,
-  parentId: number
+  parentSystemName: string | null
 }
 
 interface StateProps {
@@ -58,7 +58,7 @@ export default function editorController() {
     infoToCreateBlock: {
       index: 0,
       layoutId: null,
-      parentId: 0
+      parentSystemName: null
     },
     gridBlocks: []
   })
@@ -187,12 +187,12 @@ export default function editorController() {
       }).sort((a, b) => a['sortOrder'] - b['sortOrder'])
 
       //@ts-ignore
-      state.gridBlocks = proxy.$array.builTree(result || [])
+      state.gridBlocks = proxy.$array.builTree(result || [], 0, {parentId: 'parentSystemName', nameFieldParent: 'systemName'})
     },
     //Handle the creation block
     handleCreatingBlock(val) {
       state.infoToCreateBlock.index = val ? val.children.length : state.gridBlocks.length
-      state.infoToCreateBlock.parentId = val?.id || 0
+      state.infoToCreateBlock.parentSystemName = val?.systemName || null
       state.infoToCreateBlock.layoutId = store.layoutSelected?.id || null
       state.showBlocksPanel = true
     },
@@ -229,14 +229,16 @@ export default function editorController() {
         const blocksToSave = []
 
         layout?.blocks?.forEach(block => {
+          //@ts-ignore
           const newSystemName = proxy.$uid();
 
           layout.blocks.forEach(child => {
             if (child.parentId === block.id) {
-              child.parentId = newSystemName;
+              child.parentSystemName = newSystemName;
             }
           });
 
+          //@ts-ignore
           blocksToSave.push({...block, systemName: newSystemName, layoutId: layout.id})
 
         })
@@ -247,7 +249,7 @@ export default function editorController() {
       }
 
     },
-    // Save the blocks of layout | TODO:  change to bulck update
+    // Save the blocks of layout
     async saveBlocks() {
       state.loading = true
       await service.blocksBulkUpdate(state.blocks, store.ignoreConfigKeys).then(response => {
@@ -279,7 +281,7 @@ export default function editorController() {
 
   watch(() => state.gridBlocks, (newValue, oldValue): void => {
     //@ts-ignore
-    state.blocks = proxy.$array.destroyNestedItems(proxy.$clone(newValue))
+    state.blocks = proxy.$array.destroyNestedItems(proxy.$clone(newValue), 0, {parentId: 'parentSystemName'})
   }, {deep: true})
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}

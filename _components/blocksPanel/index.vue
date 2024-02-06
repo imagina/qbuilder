@@ -89,7 +89,7 @@ export default defineComponent({
   props: {
     index: {type: Number, default: 0},
     layoutId: {type: Number, default: 0},
-    parentId: {type: Number, default: 0}
+    parentSystemName: {default: null}
   },
   components: {blockForm},
   setup(props, {emit}) {

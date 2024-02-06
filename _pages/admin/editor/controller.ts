@@ -281,7 +281,7 @@ export default function editorController() {
 
   watch(() => state.gridBlocks, (newValue, oldValue): void => {
     //@ts-ignore
-    state.blocks = proxy.$array.destroyNestedItems(proxy.$clone(newValue), 0, {parentId: 'parentSystemName'})
+    state.blocks = proxy.$array.destroyNestedItems(proxy.$clone(newValue), null, {parentId: 'parentSystemName'})
   }, {deep: true})
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}

@@ -149,9 +149,11 @@
 </template>
 <script>
 
-import Vue, {computed} from "vue";
+import { computed } from "vue";
 import editorStore from "@imagina/qbuilder/_store/editor";
 import saveButton from '@imagina/qbuilder/_components/editor/drawers/block/saveButton.vue'
+import eventBus from '@imagina/qsite/_plugins/eventBus'
+
 
 export default {
   setup(){
@@ -181,8 +183,8 @@ export default {
     },
   },
   beforeDestroy() {
-    this.$eventBus.$off('updateBlockInfo')
-    this.$eventBus.$off('saveBlockInfo')
+    eventBus.off('updateBlockInfo')
+    eventBus.off('saveBlockInfo')
   },
   mounted() {
     this.$nextTick(function () {
@@ -422,10 +424,10 @@ export default {
   methods: {
     init() {
       editorStore.methods.getBlocksConfiguration(true);
-      this.$eventBus.$on('updateBlockInfo', () => {
+      eventBus.on('updateBlockInfo', () => {
         this.updateBlock();
       })
-      this.$eventBus.$on('saveBlockInfo', () => {
+      eventBus.on('saveBlockInfo', () => {
         this.createBlock();
       })
     },

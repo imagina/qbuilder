@@ -6,7 +6,7 @@
                       text-color="green" :options="deviceOptions"/>
       <div></div>
       <q-btn color="primary" text-color="white" no-caps v-if="selectedBlock" @click="() => saveBlockInfo()" label="Guardar" />
-      <q-btn color="primary" text-color="white" no-caps v-else-if="createMode" @click="() => $eventBus.$emit('saveBlockInfo')" label="Guardar Bloque" />
+      <q-btn color="primary" text-color="white" no-caps v-else-if="createMode" @click="() => eventBus.emit('saveBlockInfo')" label="Guardar Bloque" />
       <q-btn color="primary" text-color="white" no-caps v-else-if="!selectedBlock && !createMode" @click="() => saveBlockInfo()" label="Crear Bloque" />
     </div>
     <div id="editorContent">
@@ -19,9 +19,10 @@
   </div>
 </template>
 <script>
-import Vue, {defineComponent, computed} from "vue";
+import { defineComponent, computed } from "vue";
 import editorStore from '@imagina/qbuilder/_store/editor'
 import blockPreview from '@imagina/qbuilder/_components/editor/blockPreview.vue'
+import eventBus from '@imagina/qsite/_plugins/eventBus'
 
 export default defineComponent({
   setup() {
@@ -38,7 +39,8 @@ export default defineComponent({
   components: {blockPreview},
   data() {
     return {
-      urlIframe: 'https://www.imaginacolombia.com'
+      urlIframe: 'https://www.imaginacolombia.com',
+      eventBus
     }
   },
   mounted() {
@@ -55,7 +57,7 @@ export default defineComponent({
   methods: {
     saveBlockInfo(){
       if (this.selectedBlock) {
-        this.$eventBus.$emit('updateBlockInfo');
+        eventBus.emit('updateBlockInfo');
       }else{
         editorStore.methods.createMode();
         //this.$eventBus.$emit('saveBlockInfo');

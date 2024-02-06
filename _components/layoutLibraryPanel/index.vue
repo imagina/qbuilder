@@ -1,5 +1,5 @@
 <template>
-  <div id="builderBlockPanel" class="bg-white relative-position">
+  <div id="builderLayoutLibraryPanel" class="bg-white relative-position">
     <div class="drawer-title q-py-md q-px-md">
       <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.layouts') }}</h2>
     </div>
@@ -26,7 +26,7 @@
                  class="full-width q-mx-sm text-capitalize" color="primary" no-caps padding="sm lg">
             <q-icon size="xs" left name="fa-solid fa-plus"/>
             <div class="text-center text-weight-bold">
-              {{ $tr('ibuilder.cms.newBlock') }}
+              {{ $tr('ibuilder.cms.label.newLayout') }}
             </div>
           </q-btn>
         </div>
@@ -62,7 +62,7 @@ export default defineComponent({
 })
 </script>
 <style lang="stylus">
-#builderBlockPanel
+#builderLayoutLibraryPanel
   width 800px
   height 100vh
 

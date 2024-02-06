@@ -4,7 +4,7 @@
     <div class="text-right q-mb-md">
       <!--Crud Layouts-->
       <crud :crud-data="import('@imagina/qbuilder/_crud/layouts')" type="onlyUpdate" ref="crudLayout"
-            @created="refreshLayouts({crudAction : 'created'})" @updated="refreshLayouts({crudAction : 'updated'})"
+            @createdData="(layout) => handleCreateLayout(layout, true)" @updated="refreshLayouts({crudAction : 'updated'})"
       />
     </div>
     <!--Panels-->
@@ -32,7 +32,7 @@
       </q-dialog>
       <!--Layout panel-->
       <q-dialog v-model="showLayoutPanel" position="left" content-class="builder-panel-dialog" square>
-        <layout-library-panel @creating="layout => crudLayout.create(layout)"
+        <layout-library-panel @creating="handleCreateLayout"
                       class="full-height"/>
       </q-dialog>
     </div>

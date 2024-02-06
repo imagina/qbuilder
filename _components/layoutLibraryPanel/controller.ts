@@ -4,7 +4,7 @@ import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
 
 interface StateProps {
   layoutLibrary: Layout[],
-  layoutTypeSelected: string | null,
+  layoutTypeSelected: string,
   loading: Boolean,
 }
 
@@ -17,7 +17,7 @@ export default function controller(props: any, emit: any) {
   // States
   const state = reactive<StateProps>({
     layoutLibrary: [],
-    layoutTypeSelected: null,
+    layoutTypeSelected: '',
     loading: false
   })
 
@@ -26,7 +26,7 @@ export default function controller(props: any, emit: any) {
     //Return the existing blocks to list
     layoutTypes: computed(() => {
       const configs = methods.builderConfig()
-      const response= [];
+      const response: {title: string, entityType: string}[] = [];
 
       // loop each module configs
       Object.keys(configs).forEach(moduleName => {
@@ -72,8 +72,16 @@ export default function controller(props: any, emit: any) {
     },
     //Trigger to select Layout
     selectedLayout(layout) {
-      const newLayout = proxy.$clone(layout)
-      newLayout.systemName = proxy.$uid();
+      let newLayout = {
+        blocks: []
+      }
+
+      if(layout) {
+        newLayout = proxy.$clone(layout)
+        newLayout.systemName = proxy.$uid();
+        newLayout.default = null;
+        newLayout.id = null;
+      }
 
       emit('creating', newLayout);
     },

@@ -7,6 +7,7 @@ import handleGrid from '@imagina/qsite/_components/v3/handleGrid/index.vue';
 import blockForm from '@imagina/qbuilder/_components/blockContentForm/index.vue'
 import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm/index.vue';
 import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
+import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
 
 interface PropInfoToCreateBlock {
   index: number,
@@ -17,6 +18,7 @@ interface PropInfoToCreateBlock {
 interface StateProps {
   blocks: Block[];
   layoutTab: 'builder' | 'preview',
+  layoutClone: Layout | null,
   loading: boolean,
   showBlocksPanel: boolean,
   showLayoutPanel: boolean,
@@ -48,6 +50,7 @@ export default function editorController() {
   const state = reactive<StateProps>({
     blocks: [],
     layoutTab: 'builder',
+    layoutClone: null,
     loading: false,
     showBlocksPanel: false,
     showLayoutPanel: false,
@@ -209,6 +212,40 @@ export default function editorController() {
       }
       state.showBlocksPanel = false
       state.showBlockAttributesForm = false
+    },
+    //Handle when action create into layout
+    handleCreateLayout(layout: Layout, isCreated = false) {
+      console.warn(layout)
+      //Handle when creating layout
+      if(!isCreated) {
+        state.layoutClone = proxy.$clone(layout);
+        //@ts-ignore
+        refs.crudLayout.value?.create(layout)
+      } else {
+        //Handle when layout is created
+        state.showLayoutPanel = false
+        state.loading = true
+
+        const blocksToSave = []
+
+        layout?.blocks?.forEach(block => {
+          const newSystemName = proxy.$uid();
+
+          layout.blocks.forEach(child => {
+            if (child.parentId === block.id) {
+              child.parentId = newSystemName;
+            }
+          });
+
+          blocksToSave.push({...block, systemName: newSystemName, layoutId: layout.id})
+
+        })
+
+        console.warn(blocksToSave)
+
+        state.loading = false
+      }
+
     },
     // Save the blocks of layout | TODO:  change to bulck update
     async saveBlocks() {

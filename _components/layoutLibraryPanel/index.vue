@@ -22,7 +22,7 @@
       <div class="col-7">
         <!--Buttons actions-->
         <div class="flex q-my-sm q-px-lg">
-          <q-btn @click="selectedLayout(blockDefault)" outline rounded
+          <q-btn @click="selectedLayout()" outline rounded
                  class="full-width q-mx-sm text-capitalize" color="primary" no-caps padding="sm lg">
             <q-icon size="xs" left name="fa-solid fa-plus"/>
             <div class="text-center text-weight-bold">

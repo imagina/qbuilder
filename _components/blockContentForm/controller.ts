@@ -215,7 +215,7 @@ export default function controller(props: any, emit: any) {
       if (state.configBlock?.content) {
         // Find the element that matches the given entity type
         response = state.configBlock.content.find(item => {
-          if (item.value == state.block?.entity?.type) return item
+          if (item.value == state.formBlock?.entity?.type) return item
         })!
       }
 

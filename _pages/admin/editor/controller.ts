@@ -215,7 +215,6 @@ export default function editorController() {
     },
     //Handle when action create into layout
     handleCreateLayout(layout: Layout, isCreated = false) {
-      console.warn(layout)
       //Handle when creating layout
       if(!isCreated) {
         state.layoutClone = proxy.$clone(layout);
@@ -233,7 +232,7 @@ export default function editorController() {
           const newSystemName = proxy.$uid();
 
           layout.blocks.forEach(child => {
-            if (child.parentId === block.id) {
+            if (child.parentSystemName === block.systemName) {
               child.parentSystemName = newSystemName;
             }
           });

@@ -81,6 +81,7 @@ export default function layoutController(props: any, emit: any) {
         const firstLayout = state.layouts[0]
         recursiveStore.itemSelected = firstLayout;
         store.layoutSelected = firstLayout
+        emit('selected', proxy.$clone(firstLayout));
       } else if (store.layoutSelected && store.layoutSelected.id) {
         const layoutSelected = state.layouts.find(layout => layout.id === store.layoutSelected?.id)
 

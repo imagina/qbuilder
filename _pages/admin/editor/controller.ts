@@ -253,7 +253,6 @@ export default function editorController() {
         await service.blocksBulkCreate(blocks, store.ignoreConfigKeys).then(response => {
           proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
           methods.refreshLayouts({crudAction: 'created'})
-          state.loading = false
         }).catch(error => {
           proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
           state.loading = false

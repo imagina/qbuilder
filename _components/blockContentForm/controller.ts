@@ -23,7 +23,6 @@ interface StateProps {
   formBlock: MainData | null,
   configBlock: ModuleBlockConfig,
   languageOptions: any,
-  modalActions: any[],
   loading: boolean
 }
 
@@ -47,15 +46,6 @@ export default function controller(props: any, emit: any) {
     formBlock: null,
     configBlock: {} as ModuleBlockConfig,
     languageOptions: proxy.$store.getters['qsiteApp/getSelectedLocalesSelect'],
-    modalActions: [
-      {
-        props: {
-          label: proxy.$tr('isite.cms.label.save'),
-          color: 'green',
-        },
-        action: () => refs.refForm.value?.changeStep('next', true)
-      }
-    ],
     loading: false
   })
 
@@ -170,6 +160,19 @@ export default function controller(props: any, emit: any) {
       delete response.helpText
       //Response
       return response
+    }),
+    //get modal Actions
+    modalActions: computed(() => {
+      const buttonLabel = state.idBlock ? proxy.$tr('ibuilder.cms.label.apply') : proxy.$tr('isite.cms.label.save')
+      return [
+        {
+          props: {
+            label: buttonLabel,
+            color: 'green',
+          },
+          action: () => refs.refForm.value?.changeStep('next', true)
+        }
+      ]
     }),
 
   }

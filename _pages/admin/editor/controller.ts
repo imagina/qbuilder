@@ -244,8 +244,6 @@ export default function editorController() {
           //Changes principal values in block
           block.entity = {} as any
           block.systemName = newSystemName
-          //@ts-ignore
-          block.id = null
           block.layoutId = layout.id
 
         })

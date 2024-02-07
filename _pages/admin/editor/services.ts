@@ -41,6 +41,20 @@ export default {
       }).catch(error => reject(error))
     })
   },
+  //Bulk create blocks
+  blocksBulkCreate(blocks, ignoreKeyToSnakeCase: string[] = []): Promise<any> {
+    return new Promise((resolve, reject) => {
+      //Request params
+      const requestParams = {
+        notToSnakeCase: [...ignoreKeyToSnakeCase,"component", "entity", "attributes"]
+      }
+      //Request
+      //@ts-ignore
+      baseService.create(`${config('apiRoutes.qbuilder.blocks')}/bulk/create`, blocks, requestParams).then(response => {
+        resolve(true)
+      }).catch(error => reject(error))
+    })
+  },
   //Delete block
   deleteblock(blockId): Promise<any> {
     return new Promise((resolve, reject) => {

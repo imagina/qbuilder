@@ -8,6 +8,7 @@ import blockForm from '@imagina/qbuilder/_components/blockContentForm/index.vue'
 import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm/index.vue';
 import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
 import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
+import {biAward} from "@quasar/extras/bootstrap-icons";
 
 interface PropInfoToCreateBlock {
   index: number,
@@ -214,7 +215,7 @@ export default function editorController() {
       state.showBlockAttributesForm = false
     },
     //Handle when action create into layout
-    handleCreateLayout(layout: Layout, isCreated = false) {
+    async handleCreateLayout(layout: Layout, isCreated = false) {
       //Handle when creating layout
       if(!isCreated) {
         state.layoutClone = proxy.$clone(layout);
@@ -225,26 +226,38 @@ export default function editorController() {
         state.showLayoutPanel = false
         state.loading = true
 
-        const blocksToSave = []
+        const blocks = proxy.$clone(state.layoutClone?.blocks ?? [])
 
-        layout?.blocks?.forEach(block => {
-          //@ts-ignore
-          const newSystemName = proxy.$uid();
+        //Map the blocks
+        blocks.forEach(block => {
+          //Define first
+          const newSystemName = proxy.$uid() as string
 
-          layout.blocks.forEach(child => {
+          //Map if has childs
+          blocks.forEach(child => {
+            //Check if the parent has childs
             if (child.parentSystemName === block.systemName) {
               child.parentSystemName = newSystemName;
             }
           });
 
+          //Changes principal values in block
+          block.entity = {} as any
+          block.systemName = newSystemName
           //@ts-ignore
-          blocksToSave.push({...block, systemName: newSystemName, layoutId: layout.id})
+          block.id = null
+          block.layoutId = layout.id
 
         })
 
-        console.warn(blocksToSave)
-
-        state.loading = false
+        await service.blocksBulkCreate(blocks, store.ignoreConfigKeys).then(response => {
+          proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
+          methods.refreshLayouts({crudAction: 'created'})
+          state.loading = false
+        }).catch(error => {
+          proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
+          state.loading = false
+        })
       }
 
     },

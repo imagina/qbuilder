@@ -42,6 +42,9 @@ export default {
           entityType: {
             value: '',
             type: 'select',
+            help: {
+              description: this.$tr('ibuilder.cms.form.layoutEntityType')
+            },
             required: true,
             props: {
               label: this.$tr('iqreable.cms.form.entityType'),
@@ -51,6 +54,9 @@ export default {
           type: {
             value: '',
             type: 'select',
+            help: {
+              description: this.$tr('ibuilder.cms.form.layoutType')
+            },
             props: {
               label: this.$tr('isite.cms.form.type'),
               vIf: this.crudInfo.entityType && this.typeOptions.length,
@@ -61,6 +67,10 @@ export default {
           default: {
             value: '0',
             type: 'select',
+            required: true,
+            help: {
+              description: this.$tr('ibuilder.cms.form.layoutDefault')
+            },
             props: {
               label: this.$tr('isite.cms.form.default'),
               options: [

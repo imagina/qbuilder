@@ -187,7 +187,7 @@ export default function editorController() {
       }).sort((a, b) => a['sortOrder'] - b['sortOrder'])
 
       //@ts-ignore
-      state.gridBlocks = proxy.$array.builTree(result || [], 0, {parentId: 'parentSystemName', nameFieldParent: 'systemName'})
+      state.gridBlocks = proxy.$array.builTree(result || [], 0, {parentFieldName: 'parentSystemName', parentFieldValue: 'systemName'})
     },
     //Handle the creation block
     handleCreatingBlock(val) {
@@ -281,7 +281,7 @@ export default function editorController() {
 
   watch(() => state.gridBlocks, (newValue, oldValue): void => {
     //@ts-ignore
-    state.blocks = proxy.$array.destroyNestedItems(proxy.$clone(newValue), null, {parentId: 'parentSystemName'})
+    state.blocks = proxy.$array.destroyNestedItems(proxy.$clone(newValue), null, {parentFieldName: 'parentSystemName', parentFieldValue: 'systemName'})
   }, {deep: true})
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}

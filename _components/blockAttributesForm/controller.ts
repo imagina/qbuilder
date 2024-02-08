@@ -112,7 +112,7 @@ export default function controller(props: any, emit: any) {
           action: methods.discardChanges
         },
         {
-          props : {
+          props: {
             label: proxy.$tr('ibuilder.cms.label.apply'),
             color: 'green',
             rounded: true
@@ -161,7 +161,12 @@ export default function controller(props: any, emit: any) {
             ...state.block.attributes[componentKey],
             ...state.formAttributes
           })
-        } else state.block = proxy.$clone(proxy.$helper.deepMergeObjects(state.block, state.formContent))
+        } else {
+          const formResult = proxy.$clone(state.formContent)
+          const result = methods.getMediasFirstLevel(formResult)
+          
+          state.block = proxy.$clone(proxy.$helper.deepMergeObjects(state.block, {...formResult, ...result}))
+        }
 
         //Call update preview
         methods.previewBlock()
@@ -194,12 +199,33 @@ export default function controller(props: any, emit: any) {
     //Verify if Has fields
     hasFields(obj) {
       //Checks if you have at least one object in the array
-      if(!obj.length) return false
+      if (!obj.length) return false
       //Look for the fields key, which is an object and get the keys
       const keys = Object.keys(obj[0]?.fields ?? {})
 
       //Returns if you have one or more fields in fields
       return keys.length > 0
+    },
+    //Get mediasSingle and mediasMulti
+    getMediasFirstLevel(obj) {
+      const response = {};
+      const firstLevel = ['mediasSingle', 'mediasMulti'];
+
+      function getMedias(obj) {
+        for (let clave in obj) {
+          let valor = obj[clave];
+          if (valor && typeof valor === "object") {
+            if (firstLevel.includes(clave)) {
+              response[clave] = valor;
+            } else {
+              getMedias(valor); // Búsqueda recursiva
+            }
+          }
+        }
+      }
+
+      getMedias(obj)
+      return response
     }
   }
 

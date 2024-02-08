@@ -109,6 +109,18 @@ export default function controller(props: any, emit: any) {
                 label: proxy.$tr("isite.cms.label.block") + "*",
                 readonly: true
               }
+            },
+            mediasSingle: {
+              value: {},
+              type: 'media',
+              colClass: "col-12",
+              fieldItemId: state.idBlock || null,
+              props: {
+                label: proxy.$tr('isite.cms.message.preview'),
+                zone: 'internalimage',
+                entity: "Modules\\Ibuilder\\Entities\\Block",
+                entityId: null
+              }
             }
           }
         },
@@ -125,21 +137,21 @@ export default function controller(props: any, emit: any) {
     //get body params to iframe
     getBlockRequestData: computed(() => {
       // Determine which object to use as base
-      const baseObject = state.idBlock ? { ...state.block, ...state.formBlock } : state.formBlock;
+      const baseObject = state.idBlock ? {...state.block, ...state.formBlock} : state.formBlock;
 
       // Clone the base object
       let response: any = proxy.$clone({
         ...baseObject,
         ...(state.idBlock ? {} : {
           systemName: proxy.$uid(),
-          attributes: { ...(state.block?.attributes ?? {}) },
+          attributes: {...(state.block?.attributes ?? {})},
           sortOrder: state.indexBlock,
           parentSystemName: state.parentSystemName,
           layoutId: state.layoutId
         })
       });
 
-      if(!response.entity) response.entity = {}
+      if (!response.entity) response.entity = {}
 
       //Merge translations
       state.languageOptions.forEach(lang => {
@@ -251,7 +263,7 @@ export default function controller(props: any, emit: any) {
           type: {
             type: "select",
             require: true,
-            colClass: "col-12" ,
+            colClass: "col-12",
             fakeFieldName: 'entity',
             props: {
               label: `${proxy.$tr('isite.cms.label.entity')}*`,
@@ -301,15 +313,13 @@ export default function controller(props: any, emit: any) {
         state.showModal = false;
         state.idBlock = null;
         emit('updated', requestData)
-      } else {
-        await methods.createBlock(requestData, requestParams)
-      }
+      } else await methods.createBlock(requestData, requestParams)
     },
     //Create Block
     async createBlock(data, params) {
       state.loading = true
 
-      service.createBlock( data, params).then(response => {
+      service.createBlock(data, params).then(response => {
         state.loading = false
         state.showModal = false;
         //Merge translations
@@ -319,7 +329,6 @@ export default function controller(props: any, emit: any) {
             ...data[locale],
           }
         })
-
         
         emit('created', response)
       }).catch(error => {

@@ -7,8 +7,8 @@
     <div class="row" v-if="!loading">
       <div class="col-5">
         <div class="title-tabs"></div>
-        <q-tabs v-model="layoutTypeSelected" vertical active-bg-color="primary" inline-label active-class="selected-item"
-                active-color="white" indicator-color="primary" class="scroll-content border-tab"
+        <q-tabs v-model="layoutTypeSelected" vertical active-bg-color="indigo-8" inline-label active-class="selected-item"
+                active-color="white" indicator-color="indigo-6" class="scroll-content border-tab"
                 content-class="alternating-colors">
           <q-tab v-for="(type, keyItem) in layoutTypes" :key="keyItem" :name="type.entityType"
                  content-class="custom-position" no-caps>
@@ -23,7 +23,7 @@
         <!--Buttons actions-->
         <div class="flex q-my-sm q-px-lg">
           <q-btn @click="selectedLayout()" outline rounded
-                 class="full-width q-mx-sm text-capitalize" color="primary" no-caps padding="sm lg">
+                 class="full-width q-mx-sm text-capitalize btn-color" no-caps padding="sm lg">
             <q-icon size="xs" left name="fa-solid fa-plus"/>
             <div class="text-center text-weight-bold">
               {{ $tr('ibuilder.cms.label.newLayout') }}
@@ -66,6 +66,14 @@ export default defineComponent({
   width 800px
   height 100vh
 
+  .btn-color {
+    color: #182280
+  }
+
+  .bg-color-tab {
+    color: #0A1049;
+  }
+
   .border-tab {
     border-right 1px solid $blue-grey-1
 
@@ -104,7 +112,7 @@ export default defineComponent({
     text-align center
     align-items center
     justify-content center
-    background-color $primary
+    background-color #131B68
     color white
   }
 
@@ -123,6 +131,11 @@ export default defineComponent({
       display grid
       place-items center
       color white
+    }
+
+    &:hover {
+      background-color: #0A1049 !important;
+      border: 2px solid #0A1049 !important;
     }
   }
 

@@ -67,7 +67,7 @@ export default function editorController() {
   // Computed
   const computeds = {
     // Validate the color by selectedTab
-    tabColor: computed(() => state.layoutTab == 'preview' ? 'purple' : 'orange'),
+    tabColor: computed(() => state.layoutTab == 'preview' ? 'indigo-10' : 'orange-10'),
     //Return the selected layout title to the header of preview section
     titleTab: computed(() => store.layoutSelected?.title ?? proxy.$tr('ibuilder.cms.layout')),
     //Get config of handleGrid

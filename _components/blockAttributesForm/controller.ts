@@ -89,11 +89,14 @@ export default function controller(props: any, emit: any) {
       if (!computeds.selectedComponent.value) return []
       let fields = computeds.selectedComponent.value.contentFields || {}
 
-      //Set fakeFieldName
-      for (const [fieldName, field] of Object.entries(fields)) {
-        //@ts-ignore
-        fields[fieldName] = {...field, fakeFieldName: computeds.selectedComponent.value.componentKey}
-      }
+        //Set fakeFieldName
+        for (const [fieldName, field] of Object.entries(fields)) {
+          //@ts-ignore
+          fields[fieldName] = {
+            ...field,
+            ...(field?.type !== 'media' ? {fakeFieldName: computeds.selectedComponent.value.componentKey} : {fieldItemId: state.block.id})
+          }
+        }
 
       //Response
       return [{name: 'maincontent', title: proxy.$tr('ibuilder.cms.label.content'), fields: fields}]
@@ -161,12 +164,7 @@ export default function controller(props: any, emit: any) {
             ...state.block.attributes[componentKey],
             ...state.formAttributes
           })
-        } else {
-          const formResult = proxy.$clone(state.formContent)
-          const result = methods.getMediasFirstLevel(formResult)
-          
-          state.block = proxy.$clone(proxy.$helper.deepMergeObjects(state.block, {...formResult, ...result}))
-        }
+        } else state.block = proxy.$clone(proxy.$helper.deepMergeObjects(state.block, state.formContent))
 
         //Call update preview
         methods.previewBlock()
@@ -205,27 +203,6 @@ export default function controller(props: any, emit: any) {
 
       //Returns if you have one or more fields in fields
       return keys.length > 0
-    },
-    //Get mediasSingle and mediasMulti
-    getMediasFirstLevel(obj) {
-      const response = {};
-      const firstLevel = ['mediasSingle', 'mediasMulti'];
-
-      function getMedias(obj) {
-        for (let clave in obj) {
-          let valor = obj[clave];
-          if (valor && typeof valor === "object") {
-            if (firstLevel.includes(clave)) {
-              response[clave] = valor;
-            } else {
-              getMedias(valor); // Búsqueda recursiva
-            }
-          }
-        }
-      }
-
-      getMedias(obj)
-      return response
     }
   }
 

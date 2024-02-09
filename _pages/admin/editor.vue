@@ -20,9 +20,9 @@
 </template>
 <script>
 import { defineComponent, computed } from "vue";
-import editorStore from '@imagina/qbuilder/_store/editor'
-import blockPreview from '@imagina/qbuilder/_components/editor/blockPreview.vue'
-import eventBus from '@imagina/qsite/_plugins/eventBus'
+import editorStore from 'modules/qbuilder/_store/editor'
+import blockPreview from 'modules/qbuilder/_components/editor/blockPreview.vue'
+import eventBus from 'modules/qsite/_plugins/eventBus'
 
 export default defineComponent({
   setup() {

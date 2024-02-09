@@ -12,8 +12,8 @@
   </div>
 </template>
 <script>
-import editorStore from '@imagina/qbuilder/_store/editor'
-import iframePost from '@imagina/qsite/_components/master/iframePost.vue'
+import editorStore from 'modules/qbuilder/_store/editor'
+import iframePost from 'modules/qsite/_components/master/iframePost.vue'
 
 export default {
   props: {},

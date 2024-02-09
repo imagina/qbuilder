@@ -37,9 +37,9 @@
   </div>
 </template>
 <script>
-import Vue, {defineComponent, computed, ref} from "vue";
-import editorStore from '@imagina/qbuilder/_store/editor'
-import saveButton from '@imagina/qbuilder/_components/editor/drawers/block/saveButton.vue'
+import { defineComponent, computed, ref } from "vue";
+import editorStore from 'modules/qbuilder/_store/editor'
+import saveButton from 'modules/qbuilder/_components/editor/drawers/block/saveButton.vue'
 
 export default defineComponent({
   setup() {

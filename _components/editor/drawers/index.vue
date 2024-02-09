@@ -16,11 +16,11 @@
 </template>
 <script>
 import Vue, {defineComponent, computed} from "vue";
-import editorStore from '@imagina/qbuilder/_store/editor'
+import editorStore from 'modules/qbuilder/_store/editor'
 //Components
-import blocksList from '@imagina/qbuilder/_components/editor/drawers/block/list.vue'
-import blocksForm from '@imagina/qbuilder/_components/editor/drawers/block/form.vue'
-import attributesForm from '@imagina/qbuilder/_components/editor/drawers/block/attributes.vue'
+import blocksList from 'modules/qbuilder/_components/editor/drawers/block/list.vue'
+import blocksForm from 'modules/qbuilder/_components/editor/drawers/block/form.vue'
+import attributesForm from 'modules/qbuilder/_components/editor/drawers/block/attributes.vue'
 
 export default defineComponent({
   setup() {

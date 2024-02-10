@@ -113,9 +113,9 @@
 </template>
 
 <script>
-import editorStore from "@imagina/qbuilder/_store/editor";
+import editorStore from "modules/qbuilder/_store/editor";
 import Vue, { defineComponent, computed, reactive } from "vue";
-import saveButton from '@imagina/qbuilder/_components/editor/drawers/block/saveButton.vue'
+import saveButton from 'modules/qbuilder/_components/editor/drawers/block/saveButton.vue'
 
 export default {
   name: 'attributes',

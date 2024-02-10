@@ -170,7 +170,7 @@
   </div>
 </template>
 <script>
-import fileListComponent from '@imagina/qsite/_components/master/fileList'
+import fileListComponent from 'modules/qsite/_components/master/fileList'
 
 export default {
   beforeDestroy() {

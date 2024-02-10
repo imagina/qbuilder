@@ -9,8 +9,8 @@
 </template>
 <script>
 import { defineComponent, computed, ref } from "vue";
-import editorStore from '@imagina/qbuilder/_store/editor'
-import eventBus from '@imagina/qsite/_plugins/eventBus'
+import editorStore from 'modules/qbuilder/_store/editor'
+import eventBus from 'modules/qsite/_plugins/eventBus'
 
 export default defineComponent({
   name: 'saveButton',

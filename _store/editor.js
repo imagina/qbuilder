@@ -1,6 +1,6 @@
-import Vue, {reactive, computed, getCurrentInstance} from 'vue';
-import crud from '@imagina/qcrud/_services/baseService.js';
-import helper from '@imagina/qsite/_plugins/helper'
+import { reactive, computed, getCurrentInstance } from 'vue';
+import crud from 'modules/qcrud/_services/baseService.js';
+import helper from 'modules/qsite/_plugins/helper'
 
 const proxy = getCurrentInstance().appContext.config.globalProperties
 

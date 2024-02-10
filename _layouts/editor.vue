@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import drawers from '@imagina/qbuilder/_components/editor/drawers/index.vue'
+import drawers from 'modules/qbuilder/_components/editor/drawers/index.vue'
 
 export default {
   components: {

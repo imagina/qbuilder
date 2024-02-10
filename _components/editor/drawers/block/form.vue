@@ -150,9 +150,9 @@
 <script>
 
 import { computed } from "vue";
-import editorStore from "@imagina/qbuilder/_store/editor";
-import saveButton from '@imagina/qbuilder/_components/editor/drawers/block/saveButton.vue'
-import eventBus from '@imagina/qsite/_plugins/eventBus'
+import editorStore from "modules/qbuilder/_store/editor";
+import saveButton from 'modules/qbuilder/_components/editor/drawers/block/saveButton.vue'
+import eventBus from 'modules/qsite/_plugins/eventBus'
 
 
 export default {

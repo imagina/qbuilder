@@ -3,7 +3,8 @@ import store from '@imagina/qbuilder/_components/blockAttributesForm/store'
 import storeEditor from '@imagina/qbuilder/_pages/admin/editor/store'
 import {
   Block,
-  ModuleBlockConfig
+  ModuleBlockConfig,
+  PropsDynamicField
 } from '@imagina/qbuilder/_components/blocksPanel/interface'
 import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 import {debounce} from 'quasar'
@@ -87,11 +88,10 @@ export default function controller(props: any, emit: any) {
     //Return the config of dynamic-form to attributes
     contentForm: computed(() => {
       if (!computeds.selectedComponent.value) return []
-      let fields = computeds.selectedComponent.value.contentFields || {}
+      let fields: { [key: string]: PropsDynamicField } = computeds.selectedComponent.value.contentFields || {}
 
         //Set fakeFieldName
         for (const [fieldName, field] of Object.entries(fields)) {
-          //@ts-ignore
           fields[fieldName] = {
             ...field,
             ...(field?.type !== 'media' ? {fakeFieldName: computeds.selectedComponent.value.componentKey} : {fieldItemId: state.block.id})

@@ -4,18 +4,15 @@
     <div class="text-right q-mb-md">
       <!--Crud Layouts-->
       <crud :crud-data="import('@imagina/qbuilder/_crud/layouts')" type="onlyUpdate" ref="crudLayout"
-            @createdData="(layout) => handleCreateLayout(layout, true)" @updated="refreshLayouts({crudAction : 'updated'})"
+            @createdData="(layout) => handleCreateLayout(layout, true)"
+            @updated="refreshLayouts({crudAction : 'updated'})"
       />
     </div>
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
       <!--Layout Panel-->
       <layout-panel @create="() => showLayoutPanel = true" ref="refPanel" @selected="handleLayoutSelected"
-        @refresh="(val) => loading = val"/>
-      <!--Save Button-->
-      <q-btn v-if="store.layoutSelected" :label="$tr('isite.cms.label.save')"
-             class="full-width absolute-bottom text-capitalize"
-             color="green" no-caps padding="md md" @click="saveBlocks" icon="fas fa-save"/>
+                    @refresh="(val) => loading = val"/>
       <!--Over panels-->
       <q-dialog v-model="showBlocksPanel" position="left" content-class="builder-panel-dialog" square>
         <blocks-panel @created="block => handleChangesBlock({block, refreshLayouts: true})"
@@ -33,28 +30,37 @@
       <!--Layout panel-->
       <q-dialog v-model="showLayoutPanel" position="left" content-class="builder-panel-dialog" square>
         <layout-library-panel @creating="handleCreateLayout"
-                      class="full-height"/>
+                              class="full-height"/>
       </q-dialog>
     </div>
     <!-- Preview -->
     <div class="preview-content" :style="`width: calc(100% - ${store.panelWidth})`">
       <!--Header-->
       <div class="preview-content__actions row justify-between items-center">
-        <!--Title and edit button-->
-        <div class="q-px-md q-py-sm text-primary text-h6">
-          <q-btn v-if="store.layoutSelected" size="xs" padding="sm" class="q-mr-sm" unelevated outline
-                 @click="crudLayout.update(store.layoutSelected)" icon="fa-light fa-edit" round color="cyan">
-            <q-tooltip>{{ $tr('isite.cms.label.edit') }}</q-tooltip>
-          </q-btn>
-          {{ titleTab }}
-        </div>
         <!--Tabs to preview/builder-->
         <q-tabs v-if="store.layoutSelected" v-model="layoutTab" align="right" inline-label
                 no-caps indicator-color="transparent" :active-bg-color="tabColor" active-color="white"
                 :content-class="`text-${tabColor} bg-grey-2`">
           <q-tab name="builder" :label="$tr('ibuilder.cms.label.grid')" icon="fa-light fa-border-none"/>
-          <q-tab name="preview" :label="$tr('ibuilder.cms.label.preview')" icon="fa-light fa-eye" @click="previewPage"/>
+          <q-tab name="preview" :label="$tr('ibuilder.cms.label.preview')" icon="fa-light fa-eye"
+                 @click="previewPage"/>
         </q-tabs>
+        <!--Title and edit button-->
+        <div class="q-px-md q-py-sm text-blue-grey text-h6">
+          {{ titleTab }}
+        </div>
+        <!--Actions-->
+        <div class="q-pr-md">
+          <q-btn v-if="store.layoutSelected" size="xs" padding="sm" class="q-mr-sm" unelevated outline
+                 @click="crudLayout.update(store.layoutSelected)" icon="fa-light fa-edit" round color="cyan">
+            <q-tooltip>{{ $tr('isite.cms.label.edit') }}</q-tooltip>
+          </q-btn>
+          <q-btn v-if="store.layoutSelected" outline rounded color="green" no-caps @click="saveBlocks"
+                 padding="xs md">
+            <q-icon name="fa-light fa-save" size="17px" class="q-mr-sm"/>
+            {{ $tr('isite.cms.label.save') }}
+          </q-btn>
+        </div>
       </div>
       <q-separator :color="tabColor" size="3px"/>
       <!--Builder layout-->

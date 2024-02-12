@@ -10,13 +10,15 @@ import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPane
 import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
 import {biAward} from "@quasar/extras/bootstrap-icons";
 
-interface PropInfoToCreateBlock {
+interface PropInfoToCreateBlock
+{
   index: number,
   layoutId: number | null,
   parentSystemName: string | null
 }
 
-interface StateProps {
+interface StateProps
+{
   blocks: Block[];
   layoutTab: 'builder' | 'preview',
   layoutClone: Layout | null,
@@ -28,13 +30,15 @@ interface StateProps {
   gridBlocks: Block[]
 }
 
-interface PropsHandleChangesBlock {
+interface PropsHandleChangesBlock
+{
   block: null | Block,
   wasDeleted: boolean,
   refreshLayouts: boolean
 }
 
-export default function editorController() {
+export default function editorController ()
+{
   const proxy = (getCurrentInstance() as { proxy: Vue }).proxy as Vue
 
   // Refs
@@ -69,7 +73,11 @@ export default function editorController() {
     // Validate the color by selectedTab
     tabColor: computed(() => state.layoutTab == 'preview' ? 'indigo-10' : 'orange-10'),
     //Return the selected layout title to the header of preview section
-    titleTab: computed(() => store.layoutSelected?.title ?? proxy.$tr('ibuilder.cms.layout')),
+    titleTab: computed(() =>
+    {
+      if (store.layoutSelected?.title) return `${store.layoutSelected.title} (${store.layoutSelected.id})`
+      return proxy.$tr('ibuilder.cms.layout')
+    }),
     //Get config of handleGrid
     configHandleGrid: computed(() => ({
       orderBy: "sortOrder",
@@ -80,7 +88,8 @@ export default function editorController() {
           label: proxy.$tr('isite.cms.label.delete'),
           icon: 'fa-regular fa-trash',
           color: 'red',
-          action: (data) => {
+          action: (data) =>
+          {
             proxy.$alert.error({
               mode: 'modal',
               title: data.internalTitle,
@@ -99,14 +108,16 @@ export default function editorController() {
         blockContent: {
           label: proxy.$tr('ibuilder.cms.label.content'),
           icon: 'fa-regular fa-book',
-          action: (data) => {
+          action: (data) =>
+          {
             refs.refBlockForm.value?.updateData(data)
           }
         },
         blockAttriutes: {
           label: proxy.$tr('ibuilder.cms.label.attributes'),
           icon: 'fa-regular fa-palette',
-          action: (data) => {
+          action: (data) =>
+          {
             state.showBlockAttributesForm = true
             setTimeout(() => refs.blockAttributesForm?.value?.edit(data), 500)
           }
@@ -118,7 +129,8 @@ export default function editorController() {
   // Methods
   const methods = {
     //Get all config Blocks
-    getConfigBlocks: async () => {
+    getConfigBlocks: async () =>
+    {
       state.loading = true
 
       //Instance the request params
@@ -130,10 +142,13 @@ export default function editorController() {
       //Map blockConfigs to get an array with all blocks
       const response: ModuleBlockConfig[] = []
       const blockConfigsByModule = Object.values(config).filter(item => item)
-      blockConfigsByModule.forEach(configModule => {
-        Object.values(configModule).forEach(blockConfig => {
+      blockConfigsByModule.forEach(configModule =>
+      {
+        Object.values(configModule).forEach(blockConfig =>
+        {
           //Added blockConfig to all configs like child
-          if (blockConfig.systemName !== store.mainBlockSystemName) {
+          if (blockConfig.systemName !== store.mainBlockSystemName)
+          {
             blockConfig.childBlocks = {
               mainblock: store.mainBlockSystemName,
               ...(blockConfig.childBlocks || {})
@@ -148,9 +163,12 @@ export default function editorController() {
       state.loading = false
     },
     // Open the preview
-    previewPage() {
-      if (state.layoutTab === 'preview') {
-        setTimeout(() => {
+    previewPage ()
+    {
+      if (state.layoutTab === 'preview')
+      {
+        setTimeout(() =>
+        {
           if (refs.refIframePost?.value?.loadIframe && store.layoutSelected)
             refs.refIframePost.value.loadIframe(
               `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/layout/preview/${store.layoutSelected.id}`,
@@ -160,18 +178,21 @@ export default function editorController() {
       }
     },
     // Refresh the layout data
-    async refreshLayouts({crudAction = '', emitSelected = true}) {
+    async refreshLayouts ({crudAction = '', emitSelected = true})
+    {
       state.loading = true
       state.loading = await refs.refPanel?.value?.refreshLayouts({crudAction, emitSelected}) || false;
     },
     // Handle the layout selected
-    handleLayoutSelected() {
+    handleLayoutSelected ()
+    {
       state.blocks = proxy.$clone(store.layoutSelected?.blocks || [])
       methods.setTheGridBlocks()
       state.layoutTab = 'builder'
     },
     // Set the grid blocks
-    setTheGridBlocks() {
+    setTheGridBlocks ()
+    {
       const blocks = proxy.$clone(state.blocks ?? []);
 
       //Get the systemName of the block with allowChildren
@@ -180,31 +201,40 @@ export default function editorController() {
         .map(config => config.systemName);
 
       // Include the attribute children for draggable component to the needed blocks
-      const result = blocks.map(block => {
-        if (configBlocks.includes(block?.component?.systemName) && !block?.children?.length) {
+      const result = blocks.map(block =>
+      {
+        if (configBlocks.includes(block?.component?.systemName) && !block?.children?.length)
+        {
           block.children = [];
         }
         return block
       }).sort((a, b) => a['sortOrder'] - b['sortOrder'])
 
       //@ts-ignore
-      state.gridBlocks = proxy.$array.builTree(result || [], 0, {parentFieldName: 'parentSystemName', parentFieldValue: 'systemName'})
+      state.gridBlocks = proxy.$array.builTree(result || [], 0, {
+        parentFieldName: 'parentSystemName',
+        parentFieldValue: 'systemName'
+      })
     },
     //Handle the creation block
-    handleCreatingBlock(val) {
+    handleCreatingBlock (val)
+    {
       state.infoToCreateBlock.index = val ? val.children.length : state.gridBlocks.length
       state.infoToCreateBlock.parentSystemName = val?.systemName || null
       state.infoToCreateBlock.layoutId = store.layoutSelected?.id || null
       state.showBlocksPanel = true
     },
     //Handle the created blocks
-    handleChangesBlock({block = null, wasDeleted = false, refreshLayouts = false}: PropsHandleChangesBlock) {
-      if (block) {
+    handleChangesBlock ({block = null, wasDeleted = false, refreshLayouts = false}: PropsHandleChangesBlock)
+    {
+      if (block)
+      {
         //Refresh de layoutPanel data
         if (refreshLayouts) methods.refreshLayouts({emitSelected: false})
         //TODO: buscar si block ya existe en stateblocks y actualizarlo, si no, agregarlo
         let blockIndex = state.blocks.findIndex(item => item.id == block.id)
-        if (blockIndex >= 0) {
+        if (blockIndex >= 0)
+        {
           if (wasDeleted) state.blocks.splice(blockIndex, 1)
           else state.blocks.splice(blockIndex, 1, block)
         } else state.blocks = [...state.blocks, block]
@@ -215,13 +245,16 @@ export default function editorController() {
       state.showBlockAttributesForm = false
     },
     //Handle when action create into layout
-    async handleCreateLayout(layout: Layout, isCreated = false) {
+    async handleCreateLayout (layout: Layout, isCreated = false)
+    {
       //Handle when creating layout
-      if(!isCreated) {
+      if (!isCreated)
+      {
         state.layoutClone = proxy.$clone(layout);
         //@ts-ignore
         refs.crudLayout.value?.create(layout)
-      } else {
+      } else
+      {
         //Handle when layout is created
         state.showLayoutPanel = false
         state.loading = true
@@ -229,14 +262,17 @@ export default function editorController() {
         const blocks = proxy.$clone(state.layoutClone?.blocks ?? [])
 
         //Map the blocks
-        blocks.forEach(block => {
+        blocks.forEach(block =>
+        {
           //Define first
           const newSystemName = proxy.$uid() as string
 
           //Map if has childs
-          blocks.forEach(child => {
+          blocks.forEach(child =>
+          {
             //Check if the parent has childs
-            if (child.parentSystemName === block.systemName) {
+            if (child.parentSystemName === block.systemName)
+            {
               child.parentSystemName = newSystemName;
             }
           });
@@ -248,10 +284,12 @@ export default function editorController() {
 
         })
 
-        await service.blocksBulkCreate(blocks, store.ignoreConfigKeys).then(response => {
+        await service.blocksBulkCreate(blocks, store.ignoreConfigKeys).then(response =>
+        {
           proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
           methods.refreshLayouts({crudAction: 'created'})
-        }).catch(error => {
+        }).catch(error =>
+        {
           proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
           state.loading = false
         })
@@ -259,19 +297,23 @@ export default function editorController() {
 
     },
     // Save the blocks of layout
-    async saveBlocks() {
+    async saveBlocks ()
+    {
       state.loading = true
-      await service.blocksBulkUpdate(state.blocks, store.ignoreConfigKeys).then(response => {
+      await service.blocksBulkUpdate(state.blocks, store.ignoreConfigKeys).then(response =>
+      {
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
         methods.refreshLayouts({})
         state.loading = false
-      }).catch(error => {
+      }).catch(error =>
+      {
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
         state.loading = false
       })
     },
     //Remove block from layout
-    async deleteBlock(block) {
+    async deleteBlock (block)
+    {
       state.loading = true
       await service.deleteblock(block.id)
       methods.handleChangesBlock({block, wasDeleted: true, refreshLayouts: true})
@@ -280,17 +322,23 @@ export default function editorController() {
   }
 
   // Mounted
-  onMounted(() => {
+  onMounted(() =>
+  {
     methods.getConfigBlocks()
   })
 
-  onUnmounted(() => {
+  onUnmounted(() =>
+  {
     store.layoutSelected = null
   })
 
-  watch(() => state.gridBlocks, (newValue, oldValue): void => {
+  watch(() => state.gridBlocks, (newValue, oldValue): void =>
+  {
     //@ts-ignore
-    state.blocks = proxy.$array.destroyNestedItems(proxy.$clone(newValue), null, {parentFieldName: 'parentSystemName', parentFieldValue: 'systemName'})
+    state.blocks = proxy.$array.destroyNestedItems(proxy.$clone(newValue), null, {
+      parentFieldName: 'parentSystemName',
+      parentFieldValue: 'systemName'
+    })
   }, {deep: true})
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}

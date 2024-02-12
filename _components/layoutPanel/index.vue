@@ -45,7 +45,7 @@ export default defineComponent({
 
   .drawer-body {
     overflow-y auto
-    height calc(100vh - 130px)
+    height calc(100vh - 76px)
     padding 26px 18px 24px 18px
 
     .heigth-button {

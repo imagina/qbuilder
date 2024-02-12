@@ -8,7 +8,7 @@
       <div class="col-6 text-center">
         <q-input v-model="inputSearch" dense dark standout bg-color="white" style="padding-bottom: 0px">
           <template v-slot:append>
-            <q-icon v-if="inputSearch !== ''" name="close" @click="inputSearch = ''" class="cursor-pointer" color="primary"/>
+            <q-icon v-if="inputSearch !== ''" name="fa fa-close" @click="inputSearch = ''" class="cursor-pointer" color="primary"/>
             <q-icon v-if="inputSearch == ''" name="search" color="primary"></q-icon>
           </template>
         </q-input>

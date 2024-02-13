@@ -1,5 +1,6 @@
 import baseService from '@imagina/qcrud/_services/baseService'
 import {ModulesData} from "@imagina/qbuilder/_components/blocksPanel/interface";
+import store from "@imagina/qbuilder/_pages/admin/editor/store";
 
 export default {
   getBlockConfigs(refresh = false, params = {}): Promise<any> {
@@ -60,6 +61,18 @@ export default {
     return new Promise((resolve, reject) => {
       baseService.delete('apiRoutes.qbuilder.blocks', blockId).then(response => {
         resolve(true)
+      }).catch(error => reject(error))
+    })
+  },
+  //Update block
+  updateBlock(blockId, data, params = {}): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const requestParams = {
+        ...params,
+        notToSnakeCase: [...(store.ignoreConfigKeys), "component", "entity", "attributes"]
+      }
+      baseService.update('apiRoutes.qbuilder.blocks', blockId, data, requestParams).then(response => {
+        resolve(response.data)
       }).catch(error => reject(error))
     })
   },

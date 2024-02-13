@@ -36,6 +36,7 @@ interface PropsHandleChangesBlock
   wasDeleted: boolean,
   refreshLayouts: boolean,
   update?: boolean
+  persistModalAttributes?: boolean
 }
 
 export default function editorController ()
@@ -226,7 +227,7 @@ export default function editorController ()
       state.showBlocksPanel = true
     },
     //Handle the created blocks
-    handleChangesBlock ({block = null, wasDeleted = false, refreshLayouts = false, update = false}: PropsHandleChangesBlock)
+    handleChangesBlock ({block = null, wasDeleted = false, refreshLayouts = false, update = false, persistModalAttributes = false}: PropsHandleChangesBlock)
     {
       if (block)
       {
@@ -245,7 +246,7 @@ export default function editorController ()
         methods.setTheGridBlocks()
       }
       state.showBlocksPanel = false
-      state.showBlockAttributesForm = false
+      state.showBlockAttributesForm = persistModalAttributes
     },
     //Handle when action create into layout
     async handleCreateLayout (layout: Layout, isCreated = false)

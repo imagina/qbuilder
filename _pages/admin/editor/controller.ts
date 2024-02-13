@@ -225,10 +225,12 @@ export default function editorController ()
       state.showBlocksPanel = true
     },
     //Handle the created blocks
-    handleChangesBlock ({block = null, wasDeleted = false, refreshLayouts = false}: PropsHandleChangesBlock)
+    handleChangesBlock ({block = null, wasDeleted = false, refreshLayouts = false, update = false}: PropsHandleChangesBlock)
     {
       if (block)
       {
+        //Update block data
+        if(update) methods.handleUpdateBlock({block})
         //Refresh de layoutPanel data
         if (refreshLayouts) methods.refreshLayouts({emitSelected: false})
         //TODO: buscar si block ya existe en stateblocks y actualizarlo, si no, agregarlo
@@ -307,6 +309,19 @@ export default function editorController ()
         state.loading = false
       }).catch(error =>
       {
+        proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
+        state.loading = false
+      })
+    },
+    // Update block
+    async handleUpdateBlock({block, params = {}, modal = '', persistModal = false}) {
+      state.loading = true
+      await service.updateBlock(block.id, block, params).then(response => {
+        if(modal.length) state[modal] = persistModal
+        methods.refreshLayouts({})
+        proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
+        state.loading = false
+      }).catch(error => {
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
         state.loading = false
       })

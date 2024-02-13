@@ -19,13 +19,13 @@
                       class="full-height" v-bind="infoToCreateBlock"/>
       </q-dialog>
       <!--Block Form-->
-      <block-form ref="refBlockForm" @updated="block => handleChangesBlock({block})"/>
+      <block-form ref="refBlockForm" @updated="block => handleChangesBlock({block, update: true})"/>
       <!--block attrs from panels-->
       <q-dialog v-model="showBlockAttributesForm" :title="$tr('ibuilder.cms.label.editBlockAttributes')"
                 position="left" content-class="builder-panel-dialog" square persistent>
         <block-attributes-form ref="blockAttributesForm"
                                @cancel="() => handleChangesBlock({})"
-                               @input="block => handleChangesBlock({block})"/>
+                               @input="response => handleUpdateBlock(response)"/>
       </q-dialog>
       <!--Layout panel-->
       <q-dialog v-model="showLayoutPanel" position="left" content-class="builder-panel-dialog" square>

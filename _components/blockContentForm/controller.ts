@@ -175,7 +175,7 @@ export default function controller(props: any, emit: any) {
     }),
     //get modal Actions
     modalActions: computed(() => {
-      const buttonLabel = state.idBlock ? proxy.$tr('ibuilder.cms.label.apply') : proxy.$tr('isite.cms.label.save')
+      const buttonLabel = state.idBlock ? proxy.$tr('isite.cms.label.update') : proxy.$tr('isite.cms.label.save')
       return [
         {
           props: {

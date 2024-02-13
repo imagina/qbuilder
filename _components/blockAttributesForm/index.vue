@@ -5,7 +5,7 @@
         {{ block.id }}</h2>
       <!-- Close button -->
       <q-btn unelevated color="white" outline round icon="fa fa-close"
-             @click="discardChanges" class=""/>
+             @click="discardChanges"/>
     </div>
     <div class="row q-col-gutter-x-md relative-position">
       <!--Panel-->

@@ -34,7 +34,8 @@ interface PropsHandleChangesBlock
 {
   block: null | Block,
   wasDeleted: boolean,
-  refreshLayouts: boolean
+  refreshLayouts: boolean,
+  update?: boolean
 }
 
 export default function editorController ()
@@ -314,16 +315,13 @@ export default function editorController ()
       })
     },
     // Update block
-    async handleUpdateBlock({block, params = {}, modal = '', persistModal = false}) {
-      state.loading = true
+    async handleUpdateBlock({block, params = {}}) {
       await service.updateBlock(block.id, block, params).then(response => {
-        if(modal.length) state[modal] = persistModal
-        methods.refreshLayouts({})
+        state.loading = false
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
-        state.loading = false
       }).catch(error => {
-        proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
         state.loading = false
+        proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
       })
     },
     //Remove block from layout

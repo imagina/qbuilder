@@ -72,7 +72,7 @@
                         @click="updateBlock({})"
         >
           <q-list>
-            <q-item clickable v-close-popup @click="updateBlock({persistModal: false})" class="q-px-sm">
+            <q-item clickable v-close-popup @click="updateBlock({closeModal: true})" class="q-px-sm">
               <q-item-section>
                 <q-item-label>{{ $tr('isite.cms.message.saveAndReturn') }}</q-item-label>
               </q-item-section>
@@ -81,6 +81,8 @@
         </q-btn-dropdown>
       </div>
     </div>
+
+    <inner-loading :visible="loading"/>
   </div>
 </template>
 <script lang="ts">

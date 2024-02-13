@@ -1,6 +1,7 @@
 import Vue, {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} from "vue";
 import store from '@imagina/qbuilder/_components/blockAttributesForm/store'
 import storeEditor from '@imagina/qbuilder/_pages/admin/editor/store'
+import serviceEditor from '@imagina/qbuilder/_pages/admin/editor/services'
 import {
   Block,
   ModuleBlockConfig,
@@ -16,7 +17,8 @@ interface StateProps {
   tabName: 'attributes' | 'content',
   formAttributes: any,
   formContent: any,
-  panelWidth: string
+  panelWidth: string,
+  loading: boolean
 }
 
 export default function controller(props: any, emit: any) {
@@ -35,7 +37,8 @@ export default function controller(props: any, emit: any) {
     tabName: 'attributes',
     formAttributes: {},
     formContent: {},
-    panelWidth: '650px'
+    panelWidth: '650px',
+    loading: false
   })
 
   // Computed
@@ -101,19 +104,6 @@ export default function controller(props: any, emit: any) {
       //Response
       return [{name: 'maincontent', title: proxy.$tr('ibuilder.cms.label.content'), fields: fields}]
     }),
-    // General Actions
-    generalActions: computed(() => {
-      return [
-        {
-          props: {
-            label: proxy.$tr('isite.cms.label.saveAndExist'),
-            color: 'green',
-            rounded: true
-          },
-          action: () => methods.updateBlock({exit: true})
-        }
-      ]
-    })
   }
 
   // Methods
@@ -135,15 +125,20 @@ export default function controller(props: any, emit: any) {
       })
     },
     //Update block
-    updateBlock: ({persistModal = true}) => {
+    updateBlock: ({closeModal = false}) => {
       if(state.block) {
-        const response = {
-          block: state.block,
-          persistModal: persistModal,
-          modal: 'showBlockAttributesForm'
-        }
+        state.loading = true
+        //Update block with editor service
+        serviceEditor.updateBlock(state.block.id, state.block).then(response => {
+          proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
+          //Close Modal
+          if(closeModal) emit('input', {block: proxy.$clone(response)})
 
-        emit('input', response)
+          state.loading = false
+        }).catch(() => {
+          proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
+          state.loading = false
+        })
       }
     },
     // Handle the allowEdit indicator

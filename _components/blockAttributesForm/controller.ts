@@ -10,7 +10,7 @@ import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
 import {debounce} from 'quasar'
 
 interface StateProps {
-  allowEdit: Boolean,
+  allowEdit: boolean,
   block: Block,
   selectedComponentKey: string
   tabName: 'attributes' | 'content',
@@ -106,21 +106,11 @@ export default function controller(props: any, emit: any) {
       return [
         {
           props: {
-            label: proxy.$tr('ibuilder.cms.label.discard'),
-            color: 'grey-7',
-            outline: true,
-            rounded: true,
-            class: 'q-mr-sm'
-          },
-          action: methods.discardChanges
-        },
-        {
-          props: {
-            label: proxy.$tr('ibuilder.cms.label.apply'),
+            label: proxy.$tr('isite.cms.label.saveAndExist'),
             color: 'green',
             rounded: true
           },
-          action: () => emit('input', proxy.$clone(state.block))
+          action: () => methods.updateBlock({exit: true})
         }
       ]
     })
@@ -143,6 +133,18 @@ export default function controller(props: any, emit: any) {
         state.formAttributes = state.block.attributes[state.selectedComponentKey]
         state.formContent = state.block
       })
+    },
+    //Update block
+    updateBlock: ({persistModal = true}) => {
+      if(state.block) {
+        const response = {
+          block: state.block,
+          persistModal: persistModal,
+          modal: 'showBlockAttributesForm'
+        }
+
+        emit('input', response)
+      }
     },
     // Handle the allowEdit indicator
     handleAllowEditIndicator: () => {

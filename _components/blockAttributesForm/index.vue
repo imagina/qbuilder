@@ -1,7 +1,11 @@
 <template>
   <div id="blockAttributesForm" class="bg-white">
-    <div class="drawer-title q-py-md q-px-md bg-primary text-white">
-      <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.blockEdit') }} - ID: {{ block.id }}</h2>
+    <div class="drawer-title row justify-between q-py-md q-px-md bg-primary text-white">
+      <h2 class="col-11 text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.blockEdit') }} - ID:
+        {{ block.id }}</h2>
+      <!-- Close button -->
+      <q-btn unelevated color="white" outline round icon="fa fa-close"
+             @click="discardChanges" class=""/>
     </div>
     <div class="row q-col-gutter-x-md relative-position">
       <!--Panel-->
@@ -61,9 +65,20 @@
       </div>
 
       <!-- Actions -->
-      <div id="actionsContent" class="row no-wrap absolute-top-right q-mt-sm q-mr-lg">
-        <q-btn v-for="(btn, keyBtn) in generalActions" :key="keyBtn" unelevated
-               @click="btn.action" class="col-6" v-bind="btn.props"/>
+      <div id="actionsContent" class="absolute-bottom-right q-mb-sm q-mr-lg">
+        <q-btn-dropdown split rounded dense no-caps padding="xs 15px"
+                        color="green" outline text-color="green"
+                        :label="$tr('isite.cms.label.save')"
+                        @click="updateBlock({})"
+        >
+          <q-list>
+            <q-item clickable v-close-popup @click="updateBlock({exit: true})" class="q-px-sm">
+              <q-item-section>
+                <q-item-label>{{ $tr('isite.cms.message.saveAndReturn') }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </div>
     </div>
   </div>
@@ -90,7 +105,7 @@ export default defineComponent({
       border-right 1px solid $blue-grey-1
 
     #formPanelsContent
-      height: calc(100vh - 110px)
+      height: calc(100vh - 130px)
       overflow-y: scroll
 
   #previewContent
@@ -99,7 +114,6 @@ export default defineComponent({
     overflow scroll
     display flex
     align-items center
-    padding-top 56px
 
     #iframePostcomponent
       display flex

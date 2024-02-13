@@ -71,6 +71,8 @@ export default {
         ...params,
         notToSnakeCase: [...(store.ignoreConfigKeys), "component", "entity", "attributes"]
       }
+      delete data.children;
+      
       baseService.update('apiRoutes.qbuilder.blocks', blockId, data, requestParams).then(response => {
         resolve(response.data)
       }).catch(error => reject(error))

@@ -132,7 +132,7 @@ export default function controller(props: any, emit: any) {
         serviceEditor.updateBlock(state.block.id, state.block).then(response => {
           proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
           //Emit info to Editor and Close Modal
-          emit('input', { block: proxy.$clone(response), persistModalAttributes: !closeModal})
+          emit('input', { block: proxy.$clone(state.block), persistModalAttributes: !closeModal})
           state.loading = false
         }).catch(() => {
           proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});

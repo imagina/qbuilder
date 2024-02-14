@@ -152,7 +152,7 @@
 import { computed } from "vue";
 import editorStore from "modules/qbuilder/_store/editor";
 import saveButton from 'modules/qbuilder/_components/editor/drawers/block/saveButton.vue'
-import eventBus from 'modules/qsite/_plugins/eventBus'
+import { eventBus } from 'src/plugins/utils'
 
 
 export default {

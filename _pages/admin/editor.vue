@@ -22,7 +22,7 @@
 import { defineComponent, computed } from "vue";
 import editorStore from 'modules/qbuilder/_store/editor'
 import blockPreview from 'modules/qbuilder/_components/editor/blockPreview.vue'
-import eventBus from 'modules/qsite/_plugins/eventBus'
+import { eventBus } from 'src/plugins/utils'
 
 export default defineComponent({
   setup() {

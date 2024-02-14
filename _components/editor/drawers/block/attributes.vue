@@ -17,7 +17,7 @@
           <dynamic-field v-if="element" v-model="element" :field="elementOptions"/>
         </div>
         <div v-if="element && featureFlagElement" class="col-3 text-right">
-          <q-toggle @input="() => resetAttributesKey()"
+          <q-toggle @update:modelValue="() => resetAttributesKey()"
                     v-model="statusChildBlocks[featureFlagElement.name]"
                     :label="statusChildBlocks[featureFlagElement.name] ? 'Active': 'Disabled' "
                     color="green"

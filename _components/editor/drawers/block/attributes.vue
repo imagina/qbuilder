@@ -160,8 +160,8 @@ export default {
       this.attributesKey = this.$uid()
     },
     'formEntityFields.type'(newValue){
-      this.$set(this.formEntityFields, "id", null)
-      this.$set(this.formEntityFields, "params", {"filter": {}, "take": 12})
+      this.formEntityFields.id = null
+      this.formEntityFields.params = {"filter": {}, "take": 12}
       if (!this.selectedBlock && newValue) {
         this.setAttributes();
       }

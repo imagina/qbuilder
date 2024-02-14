@@ -187,8 +187,8 @@ export default {
       this.statusChildBlocks = {}
     },
     'formEntity.type'() {
-      this.$set(this.formEntity, "id", null)
-      this.$set(this.formEntity, "params", {"filter": {}, "take": 12})
+      this.formEntity.id = null
+      this.formEntity.params = {"filter": {}, "take": 12}
     },
     getBlockRequestData() {
       if (this.timeout) clearTimeout(this.timeout);
@@ -441,7 +441,7 @@ export default {
           this.elementSelected = Object.values(block.elements)[0].systemName;
           //Set blocks status
           Object.values(response.block.elements).forEach(element => {
-            this.$set(this.statusChildBlocks, element.name, true)
+            this.statusChildBlocks[element.name] = true
           })
         }, 100)
       }
@@ -736,8 +736,8 @@ export default {
             //Set the formEntity data
             this.formEntity = this.$clone(response.data.entity)
             setTimeout(() => {
-              this.$set(this.formEntity, "params", response.data.entity.params)
-              this.$set(this.formEntity, "id", response.data.entity.id)
+              this.formEntity.params = response.data.entity.params
+              this.formEntity.id = response.data.entity.id
               //Set fields
               this.formContentFields = this.$clone(response.data)
 
@@ -745,9 +745,9 @@ export default {
               const blockAttr = response.data.attributes
               Object.keys(blockAttr).forEach(attrName => {
                 if ((blockAttr[attrName] != undefined) && !Array.isArray(blockAttr[attrName])) {
-                  this.$set(this.formAttributes, attrName, blockAttr[attrName])
+                  this.formAttributes[attrName] = blockAttr[attrName]
                 } else {
-                  this.$set(this.statusChildBlocks, attrName, false)
+                  this.statusChildBlocks[attrName] = false
                 }
               })
               this.previusTemplateSelected = this.$clone(this.formAttributes);

@@ -1,7 +1,20 @@
 <template>
     <section id="panel-editor-component">
-        <draggable v-model="myArray" group="components" @start="drag = true" @end="drag = false">
-            <div class="panel-editor-component__component" v-for="element in myArray" :key="element.id">{{ element.name }}</div>
+        <draggable
+          v-model="myArray"
+          group="components"
+          @start="drag = true"
+          @end="drag = false"
+          item-key="name"
+        >
+          <template #item="{ element }">
+            <div
+              class="panel-editor-component__component"
+              :key="element.id"
+            >
+              {{ element.name }}
+            </div>
+          </template>
         </draggable>
     </section>
 </template>

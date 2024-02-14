@@ -38,12 +38,11 @@
         <div class="col-12">
           <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 260px)">
             <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
-              <template v-for="(tab, index) in element.attributes">
+              <template v-for="(tab, index) in element.attributes" :key="`${index}-maintabs`">
                 <q-card
                   v-show="section == ''"
                   v-if="element.systemName === elementSelected"
                   :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
-                  :key="`${index}-maintabs`"
                   @click="section = panelNames[index]" class="col-5 q-ma-md cursor-pointer"
                   flat
                   bordered
@@ -101,9 +100,8 @@
               </div>
               <div class="row q-pb-xl">
                 <div class="col-12 q-px-md q-py-sm">
-                  <template v-for="(attribute, index) in attributes">
-                    <div v-if="typeof attribute === 'object'"
-                         :key="`${index}-subtabs`">
+                  <template v-for="(attribute, index) in attributes" :key="`${index}-subtabs`">
+                    <div v-if="typeof attribute === 'object'">
                       <div v-if="statusChildBlocks[featureFlagElement.name]">
                         <div v-if="device == 0" class="q-gutter-y-sm">
                           <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"

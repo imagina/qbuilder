@@ -1,6 +1,6 @@
 import { reactive, computed, getCurrentInstance } from 'vue';
 import crud from 'modules/qcrud/_services/baseService.js';
-import helper from 'modules/qsite/_plugins/helper'
+import { helper } from 'src/plugins/utils'
 
 const proxy = getCurrentInstance().appContext.config.globalProperties
 

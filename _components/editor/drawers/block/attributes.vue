@@ -38,17 +38,30 @@
         <div class="col-12">
           <q-scroll-area v-if="(section == '') && statusChildBlocks[featureFlagElement.name]" style="height: calc(100vh - 260px)">
             <div class="row q-pl-md" v-for="(element, index) in blockConfig.elements" :key="index">
-              <q-card v-show="section == ''" v-if="element.systemName === elementSelected" v-for="(tab, index) in element.attributes"
-                       :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
-                       :key="`${index}-maintabs`"
-                       @click="section = panelNames[index]" class="col-5 q-ma-md cursor-pointer" flat bordered v-ripple >
-                <div class="text-subtitle2 text-bold bg-grey-3 q-px-md q-py-xs ellipsis">{{tab.title}}</div>
-                <q-card-section>
-                  <div class="text-subtitle2">
-                    <p class="ellipsis-3-lines" v-text="$tr('ibuilder.cms.defaultAttributesDescription')" />
+              <template v-for="(tab, index) in element.attributes">
+                <q-card
+                  v-show="section == ''"
+                  v-if="element.systemName === elementSelected"
+                  :name="panelNames[index]" :data-test="panelNames[index]" :label="tab.title"
+                  :key="`${index}-maintabs`"
+                  @click="section = panelNames[index]" class="col-5 q-ma-md cursor-pointer"
+                  flat
+                  bordered
+                  v-ripple
+                >
+                  <div class="text-subtitle2 text-bold bg-grey-3 q-px-md q-py-xs ellipsis">
+                    {{tab.title}}
                   </div>
-                </q-card-section>
-              </q-card>
+                  <q-card-section>
+                    <div class="text-subtitle2">
+                      <p
+                        class="ellipsis-3-lines"
+                        v-text="$tr('ibuilder.cms.defaultAttributesDescription')"
+                      />
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </template>
             </div>
           </q-scroll-area>
         </div>
@@ -88,19 +101,21 @@
               </div>
               <div class="row q-pb-xl">
                 <div class="col-12 q-px-md q-py-sm">
-                  <div v-for="(attribute, index) in attributes" v-if="typeof attribute === 'object'"
-                       :key="`${index}-subtabs`">
-                    <div v-if="statusChildBlocks[featureFlagElement.name]">
-                      <div v-if="device == 0" class="q-gutter-y-sm">
-                        <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
-                                     v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
-                      </div>
-                      <div v-if="device == 1" class="q-gutter-y-sm">
-                        <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
-                                     v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                  <template v-for="(attribute, index) in attributes">
+                    <div v-if="typeof attribute === 'object'"
+                         :key="`${index}-subtabs`">
+                      <div v-if="statusChildBlocks[featureFlagElement.name]">
+                        <div v-if="device == 0" class="q-gutter-y-sm">
+                          <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-mobile`" :field="field"
+                                          v-model="formMobileAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                        </div>
+                        <div v-if="device == 1" class="q-gutter-y-sm">
+                          <dynamic-field  v-for="(field, fieldName) in attribute" :key="`${fieldName}-desktop`" :field="field"
+                                          v-model="formAttributesFields[featureFlagElement.name][field.name || fieldName]"/>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </template>
                 </div>
               </div>
             </q-scroll-area>

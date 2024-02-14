@@ -171,10 +171,11 @@
 </template>
 <script>
 import fileListComponent from 'modules/qsite/_components/master/fileList'
+import { eventBus } from 'src/plugins/utils'
 
 export default {
   beforeDestroy() {
-    this.$root.$off('page.data.refresh')
+    eventBus.off('page.data.refresh')
   },
   props: {},
   components: {fileListComponent},
@@ -637,7 +638,7 @@ export default {
   methods: {
     init() {
       this.getData()
-      this.$root.$on('page.data.refresh', this.getData)//Listen refresh event
+      eventBus.on('page.data.refresh', this.getData)//Listen refresh event
     },
     //Get data
     async getData() {

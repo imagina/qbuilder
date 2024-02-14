@@ -40,6 +40,7 @@
 import { defineComponent, computed, ref } from "vue";
 import editorStore from 'modules/qbuilder/_store/editor'
 import saveButton from 'modules/qbuilder/_components/editor/drawers/block/saveButton.vue'
+import { eventBus } from 'src/plugins/utils'
 
 export default defineComponent({
   setup() {
@@ -53,7 +54,7 @@ export default defineComponent({
     }
   },
   beforeDestroy() {
-    this.$root.$off('page.data.refresh')
+    eventBus.off('page.data.refresh')
   },
   props: {},
   components: {

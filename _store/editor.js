@@ -1,8 +1,7 @@
-import { reactive, computed, getCurrentInstance } from 'vue';
+import { reactive, computed } from 'vue';
 import crud from 'modules/qcrud/_services/baseService.js';
-import { helper } from 'src/plugins/utils'
+import { helper, uid } from 'src/plugins/utils'
 
-const proxy = getCurrentInstance().appContext.config.globalProperties
 
 //Manage the id of the last selected block before submit
   function setLastSelectedBlock(id){
@@ -40,7 +39,7 @@ const state = reactive({
   formAttributesFields: {},
   statusChildBlocks: {},
   elementSelected: null,
-  attributesKeyTemplate: proxy.$uid(),
+  attributesKeyTemplate: uid(),
   device: 1,
   formMobileAttributesFields: {},
   createMode: false,
@@ -223,7 +222,7 @@ const methods = {
     state.createMode = true;
     state.drawers.blocksShow = true;
     //state.drawers.disableSaveButton = true
-    state.attributesKeyTemplate = proxy.$uid()
+    state.attributesKeyTemplate = uid()
   },
   //Get blocks
   getBlocksData: (refresh = false) => {
@@ -276,7 +275,7 @@ const methods = {
     state.selectedBlock = block;
     //setLastSelectedBlock(block.id);
     state.drawers.blocksShow = true
-    state.attributesKeyTemplate = proxy.$uid()
+    state.attributesKeyTemplate = uid()
   },
   //Finish Edit block
   closeBlockShow() {

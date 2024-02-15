@@ -1,4 +1,4 @@
-import pages from 'src/config/pages' // Get Pages from config
+import pages from 'src/setup/pages' // Get Pages from config
 
 //Blog
 export default [

@@ -322,15 +322,9 @@ export default function controller(props: any, emit: any) {
       service.createBlock(data, params).then(response => {
         state.loading = false
         state.showModal = false;
-        //Merge translations
-        state.languageOptions.forEach(lang => {
-          const locale = lang.value
-          response[locale] = {
-            ...data[locale],
-          }
-        })
+        data.id = response.id
         
-        emit('created', response)
+        emit('created', data)
       }).catch(error => {
         state.loading = false
       })

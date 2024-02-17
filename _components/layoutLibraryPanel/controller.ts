@@ -55,7 +55,7 @@ export default function controller(props: any, emit: any) {
     getData: async () => {
       state.loading = true
       //Get all data of Layout Library
-      state.layoutLibrary = await service.getLayoutsLibrary(true)
+      state.layoutLibrary = await service.getLayoutsLibrary(true, { include: 'files' })
       //Set the default block type
       state.layoutTypeSelected = computeds.layoutTypes.value[0].entityType
       state.loading = false

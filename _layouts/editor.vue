@@ -19,8 +19,8 @@ export default {
   meta() {
     let routeTitle = ((this.$route.meta && this.$route.meta.title) ? this.$route.meta.title : '')
     if (this.$route.meta && this.$route.meta.headerTitle) routeTitle = this.$route.meta.headerTitle
-    let siteName = this.$store.getters['qsiteApp/getSettingValueByName']('core::site-name')
-    let siteDescription = this.$store.getters['qsiteApp/getSettingValueByName']('core::site-description')
+    let siteName = this.$getSetting('core::site-name')
+    let siteDescription = this.$getSetting('core::site-description')
     let iconHref = this.$store.getters['qsiteApp/getSettingMediaByName']('isite::favicon').path
 
     return {

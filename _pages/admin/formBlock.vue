@@ -249,8 +249,8 @@ export default {
     // Validate the setting about the use the legacy structure of the CMS
     settings() {
       return {
-        useLegacyStructure: parseInt(this.$store.getters['qsiteApp/getSettingValueByName']('isite::legacyStructureCMS') || 0),
-        templatesBaseUrl: this.$store.getters['qsiteApp/getSettingValueByName']('ibuilder::blockTemplatesUrl')
+        useLegacyStructure: parseInt(this.$getSetting('isite::legacyStructureCMS') || 0),
+        templatesBaseUrl: this.$getSetting('ibuilder::blockTemplatesUrl')
       }
     },
     //Main fields

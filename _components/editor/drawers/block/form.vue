@@ -85,7 +85,18 @@
               />
             </q-tab-panel>
             <q-tab-panel name="attributes" class="column">
-              <q-btn v-if="blockConfig.elements && selectedBlock" v-for="(element, indexFA) in blockConfig.elements" :key="indexFA" :label="element.title" color="primary-builder" class="full-width q-mb-md" @click="() => setElementSelected(element.systemName)"/>
+              <template
+                v-for="(element, indexFA) in blockConfig.elements"
+                :key="indexFA"
+              >
+                <q-btn
+                  v-if="blockConfig.elements && selectedBlock"
+                  :label="element.title"
+                  color="primary-builder"
+                  class="full-width q-mb-md"
+                  @click="() => setElementSelected(element.systemName)"
+                />
+              </template>
             </q-tab-panel>
           </q-tab-panels>
         </div>

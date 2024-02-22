@@ -5,7 +5,7 @@
           group="components"
           @start="drag = true"
           @end="drag = false"
-          item-key="name"
+          item-key="id"
         >
           <template #item="{ element }">
             <div

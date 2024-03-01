@@ -31,6 +31,9 @@ export default computed(() => ({
   set layoutSelected(val) {
     state.layoutSelected = val
   },
+  resetLayoutSelected() {
+    state.layoutSelected = null
+  },
   get blockSelected() {
     return state.blockSelected
   },

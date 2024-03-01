@@ -6,6 +6,7 @@
       <crud :crud-data="import('@imagina/qbuilder/_crud/layouts')" type="onlyUpdate" ref="crudLayout"
             @createdData="(layout) => handleCreateLayout(layout, true)"
             @updated="refreshLayouts({crudAction : 'updated'})"
+            @deleted="refreshLayouts({crudAction : 'deleted'})"
       />
     </div>
     <!--Panels-->
@@ -50,12 +51,16 @@
           {{ titleTab }}
         </div>
         <!--Actions-->
-        <div class="q-pr-md">
-          <q-btn v-if="store.layoutSelected" size="xs" padding="sm" class="q-mr-sm" unelevated outline
+        <div class="q-pr-md" v-if="store.layoutSelected">
+          <q-btn size="xs" padding="sm" class="q-mr-sm" unelevated outline
+                 @click="() => handleDeleteLayout(store.layoutSelected)" icon="fa-regular fa-trash" round color="negative">
+            <q-tooltip>{{ $tr('isite.cms.label.delete') }}</q-tooltip>
+          </q-btn>
+          <q-btn size="xs" padding="sm" class="q-mr-sm" unelevated outline
                  @click="crudLayout.update(store.layoutSelected)" icon="fa-light fa-edit" round color="cyan">
             <q-tooltip>{{ $tr('isite.cms.label.edit') }}</q-tooltip>
           </q-btn>
-          <q-btn v-if="store.layoutSelected" outline rounded color="green" no-caps @click="saveBlocks"
+          <q-btn outline rounded color="green" no-caps @click="saveBlocks"
                  padding="xs md">
             <q-icon name="fa-light fa-save" size="17px" class="q-mr-sm"/>
             {{ $tr('isite.cms.label.save') }}

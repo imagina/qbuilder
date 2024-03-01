@@ -182,6 +182,7 @@ export default function editorController ()
     // Refresh the layout data
     async refreshLayouts ({crudAction = '', emitSelected = true})
     {
+      if(crudAction == 'deleted') store.resetLayoutSelected()
       state.loading = true
       state.loading = await refs.refPanel?.value?.refreshLayouts({crudAction, emitSelected}) || false;
     },
@@ -332,7 +333,12 @@ export default function editorController ()
       await service.deleteblock(block.id)
       methods.handleChangesBlock({block, wasDeleted: true, refreshLayouts: true})
       state.loading = false
-    }
+    },
+    async handleDeleteLayout (layout: Layout)
+    {
+      //@ts-ignore
+      refs.crudLayout.value?.delete(layout)
+    },
   }
 
   // Mounted

@@ -52,16 +52,19 @@ export default {
             }
           },
           type: {
-            value: '',
+            value: 'general',
             type: 'select',
             help: {
               description: this.$tr('ibuilder.cms.form.layoutType')
             },
             props: {
               label: this.$tr('isite.cms.form.type'),
-              vIf: this.crudInfo.entityType && this.typeOptions.length,
-              clearable: true,
-              options: this.typeOptions
+              vIf: this.crudInfo.entityType,
+              required: true,
+              options: [
+                {label: 'General', value: 'general'},
+                ...this.typeOptions
+              ]
             }
           },
           default: {

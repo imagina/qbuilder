@@ -1,7 +1,19 @@
 <template>
   <div id="builderPanelLayouts">
-    <div class="drawer-title q-py-lg q-px-md">
+    <div class="drawer-title q-py-lg q-px-md justify-between">
       <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.layouts') }}</h2>
+
+      <q-btn-dropdown round unelevated split :label="$tr('ibuilder.cms.label.administrator')"
+       @click="$router.push({ name: 'app.home' })">
+        <q-list>
+          <q-item v-for="(btn, keyItem) in dropdownActions" :key="keyItem" clickable v-close-popup v-bind="btn.props"
+                  @click="btn.action != undefined ? btn.action() : null">
+            <q-item-section>
+              <q-item-label>{{ btn.title }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
     </div>
     <div class="drawer-body relative-position">
       <!--Buttons actions-->
@@ -45,7 +57,7 @@ export default defineComponent({
 
   .drawer-body {
     overflow-y auto
-    height calc(100vh - 76px)
+    height calc(100vh - 86px)
     padding 26px 18px 24px 18px
 
     .heigth-button {
@@ -59,7 +71,6 @@ export default defineComponent({
     display flex
     text-align center
     align-items center
-    justify-content center
     background-color $primary
     color white
   }
@@ -101,4 +112,8 @@ export default defineComponent({
 
       .q-item__label, .q-icon
         color: white
+
+.q-menu .q-list .q-item {
+  padding: 8px 10px;
+}
 </style>

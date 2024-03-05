@@ -151,6 +151,8 @@ export default function controller(props: any, emit: any) {
         })
       });
 
+      if(response.parentSystemName === 0) response.parentSystemName = null
+
       if (!response.entity) response.entity = {}
 
       //Merge translations

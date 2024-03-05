@@ -45,7 +45,21 @@ export default function layoutController(props: any, emit: any) {
   })
 
   // Computed
-  const computeds = {}
+  const computeds = {
+    dropdownActions: computed(() => {
+      return [
+        {
+          title: proxy.$tr('isite.cms.showSite'),
+          props: {
+            tag: 'a',
+            href: proxy.$store.state.qsiteApp.baseUrl,
+            target: '_blank',
+            id: 'siteActionGoToSite'
+          }
+        }
+      ]
+    }),
+  }
 
   // Methods
   const methods = {

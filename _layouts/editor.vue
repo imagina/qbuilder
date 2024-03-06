@@ -24,7 +24,7 @@ export default {
     let iconHref = this.$store.getters['qsiteApp/getSettingMediaByName']('isite::favicon').path
 
     return {
-      title: `${this.useLegacyStructure ? this.$tr(routeTitle) : routeTitle} | ${siteName}`,
+      title: `${this.$tr(routeTitle)} | ${siteName}`,
       meta: {
         description: {name: 'description', content: (siteDescription || siteName)},
       },
@@ -33,12 +33,7 @@ export default {
   },
   async mounted() {
   },
-  computed: {
-    useLegacyStructure() {
-      const legacyStructure = parseInt(this.$store.getters["qsiteApp/getSettingValueByName"]("isite::legacyStructureCMS") || 0)
-      return legacyStructure === 1 || false
-    },
-  }
+  computed: {}
 }
 </script>
 

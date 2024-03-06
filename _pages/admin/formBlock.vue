@@ -2,7 +2,7 @@
   <div id="formBlockPage">
     <!--Page Actions-->
     <div class="box box-auto-height q-mb-md">
-      <page-actions :title="settings.useLegacyStructure ? $tr($route.meta.title) : $route.meta.title"/>
+      <page-actions :title="$tr($route.meta.title)"/>
     </div>
     <!--Content-->
     <div class="relative-position">
@@ -249,7 +249,6 @@ export default {
     // Validate the setting about the use the legacy structure of the CMS
     settings() {
       return {
-        useLegacyStructure: parseInt(this.$getSetting('isite::legacyStructureCMS') || 0),
         templatesBaseUrl: this.$getSetting('ibuilder::blockTemplatesUrl')
       }
     },

@@ -1,6 +1,6 @@
 import Vue, {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} from "vue";
 import service from '@imagina/qbuilder/_components/layoutLibraryPanel/services'
-import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
+import {Layout} from '@imagina/qbuilder/_components/layoutList/interface'
 import {Block} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 interface StateProps {

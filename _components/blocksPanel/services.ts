@@ -15,7 +15,7 @@ export default {
         refresh: refresh,
         params: {
           filter: {allTranslations: true},
-          include: 'fields',
+          include: 'fields,files',
           ...params
         }
       }
@@ -33,7 +33,7 @@ export default {
       let requestParams = {
         params: {
           filter: {allTranslations: true},
-          include: 'fields',
+          include: 'fields,files',
           ...params
         }
       }

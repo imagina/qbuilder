@@ -1,12 +1,13 @@
 import Vue, {reactive, computed} from 'vue';
 import crud from '@imagina/qcrud/_services/baseService';
 import helper from '@imagina/qsite/_plugins/helper'
-import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
+import {Layout} from '@imagina/qbuilder/_components/layoutList/interface'
 import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
 
 interface StateProps {
   panelWidth: string,
   layoutSelected: Layout | null
+  viewBlockSelected: Block | null
   blockSelected: Block | null
   blockConfigs: ModuleBlockConfig[],
   mainBlockSystemName: string
@@ -16,6 +17,7 @@ interface StateProps {
 const state = reactive<StateProps>({
   panelWidth: '380px',
   layoutSelected: null,
+  viewBlockSelected: null,
   blockSelected: null,
   blockConfigs: [],
   mainBlockSystemName: 'x-ibuilder::block'
@@ -55,6 +57,16 @@ export default computed(() => ({
     }, ["componentAttributes"]))
 
     return Array.from(childKeysConfig)
+  },
+  get viewBlockSelected() {
+    return state.viewBlockSelected
+  },
+  set viewBlockSelected(val) {
+    state.viewBlockSelected = val
+  },
+  resetSelecteds() {
+    state.layoutSelected = null
+    state.blockSelected = null
+    state.viewBlockSelected = null
   }
-
 })).value

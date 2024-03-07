@@ -1,8 +1,8 @@
 import Vue, {computed, reactive, ref, onMounted, toRefs, getCurrentInstance, watch, onUnmounted} from "vue";
-import service from "@imagina/qbuilder/_components/layoutPanel/services";
+import service from "@imagina/qbuilder/_components/layoutList/services";
 import store from "@imagina/qbuilder/_pages/admin/editor/store";
 import recursiveStore from "@imagina/qsite/_components/v3/recursiveItem/store";
-import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
+import {Layout} from '@imagina/qbuilder/_components/layoutList/interface'
 
 //Map the object as needed by the recursiveItem
 interface MapLayout {
@@ -45,21 +45,7 @@ export default function layoutController(props: any, emit: any) {
   })
 
   // Computed
-  const computeds = {
-    dropdownActions: computed(() => {
-      return [
-        {
-          title: proxy.$tr('isite.cms.showSite'),
-          props: {
-            tag: 'a',
-            href: proxy.$store.state.qsiteApp.baseUrl,
-            target: '_blank',
-            id: 'siteActionGoToSite'
-          }
-        }
-      ]
-    }),
-  }
+  const computeds = {}
 
   // Methods
   const methods = {

@@ -1,21 +1,5 @@
 <template>
-  <div id="builderPanelLayouts">
-    <div class="drawer-title q-py-lg q-px-md justify-between">
-      <h2 class="text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.layouts') }}</h2>
-
-      <q-btn-dropdown round unelevated split :label="$tr('ibuilder.cms.label.administrator')"
-       @click="$router.push({ name: 'app.home' })">
-        <q-list>
-          <q-item v-for="(btn, keyItem) in dropdownActions" :key="keyItem" clickable v-close-popup v-bind="btn.props"
-                  @click="btn.action != undefined ? btn.action() : null">
-            <q-item-section>
-              <q-item-label>{{ btn.title }}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
-    </div>
-    <div class="drawer-body relative-position">
+  <div id="builderPanelLayouts" class="drawer-body relative-position">
       <!--Buttons actions-->
       <div class="flex q-gutter-xs justify-between">
         <q-btn @click="$emit('create')" outline rounded class="q-mb-sm text-capitalize heigth-button" color="primary" no-caps
@@ -31,13 +15,14 @@
 
       <q-separator spaced/>
       <recursive-item id="recursiveItemContent" :translatable="false" :menu="mapLayouts" right-icon/>
+
+
       <inner-loading :visible="loading"/>
-    </div>
   </div>
 </template>
 <script>
 import {defineComponent} from 'vue'
-import controller from '@imagina/qbuilder/_components/layoutPanel/controller'
+import controller from '@imagina/qbuilder/_components/layoutList/controller'
 import recursiveItem from '@imagina/qsite/_components/v3/recursiveItem'
 
 export default defineComponent({
@@ -52,10 +37,9 @@ export default defineComponent({
 </script>
 <style lang="stylus">
 #builderPanelLayouts
-  height 100vh
   border-right 1px solid #c7c7c7
 
-  .drawer-body {
+  &.drawer-body {
     overflow-y auto
     height calc(100vh - 86px)
     padding 26px 18px 24px 18px
@@ -63,16 +47,6 @@ export default defineComponent({
     .heigth-button {
       height 50px
     }
-  }
-
-  .drawer-title {
-    display fixed
-    width 100%
-    display flex
-    text-align center
-    align-items center
-    background-color $primary
-    color white
   }
 
   #recursiveItemContent

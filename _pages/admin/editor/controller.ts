@@ -82,10 +82,12 @@ export default function editorController ()
     //Return the selected title to the header of preview section
     titleTab: computed(() =>
     {
-      if(state.view === 'layout') {
+      if (state.view === 'layout')
+      {
         if (store.layoutSelected?.title) return `${store.layoutSelected.title} (${store.layoutSelected.id})`
         return proxy.$tr('ibuilder.cms.layout')
-      } else {
+      } else
+      {
         const block = store.viewBlockSelected;
 
         if (block?.internalTitle) return `${block?.internalTitle} (${block.id})`
@@ -126,7 +128,8 @@ export default function editorController ()
       },
     })),
     //Actions of dropdown
-    dropdownActions: computed(() => {
+    dropdownActions: computed(() =>
+    {
       return {
         redirect: [
           {
@@ -139,7 +142,10 @@ export default function editorController ()
             }
           }
         ],
-        editor: ['layout', 'block']
+        editor: [
+          {label: 'Layout', value: 'layout'},
+          {label: 'Block', value: 'block'}
+        ]
       }
     }),
   }
@@ -198,24 +204,26 @@ export default function editorController ()
     // Open the preview Block
     previewBlock ()
     {
-        setTimeout(() =>
-        {
-          if (refs.refIframePost?.value?.loadIframe && store.viewBlockSelected?.id)
-            refs.refIframePost.value.loadIframe(
-              `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
-              store.viewBlockSelected
-            )
-        }, 300)
+      setTimeout(() =>
+      {
+        if (refs.refIframePost?.value?.loadIframe && store.viewBlockSelected?.id)
+          refs.refIframePost.value.loadIframe(
+            `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
+            store.viewBlockSelected
+          )
+      }, 300)
     },
     // Refresh the api data
-    async refreshApiData ({ crudAction = '', emitSelected = true })
+    async refreshApiData ({crudAction = '', emitSelected = true})
     {
-      if(crudAction == 'deleted') store.resetSelecteds()
+      if (crudAction == 'deleted') store.resetSelecteds()
       state.loading = true
       let resLoading;
-      if(state.view == 'layout') {
+      if (state.view == 'layout')
+      {
         resLoading = await refs.refLayoutList?.value?.refreshLayouts({crudAction, emitSelected}) || false;
-      } else {
+      } else
+      {
         resLoading = await refs.refBlockList?.value?.refreshBlocks(crudAction) || false;
       }
       state.loading = resLoading
@@ -262,22 +270,32 @@ export default function editorController ()
       state.showBlocksPanel = true
     },
     //Handle the created blocks
-    handleChangesBlock ({block = null, wasDeleted = false, refresh = false, update = false, persistModalAttributes = false, crudAction = '', cancel = false }: PropsHandleChangesBlock)
+    handleChangesBlock ({
+                          block = null,
+                          wasDeleted = false,
+                          refresh = false,
+                          update = false,
+                          persistModalAttributes = false,
+                          crudAction = '',
+                          cancel = false
+                        }: PropsHandleChangesBlock)
     {
-      if (state.view == 'block') {
-        if(wasDeleted) store.viewBlockSelected = null
-        if(cancel) setTimeout( () => methods.previewBlock(), 500)
+      if (state.view == 'block')
+      {
+        if (wasDeleted) store.viewBlockSelected = null
+        if (cancel) setTimeout(() => methods.previewBlock(), 500)
       }
 
       if (block)
       {
         //Update block data
-        if(update) methods.handleUpdateBlock({block})
+        if (update) methods.handleUpdateBlock({block})
         //Refresh de layoutPanel data
         if (refresh || state.view == 'block') methods.refreshApiData({crudAction, emitSelected: false})
 
 
-        if(state.view == 'layout') {
+        if (state.view == 'layout')
+        {
           let blockIndex = state.blocks.findIndex(item => item.id == block.id)
           if (blockIndex >= 0)
           {
@@ -359,11 +377,14 @@ export default function editorController ()
       })
     },
     // Update block
-    async handleUpdateBlock({block, params = {}}) {
-      await service.updateBlock(block.id, block, params).then(response => {
+    async handleUpdateBlock ({block, params = {}})
+    {
+      await service.updateBlock(block.id, block, params).then(response =>
+      {
         state.loading = false
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
-      }).catch(error => {
+      }).catch(error =>
+      {
         state.loading = false
         proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
       })
@@ -383,12 +404,14 @@ export default function editorController ()
     //Go Home
     goHome ()
     {
-      const pathHome = proxy.$router.resolve({ name: 'app.home' })
+      const pathHome = proxy.$router.resolve({name: 'app.home'})
       window.open(pathHome.href, '_blank');
     },
     //Alert when change view
-    handleChangeView(existData, view: 'layout' | 'block' = 'layout') {
-      if(!!existData) {
+    handleChangeView (existData, view: 'layout' | 'block' = 'layout')
+    {
+      if (!!existData)
+      {
         proxy.$alert.warning({
           mode: 'modal',
           title: proxy.$tr('ibuilder.cms.label.sureChangeView'),
@@ -398,21 +421,24 @@ export default function editorController ()
             {
               label: proxy.$tr('isite.cms.label.accept'),
               color: 'green',
-              handler: () => {
+              handler: () =>
+              {
                 state.view = view
                 store.resetSelecteds()
               }
             },
           ]
         })
-      } else {
+      } else
+      {
         state.view = view
         store.resetSelecteds()
       }
 
     },
     //Open block Panel
-    openBlockPanel() {
+    openBlockPanel ()
+    {
       //Reset values to block Panel
       state.infoToCreateBlock = {
         index: 0,
@@ -423,15 +449,18 @@ export default function editorController ()
       setTimeout(() => state.showBlocksPanel = true, 100)
     },
     //Actions button of Block
-    handleActionsBlock(action: string) {
+    handleActionsBlock (action: string)
+    {
       //Action when updated attributes
-      if(action == 'updateAttr') {
+      if (action == 'updateAttr')
+      {
         state.showBlockAttributesForm = true
         setTimeout(() => refs.blockAttributesForm?.value?.edit(store.viewBlockSelected), 500)
-      } else if(action == 'delete') methods.alertDeleteBlock(store.viewBlockSelected) //Action when delete
+      } else if (action == 'delete') methods.alertDeleteBlock(store.viewBlockSelected) //Action when delete
     },
     //Alert before delete Block
-    alertDeleteBlock(data: any) {
+    alertDeleteBlock (data: any)
+    {
       proxy.$alert.error({
         mode: 'modal',
         title: data.internalTitle,

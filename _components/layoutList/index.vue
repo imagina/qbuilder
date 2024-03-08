@@ -2,8 +2,8 @@
   <div id="builderPanelLayouts" class="drawer-body relative-position">
       <!--Buttons actions-->
       <div class="flex q-gutter-xs justify-between">
-        <q-btn @click="$emit('create')" outline rounded class="q-mb-sm text-capitalize heigth-button" color="primary" no-caps
-               padding="sm lg">
+        <q-btn @click="$emit('create')" outline rounded class="q-mb-sm text-capitalize" color="primary" no-caps
+               >
           <q-icon size="xs" left name="fa-solid fa-plus"/>
           <div class="text-center text-weight-bold">
             {{ $tr('ibuilder.cms.newLayout') }}
@@ -37,16 +37,9 @@ export default defineComponent({
 </script>
 <style lang="stylus">
 #builderPanelLayouts
-  border-right 1px solid #c7c7c7
 
   &.drawer-body {
-    overflow-y auto
-    height calc(100vh - 86px)
     padding 26px 18px 24px 18px
-
-    .heigth-button {
-      height 50px
-    }
   }
 
   #recursiveItemContent

@@ -1,21 +1,21 @@
 <template>
   <div id="builderBlockList" class="drawer-body relative-position">
-      <!--Buttons actions-->
-      <div class="flex q-gutter-xs justify-between">
-        <q-btn @click="$emit('create')" outline rounded class="q-mb-sm text-capitalize heigth-button" color="primary" no-caps
-               padding="sm lg">
-          <q-icon size="xs" left name="fa-solid fa-plus"/>
-          <div class="text-center text-weight-bold">
-            {{ $tr('ibuilder.cms.newBlock') }}
-          </div>
-        </q-btn>
-        <q-btn @click="refreshBlocks" outline rounded class="q-mb-sm" size="sm" color="primary"
-               no-caps icon="fa-light fa-rotate-right" />
-      </div>
+    <!--Buttons actions-->
+    <div class="flex q-gutter-xs justify-between">
+      <q-btn @click="$emit('create')" outline rounded class="q-mb-sm text-capitalize heigth-button" color="primary"
+             no-caps>
+        <q-icon size="xs" left name="fa-solid fa-plus"/>
+        <div class="text-center text-weight-bold">
+          {{ $tr('ibuilder.cms.newBlock') }}
+        </div>
+      </q-btn>
+      <q-btn @click="refreshBlocks" outline rounded class="q-mb-sm" size="sm" color="primary"
+             no-caps icon="fa-light fa-rotate-right"/>
+    </div>
 
-      <q-separator spaced/>
-      <recursive-item id="recursiveItemContent" :translatable="false" :menu="mapBlocks" right-icon/>
-      <inner-loading :visible="loading"/>
+    <q-separator spaced/>
+    <recursive-item id="recursiveItemContent" :translatable="false" :menu="mapBlocks" right-icon/>
+    <inner-loading :visible="loading"/>
   </div>
 </template>
 <script>
@@ -35,16 +35,9 @@ export default defineComponent({
 </script>
 <style lang="stylus">
 #builderBlockList
-  border-right 1px solid #c7c7c7
 
   &.drawer-body {
-    overflow-y auto
-    height calc(100vh - 86px)
     padding 26px 18px 24px 18px
-
-    .heigth-button {
-      height 50px
-    }
   }
 
   #recursiveItemContent
@@ -59,6 +52,7 @@ export default defineComponent({
 
     .q-expansion-item__content, .expansion-header
       background white
+
     .q-expansion-item__content
       padding 0
 

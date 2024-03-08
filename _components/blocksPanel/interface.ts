@@ -13,6 +13,7 @@ export interface Block {
     gridPosition:     string;
     id:               number;
     internalTitle:    string;
+    gridLabel:        string;
     layoutId:         number;
     mediaFiles:       MediaFiles;
     mobileAttributes: any;

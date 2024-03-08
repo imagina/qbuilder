@@ -82,23 +82,17 @@ export default function editorController ()
     //Return the selected title to the header of preview section
     titleTab: computed(() =>
     {
-      if (state.view === 'layout')
-      {
-        if (store.layoutSelected?.title) return `${store.layoutSelected.title} (${store.layoutSelected.id})`
-        return proxy.$tr('ibuilder.cms.layout')
-      } else
-      {
-        const block = store.viewBlockSelected;
+      const layoutTitle = store.layoutSelected?.title ? `${store.layoutSelected.id} | ${store.layoutSelected.title}` :
+        proxy.$tr('ibuilder.cms.layout')
+      const blockTitle = store.viewBlockSelected?.internalTitle ? `${store.viewBlockSelected.id} | ${store.viewBlockSelected?.internalTitle}` :
+        proxy.$tr('isite.cms.label.block')
 
-        if (block?.internalTitle) return `${block?.internalTitle} (${block.id})`
-        return proxy.$tr('isite.cms.label.block')
-      }
-
+      return state.view === 'layout' ? layoutTitle : blockTitle
     }),
     //Get config of handleGrid
     configHandleGrid: computed(() => ({
       orderBy: "sortOrder",
-      titleField: "internalTitle",
+      titleField: "gridLabel",
       canAddNewItem: true,
       actions: {
         blockDelete: {
@@ -106,7 +100,6 @@ export default function editorController ()
           icon: 'fa-regular fa-trash',
           color: 'red',
           action: (data) => methods.alertDeleteBlock(data)
-
         },
         blockContent: {
           label: proxy.$tr('ibuilder.cms.label.content'),
@@ -248,10 +241,8 @@ export default function editorController ()
       // Include the attribute children for draggable component to the needed blocks
       const result = blocks.map(block =>
       {
-        if (configBlocks.includes(block?.component?.systemName) && !block?.children?.length)
-        {
-          block.children = [];
-        }
+        if (configBlocks.includes(block?.component?.systemName) && !block?.children?.length) block.children = [];
+        block.gridLabel = `${block.id} | ${block.internalTitle}`
         return block
       }).sort((a, b) => a['sortOrder'] - b['sortOrder'])
 

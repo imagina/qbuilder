@@ -44,22 +44,21 @@
       <!--block attrs from panels-->
       <q-dialog v-model="showBlockAttributesForm" :title="$tr('ibuilder.cms.label.editBlockAttributes')"
                 position="left" content-class="builder-panel-dialog" square persistent>
-        <block-attributes-form ref="blockAttributesForm"
-                               @cancel="() => handleChangesBlock({cancel: true})"
-                               @input="response => handleChangesBlock(response)"/>
+        <block-attributes-form ref="blockAttributesForm" @input="response => handleChangesBlock(response)"
+                               @cancel="() => handleChangesBlock({cancel: true})"/>
       </q-dialog>
       <!--Layout panel-->
       <q-dialog v-model="showLayoutPanel" position="left" content-class="builder-panel-dialog" square>
-        <layout-library-panel @creating="handleCreateLayout"
-                              class="full-height"/>
+        <layout-library-panel @creating="handleCreateLayout" class="full-height"/>
       </q-dialog>
     </div>
 
     <!-- Right content -->
     <div id="rightContent" :style="`width: calc(100% - ${store.panelWidth})`">
       <!--Actions-->
-      <div class="text-right q-pa-sm">
-        <q-btn-dropdown rounded no-caps unelevated split :label="$tr('ibuilder.cms.label.administrator')" @click="goHome"
+      <div class="text-right q-pa-md">
+        <q-btn-dropdown rounded no-caps unelevated split :label="$tr('ibuilder.cms.label.administrator')"
+                        @click="goHome"
                         icon="fa-light fa-eye" outline color="primary">
           <q-list>
             <q-item v-for="(btn, keyItem) in dropdownActions.redirect" :key="keyItem" clickable v-close-popup
@@ -137,6 +136,12 @@
             <!--Title and edit button Blocks-->
             <div class="q-px-md q-py-sm text-blue-grey text-h6">
               {{ titleTab }}
+              <div v-if="store.viewBlockSelected" class="text-caption" style="line-height: 1">
+                SN: {{ store.viewBlockSelected.systemName }}
+                <q-btn
+                    @click="$helper.copyToClipboard(store.viewBlockSelected.systemName, 'isite.cms.messages.copyToClipboard')"
+                    icon="fa-light fa-copy" flat size="sm" padding="0" class="q-ml-xs" round/>
+              </div>
             </div>
             <!--Actions-->
             <div class="q-pr-md" v-if="store.viewBlockSelected">
@@ -185,8 +190,14 @@ import blockForm from "@imagina/qbuilder/_components/blockContentForm/index.vue"
 import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm'
 import layoutLibraryPanel from '@imagina/qbuilder/_components/layoutLibraryPanel'
 import blockList from '@imagina/qbuilder/_components/blockList';
+import store from "@imagina/qbuilder/_pages/admin/editor/store";
 
 export default defineComponent({
+  computed: {
+    store() {
+      return store
+    }
+  },
   props: {},
   components: {
     blockForm,
@@ -240,7 +251,7 @@ export default defineComponent({
 
   .preview-content
     min-height calc(100vh - 52px)
-    padding 12px 85px 30px 85px
+    padding 0px 50px 30px 50px
 
     &__actions
       background-color white

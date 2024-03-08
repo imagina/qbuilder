@@ -114,8 +114,7 @@ export default function layoutController(props: any, emit: any) {
         // Map the Blocks
         const blockFilteredChildren: MapBlockChildren[] = blockFiltered.map(block => ({
           ...block,
-          label: `${block.id} ${block.internalTitle}`,
-          subLabel: block.systemName,
+          label: `${block.id} | ${block.internalTitle}`,
           activated: true,
           icon: 'fa-light fa-arrow-right',
           action: methods.selectBlock

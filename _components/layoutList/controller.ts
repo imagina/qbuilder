@@ -121,7 +121,7 @@ export default function layoutController(props: any, emit: any) {
           const entityLayoutsChildren: MapLayoutChildren[] = entityLayouts.map(layout => ({
             ...layout,
             type: layout.type ?? 'General',
-            label: `${layout.title} ${layout.default ? '(Default)' : ''}`,
+            label: `${layout.id} | ${layout.title} ${layout.default ? '(Default)' : ''}`,
             subLabel: `${layout.type ?? 'General'}`,
             activated: true,
             icon: 'fa-light fa-arrow-right',

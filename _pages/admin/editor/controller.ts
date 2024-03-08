@@ -2,13 +2,13 @@ import Vue, {computed, onMounted, onUnmounted, reactive, ref, toRefs, watch, get
 import service from '@imagina/qbuilder/_pages/admin/editor/services'
 import store from '@imagina/qbuilder/_pages/admin/editor/store'
 import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
-import layoutPanel from '@imagina/qbuilder/_components/layoutPanel/index.vue';
+import layoutList from '@imagina/qbuilder/_components/layoutList/index.vue';
+import blockList from '@imagina/qbuilder/_components/blockList/index.vue';
 import handleGrid from '@imagina/qsite/_components/v3/handleGrid/index.vue';
 import blockForm from '@imagina/qbuilder/_components/blockContentForm/index.vue'
 import blockAttributesForm from '@imagina/qbuilder/_components/blockAttributesForm/index.vue';
 import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
-import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
-import {biAward} from "@quasar/extras/bootstrap-icons";
+import {Layout} from '@imagina/qbuilder/_components/layoutList/interface'
 
 interface PropInfoToCreateBlock
 {
@@ -28,15 +28,18 @@ interface StateProps
   showBlockAttributesForm: boolean,
   infoToCreateBlock: PropInfoToCreateBlock,
   gridBlocks: Block[]
+  view: 'layout' | 'block'
 }
 
 interface PropsHandleChangesBlock
 {
   block: null | Block,
   wasDeleted: boolean,
-  refreshLayouts: boolean,
+  refresh: boolean,
   update?: boolean
   persistModalAttributes?: boolean
+  crudAction?: string
+  cancel?: boolean
 }
 
 export default function editorController ()
@@ -47,7 +50,8 @@ export default function editorController ()
   const refs = {
     refIframePost: ref<InstanceType<typeof iframePost>>(),
     crudLayout: ref(null),
-    refPanel: ref<InstanceType<typeof layoutPanel>>(),
+    refLayoutList: ref<InstanceType<typeof layoutList>>(),
+    refBlockList: ref<InstanceType<typeof blockList>>(),
     handleGrid: ref<InstanceType<typeof handleGrid>>(),
     refBlockForm: ref<InstanceType<typeof blockForm>>(),
     blockAttributesForm: ref<InstanceType<typeof blockAttributesForm>>(),
@@ -67,18 +71,27 @@ export default function editorController ()
       layoutId: null,
       parentSystemName: null
     },
-    gridBlocks: []
+    gridBlocks: [],
+    view: 'layout'
   })
 
   // Computed
   const computeds = {
     // Validate the color by selectedTab
     tabColor: computed(() => state.layoutTab == 'preview' ? 'indigo-10' : 'orange-10'),
-    //Return the selected layout title to the header of preview section
+    //Return the selected title to the header of preview section
     titleTab: computed(() =>
     {
-      if (store.layoutSelected?.title) return `${store.layoutSelected.title} (${store.layoutSelected.id})`
-      return proxy.$tr('ibuilder.cms.layout')
+      if(state.view === 'layout') {
+        if (store.layoutSelected?.title) return `${store.layoutSelected.title} (${store.layoutSelected.id})`
+        return proxy.$tr('ibuilder.cms.layout')
+      } else {
+        const block = store.viewBlockSelected;
+
+        if (block?.internalTitle) return `${block?.internalTitle} (${block.id})`
+        return proxy.$tr('isite.cms.label.block')
+      }
+
     }),
     //Get config of handleGrid
     configHandleGrid: computed(() => ({
@@ -90,22 +103,8 @@ export default function editorController ()
           label: proxy.$tr('isite.cms.label.delete'),
           icon: 'fa-regular fa-trash',
           color: 'red',
-          action: (data) =>
-          {
-            proxy.$alert.error({
-              mode: 'modal',
-              title: data.internalTitle,
-              message: proxy.$tr('isite.cms.message.deleteRecord'),
-              actions: [
-                {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
-                {
-                  label: proxy.$tr('isite.cms.label.accept'),
-                  color: 'green',
-                  handler: () => methods.deleteBlock(data)
-                },
-              ]
-            })
-          }
+          action: (data) => methods.alertDeleteBlock(data)
+
         },
         blockContent: {
           label: proxy.$tr('ibuilder.cms.label.content'),
@@ -125,7 +124,24 @@ export default function editorController ()
           }
         }
       },
-    }))
+    })),
+    //Actions of dropdown
+    dropdownActions: computed(() => {
+      return {
+        redirect: [
+          {
+            title: proxy.$tr('isite.cms.showSite'),
+            props: {
+              tag: 'a',
+              href: proxy.$store.state.qsiteApp.baseUrl,
+              target: '_blank',
+              id: 'siteActionGoToSite'
+            }
+          }
+        ],
+        editor: ['layout', 'block']
+      }
+    }),
   }
 
   // Methods
@@ -179,12 +195,30 @@ export default function editorController ()
         }, 300)
       }
     },
-    // Refresh the layout data
-    async refreshLayouts ({crudAction = '', emitSelected = true})
+    // Open the preview Block
+    previewBlock ()
     {
-      if(crudAction == 'deleted') store.resetLayoutSelected()
+        setTimeout(() =>
+        {
+          if (refs.refIframePost?.value?.loadIframe && store.viewBlockSelected?.id)
+            refs.refIframePost.value.loadIframe(
+              `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
+              store.viewBlockSelected
+            )
+        }, 300)
+    },
+    // Refresh the api data
+    async refreshApiData ({ crudAction = '', emitSelected = true })
+    {
+      if(crudAction == 'deleted') store.resetSelecteds()
       state.loading = true
-      state.loading = await refs.refPanel?.value?.refreshLayouts({crudAction, emitSelected}) || false;
+      let resLoading;
+      if(state.view == 'layout') {
+        resLoading = await refs.refLayoutList?.value?.refreshLayouts({crudAction, emitSelected}) || false;
+      } else {
+        resLoading = await refs.refBlockList?.value?.refreshBlocks(crudAction) || false;
+      }
+      state.loading = resLoading
     },
     // Handle the layout selected
     handleLayoutSelected ()
@@ -228,23 +262,31 @@ export default function editorController ()
       state.showBlocksPanel = true
     },
     //Handle the created blocks
-    handleChangesBlock ({block = null, wasDeleted = false, refreshLayouts = false, update = false, persistModalAttributes = false}: PropsHandleChangesBlock)
+    handleChangesBlock ({block = null, wasDeleted = false, refresh = false, update = false, persistModalAttributes = false, crudAction = '', cancel = false }: PropsHandleChangesBlock)
     {
+      if (state.view == 'block') {
+        if(wasDeleted) store.viewBlockSelected = null
+        if(cancel) setTimeout( () => methods.previewBlock(), 500)
+      }
+
       if (block)
       {
         //Update block data
         if(update) methods.handleUpdateBlock({block})
         //Refresh de layoutPanel data
-        if (refreshLayouts) methods.refreshLayouts({emitSelected: false})
-        //TODO: buscar si block ya existe en stateblocks y actualizarlo, si no, agregarlo
-        let blockIndex = state.blocks.findIndex(item => item.id == block.id)
-        if (blockIndex >= 0)
-        {
-          if (wasDeleted) state.blocks.splice(blockIndex, 1)
-          else state.blocks.splice(blockIndex, 1, block)
-        } else state.blocks = [...state.blocks, block]
+        if (refresh || state.view == 'block') methods.refreshApiData({crudAction, emitSelected: false})
 
-        methods.setTheGridBlocks()
+
+        if(state.view == 'layout') {
+          let blockIndex = state.blocks.findIndex(item => item.id == block.id)
+          if (blockIndex >= 0)
+          {
+            if (wasDeleted) state.blocks.splice(blockIndex, 1)
+            else state.blocks.splice(blockIndex, 1, block)
+          } else state.blocks = [...state.blocks, block]
+
+          methods.setTheGridBlocks()
+        }
       }
       state.showBlocksPanel = false
       state.showBlockAttributesForm = persistModalAttributes
@@ -292,7 +334,7 @@ export default function editorController ()
         await service.blocksBulkCreate(blocks, store.ignoreConfigKeys).then(response =>
         {
           proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
-          methods.refreshLayouts({crudAction: 'created'})
+          methods.refreshApiData({crudAction: 'created'})
         }).catch(error =>
         {
           proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
@@ -308,7 +350,7 @@ export default function editorController ()
       await service.blocksBulkUpdate(state.blocks, store.ignoreConfigKeys).then(response =>
       {
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
-        methods.refreshLayouts({})
+        methods.refreshApiData({})
         state.loading = false
       }).catch(error =>
       {
@@ -331,14 +373,79 @@ export default function editorController ()
     {
       state.loading = true
       await service.deleteblock(block.id)
-      methods.handleChangesBlock({block, wasDeleted: true, refreshLayouts: true})
-      state.loading = false
+      methods.handleChangesBlock({block, wasDeleted: true, refresh: true})
     },
     async handleDeleteLayout (layout: Layout)
     {
       //@ts-ignore
       refs.crudLayout.value?.delete(layout)
     },
+    //Go Home
+    goHome ()
+    {
+      const pathHome = proxy.$router.resolve({ name: 'app.home' })
+      window.open(pathHome.href, '_blank');
+    },
+    //Alert when change view
+    handleChangeView(existData, view: 'layout' | 'block' = 'layout') {
+      if(!!existData) {
+        proxy.$alert.warning({
+          mode: 'modal',
+          title: proxy.$tr('ibuilder.cms.label.sureChangeView'),
+          message: proxy.$tr('ibuilder.cms.label.descriptionSureRefreshLayout'),
+          actions: [
+            {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
+            {
+              label: proxy.$tr('isite.cms.label.accept'),
+              color: 'green',
+              handler: () => {
+                state.view = view
+                store.resetSelecteds()
+              }
+            },
+          ]
+        })
+      } else {
+        state.view = view
+        store.resetSelecteds()
+      }
+
+    },
+    //Open block Panel
+    openBlockPanel() {
+      //Reset values to block Panel
+      state.infoToCreateBlock = {
+        index: 0,
+        layoutId: null,
+        parentSystemName: null
+      }
+
+      setTimeout(() => state.showBlocksPanel = true, 100)
+    },
+    //Actions button of Block
+    handleActionsBlock(action: string) {
+      //Action when updated attributes
+      if(action == 'updateAttr') {
+        state.showBlockAttributesForm = true
+        setTimeout(() => refs.blockAttributesForm?.value?.edit(store.viewBlockSelected), 500)
+      } else if(action == 'delete') methods.alertDeleteBlock(store.viewBlockSelected) //Action when delete
+    },
+    //Alert before delete Block
+    alertDeleteBlock(data: any) {
+      proxy.$alert.error({
+        mode: 'modal',
+        title: data.internalTitle,
+        message: proxy.$tr('isite.cms.message.deleteRecord'),
+        actions: [
+          {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
+          {
+            label: proxy.$tr('isite.cms.label.accept'),
+            color: 'green',
+            handler: () => methods.deleteBlock(data)
+          },
+        ]
+      })
+    }
   }
 
   // Mounted
@@ -349,7 +456,7 @@ export default function editorController ()
 
   onUnmounted(() =>
   {
-    store.layoutSelected = null
+    store.resetSelecteds()
   })
 
   watch(() => state.gridBlocks, (newValue, oldValue): void =>

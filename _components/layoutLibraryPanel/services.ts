@@ -1,5 +1,5 @@
 import baseService from '@imagina/qcrud/_services/baseService'
-import {Layout} from '@imagina/qbuilder/_components/layoutPanel/interface'
+import {Layout} from '@imagina/qbuilder/_components/layoutList/interface'
 import {getCurrentInstance} from "vue";
 
 interface ResponseGetLayout {

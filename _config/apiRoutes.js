@@ -9,4 +9,5 @@ export default {
   layouts: `${urlBase}/layouts`,
   blocks: `${urlBase}/blocks`,
   editor: `${urlBase}/editor`,
+  layoutBlocks: `${urlBase}/layout-blocks`,
 }

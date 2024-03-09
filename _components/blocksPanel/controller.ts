@@ -100,6 +100,23 @@ export default function controller(props: any, emit: any) {
       state.blockSelected = block
       refs.refBlockForm?.value?.fillData(block, props)
     },
+    // Related a block with a layout
+    relateBlock(block) {
+      state.loading = true
+      //instance the data to create layoutBlock
+      const layoutBlockData = {
+        layoutId : props.layoutId,
+        blockId: block.id,
+        sortOrder: props.index,
+        parentSystemName: props.parentSystemName,
+        gridPosition: 'col-12'
+      }
+      //Request
+      service.createLayoutBlock(layoutBlockData).then(response => {
+        state.loading = false
+        this.emitCreated(block)
+      }).catch(error => state.loading = false)
+    },
     // Emit event when the block is created
     emitCreated(block) {
       state.blockSelected = null

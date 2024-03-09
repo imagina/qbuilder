@@ -12,7 +12,7 @@ export default {
     return new Promise((resolve, reject) => {
       //Params
       let requestParams = {
-        refresh: refresh,
+        refresh: false,
         params: {
           filter: {allTranslations: true},
           include: 'fields,files',
@@ -45,4 +45,16 @@ export default {
       }).catch(error => reject(error))
     })
   },
+  createLayoutBlock(data: any, params = {}): Promise<Block> {
+    return new Promise((resolve, reject) => {
+      //Params
+      let requestParams = {
+        ...params
+      }
+      //Request
+      baseService.create('apiRoutes.qbuilder.layoutBlocks', data, requestParams).then(response => {
+        resolve(response.data)
+      }).catch(error => reject(error))
+    })
+  }
 }

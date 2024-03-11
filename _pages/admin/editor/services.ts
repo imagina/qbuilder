@@ -79,28 +79,18 @@ export default {
     })
   },
   //Bulk update pivot layout blocks
-  layoutBlocksBulkUpdate(layoutBlocks): Promise<any> {
+  layoutBlocksBulkUpdate(layoutBlocks, requestParams = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       //Request
-      baseService.update('apiRoutes.qbuilder.layoutBlocks', 'bulk/update', layoutBlocks).then(response => {
+      baseService.update('apiRoutes.qbuilder.layoutBlocks', 'bulk/update', layoutBlocks, requestParams).then(response => {
         resolve(true)
       }).catch(error => reject(error))
     })
   },
   //Delete Relation block
-  deleteRelationblock(blockId, layoutId, parentSystemName): Promise<any> {
+  deleteRelationblock(id, requestParams = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      const requestParams = {
-        params: {
-          filter: {
-            field: 'block_id',
-            layout_id: layoutId,
-            parent_system_name: parentSystemName
-          }
-        }
-      }
-
-      baseService.delete('apiRoutes.qbuilder.layoutBlocks', blockId, requestParams).then(response => {
+      baseService.delete('apiRoutes.qbuilder.layoutBlocks', id, requestParams).then(response => {
         resolve(true)
       }).catch(error => reject(error))
     })

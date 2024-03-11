@@ -10,21 +10,25 @@ export interface Block {
     entity:           Entity;
     es:               LanguageBlock;
     files:            any[];
-    gridPosition:     string;
     id:               number;
     internalTitle:    string;
-    gridLabel:        string;
-    layoutId:         number;
     mediaFiles:       MediaFiles;
-    mobileAttributes: any;
     organizationId:   any;
-    sortOrder:        number;
     status:           number;
     systemName:       string;
     updatedAt:        Date;
     updatedBy:        number;
     children?:        Block[];
-    parentSystemName: string | null;
+    pivot:            PivotBlock;
+}
+
+export interface PivotBlock {
+    blockId: number
+    gridPosition: string
+    id: number
+    layoutId: number | null
+    parentSystemName: string | null
+    sortOrder: number
 }
 
 export interface Attributes {

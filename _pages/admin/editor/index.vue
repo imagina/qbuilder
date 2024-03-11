@@ -100,7 +100,7 @@
                      @click="crudLayout.update(store.layoutSelected)" icon="fa-light fa-edit" round color="cyan">
                 <q-tooltip>{{ $tr('isite.cms.label.edit') }}</q-tooltip>
               </q-btn>
-              <q-btn outline rounded color="green" no-caps @click="saveBlocks"
+              <q-btn outline rounded color="green" no-caps @click="savePivotBlocks"
                      padding="xs md">
                 <q-icon name="fa-light fa-save" size="17px" class="q-mr-sm"/>
                 {{ $tr('isite.cms.label.save') }}

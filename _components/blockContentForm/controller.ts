@@ -325,9 +325,12 @@ export default function controller(props: any, emit: any) {
         data.id = response.id
 
         if(!!state.layoutId) {
-          data = {
-            ...data,
-            ...(data.layouts[state.layoutId] ?? {})
+          data.pivot = {
+            ...(data.pivot ?? {}),
+            ...({
+              ...data.layouts[state.layoutId]  ?? {},
+              layoutId: state.layoutId
+            })
           }
         }
         

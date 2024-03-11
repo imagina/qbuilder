@@ -14,16 +14,23 @@ export default {
       const baseUrl = proxy.$store.getters['qsiteApp/getSettingValueByName']('ibuilder::blockTemplatesUrl')
       if(!baseUrl) return resolve([])
       const requestParams = {
-        filter: {allTranslations: true},
         refresh,
-        ...params
+        params: {
+          filter: {allTranslations: true},
+          ...params
+        }
       }
 
       //Request
-      //@ts-ignore
-      proxy.$axios.get<ResponseGetLayout>(`${baseUrl}/api${config('apiRoutes.qbuilder.layouts')}`, requestParams).then((response) => {
-        resolve(response.data.data)
+      baseService.index<ResponseGetLayout>('apiRoutes.qbuilder.layouts', requestParams).then((response) => {
+        resolve(response.data)
       }).catch(error => reject(error))
+
+      //Request
+      //@ts-ignore
+      // proxy.$axios.get<ResponseGetLayout>(`${baseUrl}/api${config('apiRoutes.qbuilder.layouts')}`, requestParams).then((response) => {
+      //   resolve(response.data.data)
+      // }).catch(error => reject(error))
     })
   },
 }

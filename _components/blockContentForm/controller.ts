@@ -325,13 +325,13 @@ export default function controller(props: any, emit: any) {
         data.id = response.id
 
         if(!!state.layoutId) {
-          data.pivot = {
-            ...(data.pivot ?? {}),
-            ...({
-              ...data.layouts[state.layoutId]  ?? {},
-              layoutId: state.layoutId
-            })
+          const pivotData = response.layouts[0]?.blocks?.find(block => block.id == response.id)
+
+          if(pivotData) {
+            data.pivot = pivotData.pivot
           }
+          
+          delete data.layouts
         }
         
         emit('created', data)

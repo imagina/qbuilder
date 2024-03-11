@@ -114,6 +114,7 @@ export default function editorController ()
           action: (data) =>
           {
             const updateData = state.blocks.find(block => block.id === data.blockId)
+            console.warn(data, updateData)
             if(updateData) {
               refs.refBlockForm.value?.updateData(updateData)
             }
@@ -270,15 +271,11 @@ export default function editorController ()
         return response
       }).sort((a, b) => a.sortOrder - b.sortOrder)
 
-console.warn("269: ", result)
-
       //@ts-ignore
       state.gridBlocks = proxy.$array.builTree(result || [], 0, {
         parentFieldName: 'parentSystemName',
         parentFieldValue: 'systemName'
       })
-
-      console.warn("277: ", state.gridBlocks)
     },
     //Handle the creation block
     handleCreatingBlock (val)
@@ -357,18 +354,25 @@ console.warn("269: ", result)
           //Map if has childs
           blocks.forEach(child =>
           {
+            child.layouts = child.layouts || {};
+            child.layouts[layout.id] = child.layouts[layout.id] || {};
             //Check if the parent has childs
-            if (child.pivot.parentSystemName === block.systemName)
+            if (child.pivot?.parentSystemName === block.systemName)
             {
-              child.pivot.parentSystemName = newSystemName;
+              child.layouts[layout.id].parentSystemName = newSystemName;
             }
           });
 
           //Changes principal values in block
           block.entity = {} as any
           block.systemName = newSystemName
-          block.pivot.layoutId = layout.id
-
+          delete block.id
+          block.layouts = block.layouts || {};
+          block.layouts[layout.id] = {
+            ...(block.layouts[layout.id] ?? {}),
+            gridPosition: block.pivot.gridPosition,
+            sortOrder: block.pivot.sortOrder
+          }
         })
 
         await service.blocksBulkCreate(blocks, store.ignoreConfigKeys).then(response =>

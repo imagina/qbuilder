@@ -54,10 +54,16 @@ export default function controller(props: any, emit: any) {
     //Get principal data of the component
     getData: async () => {
       state.loading = true
-      //Get all data of Layout Library
-      state.layoutLibrary = await service.getLayoutsLibrary(true, { include: 'files' })
-      //Set the default block type
-      state.layoutTypeSelected = computeds.layoutTypes.value[0].entityType
+      try {
+        //Get all data of Layout Library
+        state.layoutLibrary = await service.getLayoutsLibrary(true, { include: 'files' })
+        //Set the default block type
+        state.layoutTypeSelected = computeds.layoutTypes.value[0].entityType
+      } catch (e) {
+        console.error("Failed Load Library: ",e)
+      }
+
+
       state.loading = false
     },
     //Get the configs from builder.layout

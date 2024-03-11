@@ -250,7 +250,7 @@ export default defineComponent({
     overflow scroll
 
   .preview-content
-    min-height calc(100vh - 52px)
+    min-height calc(100vh - 76px)
     padding 0px 50px 30px 50px
 
     &__actions

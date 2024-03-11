@@ -114,7 +114,7 @@ export default function controller(props: any, emit: any) {
       //Request
       service.createLayoutBlock(layoutBlockData).then(response => {
         state.loading = false
-        this.emitCreated(block)
+        methods.emitCreated({...block, ...layoutBlockData})
       }).catch(error => state.loading = false)
     },
     // Emit event when the block is created

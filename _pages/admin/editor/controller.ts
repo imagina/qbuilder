@@ -14,7 +14,8 @@ interface PropInfoToCreateBlock
 {
   index: number,
   layoutId: number | null,
-  parentSystemName: string | null
+  parentSystemName: string | null,
+  view: 'layout' | 'block'
 }
 
 interface StateProps
@@ -67,6 +68,7 @@ export default function editorController ()
     showLayoutPanel: false,
     showBlockAttributesForm: false,
     infoToCreateBlock: {
+      view: 'layout',
       index: 0,
       layoutId: null,
       parentSystemName: null
@@ -255,6 +257,7 @@ export default function editorController ()
     //Handle the creation block
     handleCreatingBlock (val)
     {
+      state.infoToCreateBlock.view = state.view
       state.infoToCreateBlock.index = val ? val.children.length : state.gridBlocks.length
       state.infoToCreateBlock.parentSystemName = val?.systemName || null
       state.infoToCreateBlock.layoutId = store.layoutSelected?.id || null
@@ -356,7 +359,15 @@ export default function editorController ()
     async saveBlocks ()
     {
       state.loading = true
-      await service.blocksBulkUpdate(state.blocks, store.ignoreConfigKeys).then(response =>
+      const layoutsBlocks = state.blocks.map(block => ({
+        sortOrder: block.sortOrder,
+        parentSystemName: block.parentSystemName,
+        layoutId: block.layoutId ?? store.layoutSelected?.id,
+        blockId: block.id,
+        gridPosition: block.gridPosition
+      }))
+      console.warn(layoutsBlocks)
+      await service.layoutBlocksBulkUpdate(layoutsBlocks).then(response =>
       {
         proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
         methods.refreshApiData({})
@@ -384,7 +395,8 @@ export default function editorController ()
     async deleteBlock (block)
     {
       state.loading = true
-      await service.deleteblock(block.id)
+      if(state.view === 'layout') await service.deleteRelationblock(block.id, store.layoutSelected?.id, block.parentSystemName)
+      else await service.deleteblock(block.id)
       methods.handleChangesBlock({block, wasDeleted: true, refresh: true})
     },
     async handleDeleteLayout (layout: Layout)
@@ -398,40 +410,12 @@ export default function editorController ()
       const pathHome = proxy.$router.resolve({name: 'app.home'})
       window.open(pathHome.href, '_blank');
     },
-    //Alert when change view
-    handleChangeView (existData, view: 'layout' | 'block' = 'layout')
-    {
-      if (!!existData)
-      {
-        proxy.$alert.warning({
-          mode: 'modal',
-          title: proxy.$tr('ibuilder.cms.label.sureChangeView'),
-          message: proxy.$tr('ibuilder.cms.label.descriptionSureRefreshLayout'),
-          actions: [
-            {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
-            {
-              label: proxy.$tr('isite.cms.label.accept'),
-              color: 'green',
-              handler: () =>
-              {
-                state.view = view
-                store.resetSelecteds()
-              }
-            },
-          ]
-        })
-      } else
-      {
-        state.view = view
-        store.resetSelecteds()
-      }
-
-    },
     //Open block Panel
     openBlockPanel ()
     {
       //Reset values to block Panel
       state.infoToCreateBlock = {
+        view: state.view,
         index: 0,
         layoutId: null,
         parentSystemName: null
@@ -487,6 +471,11 @@ export default function editorController ()
       parentFieldValue: 'systemName'
     })
   }, {deep: true})
+
+  watch(() => state.view, (newValue, oldValue): void =>
+  {
+    store.resetSelecteds()
+  })
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}
 }

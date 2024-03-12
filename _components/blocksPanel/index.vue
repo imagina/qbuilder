@@ -70,11 +70,11 @@
                   <q-list style="min-width: 100px" dense bordered>
                     <q-item clickable v-close-popup @click="selectBlock(block)" class="row items-center">
                       <q-icon name="fa-light fa-clone" class="q-mr-sm" color="teal"/>
-                      Clone(PT)
+                      {{ $tr('ibuilder.cms.label.clone') }}
                     </q-item>
                     <q-item clickable v-close-popup @click="relateBlock(block)" class="row items-center">
                       <q-icon name="fa-light fa-link" class="q-mr-sm" color="indigo"/>
-                      Relate(PT)
+                      {{ $tr('ibuilder.cms.label.relate') }}
                     </q-item>
                   </q-list>
                 </q-menu>

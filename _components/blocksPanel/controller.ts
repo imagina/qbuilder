@@ -118,7 +118,7 @@ export default function controller(props: any, emit: any) {
           id: response.id,
           ...layoutBlockData
         };
-        console.warn("Block Panel 117",block)
+
         methods.emitCreated({...block})
       }).catch(error => state.loading = false)
     },

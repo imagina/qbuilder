@@ -114,7 +114,7 @@ export default function editorController ()
           action: (data) =>
           {
             const updateData = state.blocks.find(block => block.id === data.blockId)
-            console.warn(data, updateData)
+
             if(updateData) {
               refs.refBlockForm.value?.updateData(updateData)
             }

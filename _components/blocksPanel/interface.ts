@@ -20,6 +20,7 @@ export interface Block {
     updatedBy:        number;
     children?:        Block[];
     pivot:            PivotBlock;
+    layouts:          any;
 }
 
 export interface PivotBlock {

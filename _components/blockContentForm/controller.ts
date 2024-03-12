@@ -163,8 +163,8 @@ export default function controller(props: any, emit: any) {
         }
 
         response = {
-          ...response,
           ...(formLocaleData[locale] ?? {}),
+          ...response,
         }
       })
 

@@ -106,7 +106,11 @@ export default function editorController ()
           label: proxy.$tr('isite.cms.label.delete'),
           icon: 'fa-regular fa-trash',
           color: 'red',
-          action: (data) => methods.alertDeleteBlock(data)
+          action: (data) => {
+            //Find block data
+            const blockData = state.blocks.find(block => block.id === data.blockId)
+            if(blockData) methods.alertDeleteBlock(blockData)
+          }
         },
         blockContent: {
           label: proxy.$tr('ibuilder.cms.label.content'),
@@ -114,10 +118,7 @@ export default function editorController ()
           action: (data) =>
           {
             const updateData = state.blocks.find(block => block.id === data.blockId)
-
-            if(updateData) {
-              refs.refBlockForm.value?.updateData(updateData)
-            }
+            if(updateData) refs.refBlockForm.value?.updateData(updateData)
           }
         },
         blockAttriutes: {
@@ -127,10 +128,7 @@ export default function editorController ()
           {
             state.showBlockAttributesForm = true
             const updateData = state.blocks.find(block => block.id === data.blockId)
-            if(updateData) {
-              setTimeout(() => refs.blockAttributesForm?.value?.edit(updateData), 500)
-            }
-
+            if(updateData) setTimeout(() => refs.blockAttributesForm?.value?.edit(updateData), 500)
           }
         }
       },
@@ -315,12 +313,18 @@ export default function editorController ()
 
         if (state.view == 'layout')
         {
-          let blockIndex = state.blocks.findIndex(item => item.pivot.id === (block.pivot?.id ?? block.id))
+          let blockIndex = state.blocks.findIndex(item => item.pivot.id === block.pivot?.id)
           if (blockIndex >= 0)
           {
             if (wasDeleted) state.blocks.splice(blockIndex, 1)
-            else state.blocks.splice(blockIndex, 1, block)
-          } else state.blocks = [...state.blocks, block]
+            else {
+              //Maps all blocks that have the id of the block to edit repeated
+              state.blocks = state.blocks.map(mapBlock => {
+                if(mapBlock.id === block.id) return { ...block, pivot: mapBlock.pivot }
+                return mapBlock
+              })
+            }
+          } else if(!wasDeleted) state.blocks = [...state.blocks, block]
 
           methods.setTheGridBlocks()
         }
@@ -422,7 +426,7 @@ export default function editorController ()
     async deleteBlock (block)
     {
       state.loading = true
-      if(state.view === 'layout') await service.deleteRelationblock(block.id)
+      if(state.view === 'layout') await service.deleteRelationblock(block.pivot.id)
       else await service.deleteblock(block.id)
       methods.handleChangesBlock({block, wasDeleted: true, refresh: true})
     },

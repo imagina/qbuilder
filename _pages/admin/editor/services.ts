@@ -78,4 +78,21 @@ export default {
       }).catch(error => reject(error))
     })
   },
+  //Bulk update pivot layout blocks
+  layoutBlocksBulkUpdate(layoutBlocks, requestParams = {}): Promise<any> {
+    return new Promise((resolve, reject) => {
+      //Request
+      baseService.update('apiRoutes.qbuilder.layoutBlocks', 'bulk/update', layoutBlocks, requestParams).then(response => {
+        resolve(true)
+      }).catch(error => reject(error))
+    })
+  },
+  //Delete Relation block
+  deleteRelationblock(id, requestParams = {}): Promise<any> {
+    return new Promise((resolve, reject) => {
+      baseService.delete('apiRoutes.qbuilder.layoutBlocks', id, requestParams).then(response => {
+        resolve(true)
+      }).catch(error => reject(error))
+    })
+  },
 }

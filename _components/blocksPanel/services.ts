@@ -12,7 +12,7 @@ export default {
     return new Promise((resolve, reject) => {
       //Params
       let requestParams = {
-        refresh: false,
+        refresh,
         params: {
           filter: {allTranslations: true},
           include: 'fields,files',

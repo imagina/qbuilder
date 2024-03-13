@@ -62,19 +62,19 @@
             <not-result v-if="!blocksBySelectedType.local.length" class="q-mt-xl"/>
             <!--List-->
             <q-item v-else v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`"
-                    clickable class="bg-trans-item" v-ripple>
+                    :clickable="!layoutId" @click="selectBlock(block)" class="bg-trans-item" v-ripple>
               <q-item-section class="relative-position q-ma-sm image-section selectable">
                 <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle"/>
                 <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle }}</span>
-                <q-menu anchor="top right" self="top end">
+                <q-menu v-if="!!layoutId"  anchor="top right" self="top end">
                   <q-list style="min-width: 100px" dense bordered>
                     <q-item clickable v-close-popup @click="selectBlock(block)" class="row items-center">
                       <q-icon name="fa-light fa-clone" class="q-mr-sm" color="teal"/>
-                      Clone(PT)
+                      {{ $tr('ibuilder.cms.label.clone') }}
                     </q-item>
                     <q-item clickable v-close-popup @click="relateBlock(block)" class="row items-center">
                       <q-icon name="fa-light fa-link" class="q-mr-sm" color="indigo"/>
-                      Relate(PT)
+                      {{ $tr('ibuilder.cms.label.relate') }}
                     </q-item>
                   </q-list>
                 </q-menu>

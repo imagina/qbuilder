@@ -17,7 +17,7 @@ interface StateProps {
   block: Block,
   idBlock: number | null,
   indexBlock: number,
-  layoutId: number,
+  layoutId: number | null,
   parentSystemName: string | null,
   showModal: boolean,
   formBlock: MainData | null,
@@ -40,7 +40,7 @@ export default function controller(props: any, emit: any) {
     block: {} as Block,
     idBlock: null,
     indexBlock: 1,
-    layoutId: 0,
+    layoutId: null,
     parentSystemName: null,
     showModal: false,
     formBlock: null,
@@ -78,15 +78,6 @@ export default function controller(props: any, emit: any) {
                 ],
               }
             },
-            gridPosition: {
-              value: 'col-md-12',
-              type: "input",
-              required: true,
-              colClass: "col-6",
-              props: {
-                label: `${proxy.$tr('isite.cms.label.gridPosition')} *`
-              }
-            },
             status: {
               value: '1',
               type: "select",
@@ -101,12 +92,15 @@ export default function controller(props: any, emit: any) {
               }
             },
             systemName: {
-              type: "input",
+              type: "select",
               required: true,
               fakeFieldName: 'component',
-              colClass: "col-12",
+              colClass: "col-6",
               props: {
                 label: proxy.$tr("isite.cms.label.block") + "*",
+                options: Object.values(storeEditor.blockConfigs).filter(item => !item.internal).map(item => {
+                  return {label: item.title, value: item.systemName}
+                }),
                 readonly: true
               }
             },
@@ -145,13 +139,17 @@ export default function controller(props: any, emit: any) {
         ...(state.idBlock ? {} : {
           systemName: proxy.$uid(),
           attributes: {...(state.block?.attributes ?? {})},
-          sortOrder: state.indexBlock,
-          parentSystemName: state.parentSystemName,
-          layoutId: state.layoutId
         })
       });
 
-      if(response.parentSystemName === 0) response.parentSystemName = null
+      if(!!state.layoutId) {
+        response.layouts = {};
+        response.layouts[state.layoutId] = {
+          gridPosition: "col-md-12",
+          sortOrder: state.indexBlock,
+          parentSystemName: state.parentSystemName ?? null
+        }
+      }
 
       if (!response.entity) response.entity = {}
 
@@ -165,8 +163,8 @@ export default function controller(props: any, emit: any) {
         }
 
         response = {
-          ...response,
           ...(formLocaleData[locale] ?? {}),
+          ...response,
         }
       })
 
@@ -325,6 +323,16 @@ export default function controller(props: any, emit: any) {
         state.loading = false
         state.showModal = false;
         data.id = response.id
+
+        if(!!state.layoutId) {
+          const pivotData = response.layouts[0]?.blocks?.find(block => block.id == response.id)
+
+          if(pivotData) {
+            data.pivot = pivotData.pivot
+          }
+          
+          delete data.layouts
+        }
         
         emit('created', data)
       }).catch(error => {

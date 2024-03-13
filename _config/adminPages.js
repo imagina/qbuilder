@@ -1,13 +1,13 @@
 export default {
   editor: {
-    permission: 'ibuilder.blocks.manage',
+    permission: 'ibuilder.layouts.manage',
     activated: true,
     path: '/builder/editor',
     name: 'qbuilder.admin.editor.index',
     page: () => import('@imagina/qbuilder/_pages/admin/editor'),
-    layout: () => import('@imagina/qbuilder/_layouts/editor.vue'),
+    layout: () => import('@imagina/qsite/_layouts/blank.vue'),
     title: 'Editor',
-    icon: 'fa-light fa-puzzle-piece',
+    icon: 'fa-light fa-puzzle',
     authenticated: true,
     subHeader: {
       refresh: true
@@ -15,7 +15,7 @@ export default {
   },
   blocks: {
     permission: 'ibuilder.blocks.manage',
-    activated: true,
+    activated: false,
     path: '/builder/blocks',
     name: 'qbuilder.admin.blocks.index',
     crud: import('@imagina/qbuilder/_crud/blocks'),
@@ -30,7 +30,7 @@ export default {
   },
   formConfigBlock: {
     permission: 'ibuilder.blocks.create',
-    activated: true,
+    activated: false,
     path: '/builder/blocks/create',
     name: 'qbuilder.admin.blocks.create',
     page: () => import('@imagina/qbuilder/_pages/admin/formBlock'),
@@ -45,7 +45,7 @@ export default {
   },
   formUpdateBlock: {
     permission: 'ibuilder.blocks.edit',
-    activated: true,
+    activated: false,
     path: '/builder/blocks/:id',
     name: 'qbuilder.admin.blocks.update',
     page: () => import('@imagina/qbuilder/_pages/admin/formBlock'),
@@ -61,7 +61,7 @@ export default {
   formUpdateClientBlock: {
     viewType: 'client',
     permission: 'ibuilder.blocks.client',
-    activated: true,
+    activated: false,
     path: '/builder/blocks/client/:id',
     name: 'qbuilder.admin.client.update',
     page: () => import('@imagina/qbuilder/_pages/admin/formBlock'),
@@ -76,7 +76,7 @@ export default {
   },
   formUpdateBlockTemplate: {
     permission: 'ibuilder.blocks.edit',
-    activated: true,
+    activated: false,
     path: '/builder/blocks/template/id',
     name: 'qbuilder.admin.blocks.update.template',
     page: () => import('@imagina/qbuilder/_pages/admin/formBlock'),

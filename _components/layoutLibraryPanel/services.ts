@@ -22,15 +22,10 @@ export default {
       }
 
       //Request
-      baseService.index<ResponseGetLayout>('apiRoutes.qbuilder.layouts', requestParams).then((response) => {
-        resolve(response.data)
-      }).catch(error => reject(error))
-
-      //Request
       //@ts-ignore
-      // proxy.$axios.get<ResponseGetLayout>(`${baseUrl}/api${config('apiRoutes.qbuilder.layouts')}`, requestParams).then((response) => {
-      //   resolve(response.data.data)
-      // }).catch(error => reject(error))
+      proxy.$axios.get<ResponseGetLayout>(`${baseUrl}/api${config('apiRoutes.qbuilder.layouts')}`, requestParams).then((response) => {
+        resolve(response.data.data)
+      }).catch(error => reject(error))
     })
   },
 }

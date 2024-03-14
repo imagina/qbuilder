@@ -8,4 +8,6 @@ export default {
   version: moduleVersion,
   blocks: `${urlBase}/blocks`,
   editor: `${urlBase}/editor`,
+  layouts: `${urlBase}/layouts`,
+  layoutBlocks: `${urlBase}/layout-blocks`,
 }

@@ -14,6 +14,7 @@ import controller from 'src/modules/qbuilder/_components/blockContentForm/contro
 export default defineComponent({
   props: {},
   components: {},
+  emits: ['updated', 'created'],
   setup(props, { emit }) {
     return controller(props, emit);
   }

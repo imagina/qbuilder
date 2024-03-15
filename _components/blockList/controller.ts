@@ -1,8 +1,9 @@
-import Vue, {computed, reactive, ref, onMounted, toRefs, getCurrentInstance, watch, onUnmounted} from "vue";
-import service from "@imagina/qbuilder/_components/blocksPanel/services";
-import store from "@imagina/qbuilder/_pages/admin/editor/store";
-import recursiveStore from "@imagina/qsite/_components/v3/recursiveItem/store";
-import {Block, ModuleBlockConfig} from '@imagina/qbuilder/_components/blocksPanel/interface'
+import { reactive, onMounted, toRefs } from 'vue';
+import service from 'src/modules/qbuilder/_components/blocksPanel/services';
+import store from 'src/modules/qbuilder/_pages/admin/editor/store';
+import recursiveStore from 'src/modules/qsite/_components/v3/recursiveItem/store';
+import { Block, ModuleBlockConfig } from 'src/modules/qbuilder/_components/blocksPanel/interface';
+import { clone } from 'src/plugins/utils';
 
 //Map the object as needed by the recursiveItem
 interface MapBlock {
@@ -31,77 +32,76 @@ interface StateProps {
 }
 
 export default function layoutController(props: any, emit: any) {
-  const proxy = (getCurrentInstance() as { proxy: Vue }).proxy as Vue
   // Refs
   const refs = {
     // key: ref(defaultValue)
-  }
+  };
 
   // States
   const state = reactive<StateProps>({
     blocks: [],
     mapBlocks: [],
     loading: false
-  })
+  });
 
   // Computed
-  const computeds = {}
+  const computeds = {};
 
   // Methods
   const methods = {
     //Return the existing blocks to list
     blockTypes: () => {
       const configs: ModuleBlockConfig[] = store.blockConfigs
-        .filter(config => !config.internal)
+        .filter(config => !config.internal);
 
-      return configs
+      return configs;
     },
     //Get Blocks
     getBlocks(): Promise<boolean> {
-      state.loading = true
+      state.loading = true;
       return new Promise(resolve => {
         //Request
         service.getLocalBlocks(true).then(response => {
-          state.blocks = response
+          state.blocks = response;
           //Every time the service is called, the blocks will be remapped
-          state.mapBlocks = methods.orderedItems()
-          state.loading = false
-          resolve(false)
-        }).catch(error => {
-          state.loading = false
-          resolve(false)
-        })
-      })
+          state.mapBlocks = methods.orderedItems();
+          state.loading = false;
+          resolve(false);
+        }).catch(() => {
+          state.loading = false;
+          resolve(false);
+        });
+      });
     },
     //Refresh blocks petition
     async refreshBlocks(crudAction = '') {
-      emit('refresh', true)
+      emit('refresh', true);
       //Update blocks
       await methods.getBlocks();
 
-      let blockSelected: any = null
+      let blockSelected: any = null;
 
       //If the action is create, assign the first block to the editor and recursiveItem stores
       if (crudAction == 'blockCreated') {
         const firstBlock: any = state.blocks.reduce(function(beforeBlock, currentBlock) {
           return beforeBlock.id > currentBlock.id ? beforeBlock : currentBlock;
         });
-        recursiveStore.itemSelected = firstBlock;
         blockSelected = firstBlock;
       } else if (store.viewBlockSelected && store.viewBlockSelected.id) {
-        blockSelected = state.blocks.find(block => block.id === store.viewBlockSelected?.id) || null
+        blockSelected = state.blocks.find(block => block.id === store.viewBlockSelected?.id) || null;
       }
 
-      if(blockSelected) {
-        store.viewBlockSelected = proxy.$clone(blockSelected);
-        emit('selected', proxy.$clone(blockSelected));
+      if (blockSelected) {
+        store.viewBlockSelected = clone(blockSelected);
+        recursiveStore.itemSelected = blockSelected;
+        emit('selected', clone(blockSelected));
       }
 
-      emit('refresh', false)
+      emit('refresh', false);
     },
     //Order the Blocks to send to recursiveItem
     orderedItems() {
-      const blockConfigs = methods.blockTypes()
+      const blockConfigs = methods.blockTypes();
       const response: MapBlock[] = [];
 
       // loop each module block config
@@ -109,8 +109,8 @@ export default function layoutController(props: any, emit: any) {
 
         // Get block Filtered
         const blockFiltered = state.blocks.filter(block => {
-          return block.component.systemName == config.systemName
-        })
+          return block.component.systemName == config.systemName;
+        });
         // Map the Blocks
         const blockFilteredChildren: MapBlockChildren[] = blockFiltered.map(block => ({
           ...block,
@@ -118,7 +118,7 @@ export default function layoutController(props: any, emit: any) {
           activated: true,
           icon: 'fa-light fa-arrow-right',
           action: methods.selectBlock
-        }))
+        }));
 
         // Include to response by systemName
         response.push({
@@ -126,28 +126,28 @@ export default function layoutController(props: any, emit: any) {
           headerClass: 'expansion-header',
           customClass: 'expansion-border',
           children: blockFilteredChildren.sort((a, b) => b.id - a.id)
-        })
-      })
+        });
+      });
 
       // Response
-      return response
+      return response;
     },
     //Define the action that will have coda children in recursiveItem
     selectBlock(blockSelected: MapBlockChildren) {
       // internal method to select the Block
-      const block = state.blocks.find(i => i.id === blockSelected.id)
-      if (!block) return Promise.resolve(true)
-      store.viewBlockSelected = proxy.$clone(block)
-      emit('selected', proxy.$clone(block));
+      const block = state.blocks.find(i => i.id === blockSelected.id);
+      if (!block) return Promise.resolve(true);
+      store.viewBlockSelected = clone(block);
+      emit('selected', clone(block));
 
-      return Promise.resolve(true)
-    },
-  }
+      return Promise.resolve(true);
+    }
+  };
 
   // Mounted
   onMounted(() => {
-    methods.getBlocks()
-  })
+    methods.getBlocks();
+  });
 
-  return {...refs, ...(toRefs(state)), ...computeds, ...methods}
+  return { ...refs, ...(toRefs(state)), ...computeds, ...methods };
 }

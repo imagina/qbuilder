@@ -102,6 +102,7 @@ export default defineComponent({
     parentSystemName: { default: null }
   },
   components: { blockForm },
+  emits: ['created'],
   setup(props, { emit }) {
     return controller(props, emit);
   }

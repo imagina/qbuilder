@@ -1,31 +1,30 @@
-import baseService from '@imagina/qcrud/_services/baseService'
-import {Layout} from '@imagina/qbuilder/_components/layoutList/interface'
-import {getCurrentInstance} from "vue";
+import { Layout } from 'src/modules/qbuilder/_components/layoutList/interface';
+import { store } from 'src/plugins/utils';
+import axios from 'axios';
 
 interface ResponseGetLayout {
-  data: Layout[]
+  data: Layout[];
 }
 
 
 export default {
   getLayoutsLibrary(refresh = false, params = {}): Promise<Layout[]> {
-    const proxy = getCurrentInstance()!.proxy
     return new Promise((resolve, reject) => {
-      const baseUrl = proxy.$store.getters['qsiteApp/getSettingValueByName']('ibuilder::blockTemplatesUrl')
-      if(!baseUrl) return resolve([])
+      const baseUrl = store.getSetting('ibuilder::blockTemplatesUrl');
+      if (!baseUrl) return resolve([]);
       const requestParams = {
         refresh,
         params: {
-          filter: {allTranslations: true},
+          filter: { allTranslations: true },
           ...params
         }
-      }
+      };
 
       //Request
       //@ts-ignore
-      proxy.$axios.get<ResponseGetLayout>(`${baseUrl}/api${config('apiRoutes.qbuilder.layouts')}`, requestParams).then((response) => {
-        resolve(response.data.data)
-      }).catch(error => reject(error))
-    })
-  },
-}
+      axios.get<ResponseGetLayout>(`${baseUrl}/api${config('apiRoutes.qbuilder.layouts')}`, requestParams).then((response: { data: ResponseGetLayout }) => {
+        resolve(response.data.data);
+      }).catch((error: any) => reject(error));
+    });
+  }
+};

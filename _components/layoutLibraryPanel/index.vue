@@ -57,6 +57,7 @@ import controller from 'src/modules/qbuilder/_components/layoutLibraryPanel/cont
 export default defineComponent({
   props: {},
   components: {},
+  emits: ['creating'],
   setup(props, { emit }) {
     return controller(props, emit);
   }

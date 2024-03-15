@@ -1,14 +1,13 @@
-import {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} from "vue";
-import store from '@imagina/qbuilder/_components/blockAttributesForm/store'
-import storeEditor from '@imagina/qbuilder/_pages/admin/editor/store'
-import serviceEditor from '@imagina/qbuilder/_pages/admin/editor/services'
+import { computed, reactive, ref, onMounted, toRefs, watch, nextTick } from 'vue';
+import storeEditor from 'src/modules/qbuilder/_pages/admin/editor/store';
+import serviceEditor from 'src/modules/qbuilder/_pages/admin/editor/services';
 import {
   Block,
-  ModuleBlockConfig,
   PropsDynamicField
-} from '@imagina/qbuilder/_components/blocksPanel/interface'
-import iframePost from "@imagina/qsite/_components/v3/iframePost/index.vue";
-import {debounce} from 'quasar'
+} from 'src/modules/qbuilder/_components/blocksPanel/interface';
+import iframePost from 'src/modules/qsite/_components/v3/iframePost/index.vue';
+import { debounce } from 'quasar';
+import { i18n, clone, store as globalStore, alert, helper } from 'src/plugins/utils';
 
 interface StateProps {
   allowEdit: boolean,
@@ -18,16 +17,15 @@ interface StateProps {
   formAttributes: any,
   formContent: any,
   panelWidth: string,
-  loading: boolean
+  loading: boolean,
+  componentConfigs: any
 }
 
 export default function controller(props: any, emit: any) {
-  const proxy = (getCurrentInstance() as { proxy: Vue }).proxy as Vue
-
   // Refs
   const refs = {
-    refIframePost: ref<InstanceType<typeof iframePost>>(),
-  }
+    refIframePost: ref<InstanceType<typeof iframePost>>()
+  };
 
   // States
   const state = reactive<StateProps>({
@@ -38,177 +36,185 @@ export default function controller(props: any, emit: any) {
     formAttributes: {},
     formContent: {},
     panelWidth: '650px',
-    loading: false
-  })
+    loading: false,
+    componentConfigs: null
+  });
 
   // Computed
   const computeds = {
     //Returns the color of tabs
     tabColor: computed(() => state.tabName == 'attributes' ? 'purple' : 'orange'),
-    // returns the block config from state.block
-    blockConfig: computed<ModuleBlockConfig | null | undefined>(() => {
-      if (!state.block.id) return null
-      //Response
-      return storeEditor.blockConfigs.find(config => {
-        return config.systemName == state.block.component?.systemName
-      })
-    }),
-    // Returns the block configs of the block and its child blocks
-    componentsConfig: computed<ModuleBlockConfig[]>(() => {
-      if (!computeds.blockConfig.value) return []
-
-      //Get the child blocks syste Names
-      const childBlocksSystemName = Object.values(computeds.blockConfig.value.childBlocks || {})
-
-      //Merge the selected block with its child blocks
-      let configBlocks = [computeds.blockConfig.value, ...storeEditor.blockConfigs.filter(config => {
-        return childBlocksSystemName.includes(config.systemName)
-      })]
-
-      //Set localFormName
-      configBlocks = configBlocks.map(configBlock => {
-        configBlock.componentKey = 'componentAttributes'
-        //Define bockKey
-        for (const [name, systemName] of Object.entries(computeds.blockConfig.value.childBlocks)) {
-          if (systemName == configBlock.systemName) configBlock.componentKey = name
-        }
-        //Response
-        return configBlock
-      })
-
-      //Response
-      return configBlocks
-    }),
-    //Return the config of selected component
-    selectedComponent: computed(() => {
-      return computeds.componentsConfig.value.find(comp => comp.componentKey == state.selectedComponentKey)
-    }),
     //Return the config of dynamic-form to attributes
     attributesForm: computed(() => {
-      if (!computeds.selectedComponent.value) return []
-      return Object.values(computeds.selectedComponent.value.attributes)
+      const selectedComponent = methods.selectedTabConfig();
+      if (!selectedComponent) return [];
+      return Object.values(selectedComponent.attributes);
     }),
     //Return the config of dynamic-form to attributes
     contentForm: computed(() => {
-      if (!computeds.selectedComponent.value) return []
-      let fields: { [key: string]: PropsDynamicField } = computeds.selectedComponent.value.contentFields || {}
-
-        //Set fakeFieldName
-        for (const [fieldName, field] of Object.entries(fields)) {
-          fields[fieldName] = {
-            ...field,
-            ...(field?.type !== 'media' ? {fakeFieldName: computeds.selectedComponent.value.componentKey} : {fieldItemId: state.block.id})
-          }
-        }
-
+      const selectedComponent = methods.selectedTabConfig();
+      if (!selectedComponent) return [];
       //Response
-      return [{name: 'maincontent', title: proxy.$tr('ibuilder.cms.label.content'), fields: fields}]
-    }),
-  }
+      return [{
+        name: 'maincontent',
+        title: i18n.tr('ibuilder.cms.label.content'),
+        fields: selectedComponent.contentFields || {}
+      }];
+    })
+  };
 
   // Methods
   const methods = {
     init: () => {
-      methods.handleAllowEditIndicator()
+      methods.handleAllowEditIndicator();
     },
     // Statr to edit the block attributes
     edit: (block) => {
-      state.block = proxy.$clone(block);
-      methods.setVModels()
-      methods.previewBlock()//Call update preview
+      state.block = clone(block);
+      methods.getComponentsConfig(block.component?.systemName);
+      methods.setVModels();
+      methods.previewBlock();//Call update preview
     },
     //Set v-model states
     setVModels: () => {
-      proxy.$nextTick(() => {
-        state.formAttributes = state.block.attributes[state.selectedComponentKey]
-        state.formContent = state.block
-      })
+      nextTick(() => {
+        state.formAttributes = state.block.attributes[state.selectedComponentKey];
+        state.formContent = state.block;
+      });
+    },
+    // Returns the block configs of the block and its child blocks
+    getComponentsConfig: (systemNameComponent: string) => {
+      //Response
+      const blockConfig = storeEditor.blockConfigs.find(config => {
+        return config.systemName == systemNameComponent;
+      });
+      if (!blockConfig) return [];
+
+      //Get the child blocks syste Names
+      const childBlocksSystemName = Object.values(blockConfig.childBlocks || {});
+
+      //Merge the selected block with its child blocks
+      const configBlocks = [blockConfig, ...storeEditor.blockConfigs.filter(config => {
+        return childBlocksSystemName.includes(config.systemName);
+      })];
+
+      //config of selected component
+      state.componentConfigs = configBlocks.map(configBlock => {
+        //Set localFormName
+        configBlock.componentKey = 'componentAttributes';
+        //Define blockKey
+        for (const [name, systemName] of Object.entries(blockConfig.childBlocks)) {
+          if (systemName == configBlock.systemName) configBlock.componentKey = name;
+        }
+        //Set fake field name
+        if(configBlock?.contentFields) configBlock.contentFields = methods.setFakeFieldNameInContent(configBlock.contentFields, configBlock.componentKey)
+        //Response
+        return configBlock;
+      });
     },
     //Update block
-    updateBlock: ({closeModal = false}) => {
-      if(state.block) {
-        state.loading = true
+    updateBlock: ({ closeModal = false }) => {
+      if (state.block) {
+        state.loading = true;
         //Update block with editor service
         serviceEditor.updateBlock(state.block.id, state.block).then(response => {
-          proxy.$alert.info({message: proxy.$tr('isite.cms.message.recordUpdated')});
+          alert.info({ message: i18n.tr('isite.cms.message.recordUpdated') });
           //Emit info to Editor and Close Modal
-          emit('input', { block: proxy.$clone(state.block), persistModalAttributes: !closeModal})
-          state.loading = false
+          emit('updateBlock', { block: clone(state.block), persistModalAttributes: !closeModal });
+          state.loading = false;
         }).catch(() => {
-          proxy.$alert.error({message: proxy.$tr('isite.cms.message.recordNoUpdated')});
-          state.loading = false
-        })
+          alert.error({ message: i18n.tr('isite.cms.message.recordNoUpdated') });
+          state.loading = false;
+        });
       }
     },
     // Handle the allowEdit indicator
     handleAllowEditIndicator: () => {
-      state.allowEdit = false
-      methods.enableAllowEditIndicator()
+      state.allowEdit = false;
+      methods.enableAllowEditIndicator();
     },
     // AS a Debounce enable the edit the forms
     enableAllowEditIndicator: debounce(() => state.allowEdit = true, 1000),
     //Merge the data from forms into blockdata
     mergeDataForm() {
       if (state.allowEdit) {
-        let componentKey = computeds.selectedComponent.value?.componentKey
-
+        const selectedComponent = methods.selectedTabConfig();
+        let componentKey = selectedComponent?.componentKey;
+        if(!componentKey) return
         //Check that you haven't changed tabs
         //Merge The data according to tabName
         if (state.tabName == 'attributes') {
           //Trigger state.block watch
-          state.block.attributes[componentKey] = proxy.$clone({
+          state.block.attributes[componentKey] = clone({
             ...state.block.attributes[componentKey],
             ...state.formAttributes
-          })
-        } else state.block = proxy.$clone(proxy.$helper.deepMergeObjects(state.block, state.formContent))
+          });
+        } else state.block = clone(helper.deepMergeObjects(state.block, state.formContent));
 
         //Call update preview
-        methods.previewBlock()
+        methods.previewBlock();
       }
     },
     //Show the block preview
     previewBlock: debounce(() => {
       if (refs.refIframePost?.value?.loadIframe && state.block.id)
         refs.refIframePost.value.loadIframe(
-          `${proxy.$store.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
+          `${globalStore.state.qsiteApp.baseUrl}/api/ibuilder/v1/block/preview`,
           state.block
-        )
+        );
     }, 2000),
     //Define alert action when click button discard
     discardChanges() {
-      proxy.$alert.warning({
+      alert.warning({
         mode: 'modal',
-        title: proxy.$tr('ibuilder.cms.label.sureDiscardBlock'),
-        message: proxy.$tr('ibuilder.cms.label.descriptionSureDiscardBlock'),
+        title: i18n.tr('ibuilder.cms.label.sureDiscardBlock'),
+        message: i18n.tr('ibuilder.cms.label.descriptionSureDiscardBlock'),
         actions: [
-          {label: proxy.$tr('isite.cms.label.cancel'), color: 'grey-8'},
+          { label: i18n.tr('isite.cms.label.cancel'), color: 'grey-8' },
           {
-            label: proxy.$tr('isite.cms.label.accept'),
+            label: i18n.tr('isite.cms.label.accept'),
             color: 'green',
             handler: () => emit('cancel')
-          },
+          }
         ]
-      })
+      });
     },
     //Verify if Has fields
     hasFields(obj) {
       //Checks if you have at least one object in the array
-      if (!obj.length) return false
+      if (!obj.length) return false;
       //Look for the fields key, which is an object and get the keys
-      const keys = Object.keys(obj[0]?.fields ?? {})
+      const keys = Object.keys(obj[0]?.fields ?? {});
 
       //Returns if you have one or more fields in fields
-      return keys.length > 0
+      return keys.length > 0;
+    },
+    //Get config of selected tab
+    selectedTabConfig() {
+      if (!state.componentConfigs) return false;
+      return state.componentConfigs.find(comp => comp.componentKey == state.selectedComponentKey);
+    },
+    //Set fake field name in contentFields
+    setFakeFieldNameInContent(fields: { [key: string]: PropsDynamicField }, componentKey: string) {
+      //Set fakeFieldName
+      for (const [fieldName, field] of Object.entries(fields)) {
+        fields[fieldName] = {
+          ...field,
+          ...(field?.type !== 'media' ? { fakeFieldName: componentKey } : { fieldItemId: state.block.id })
+        };
+      }
+
+      return fields
     }
-  }
+  };
 
   // Mounted
   onMounted(() => {
-    methods.init()
-  })
+    methods.init();
+  });
 
-  // Watch - TODO: Revisar esto debería de setear la data existente del bloque en cada cambio de selectedComponentKey para los formularios
+  // Watch
   watch(() => state.selectedComponentKey, methods.setVModels);
 
-  return {...refs, ...(toRefs(state)), ...computeds, ...methods, store}
+  return { ...refs, ...(toRefs(state)), ...computeds, ...methods };
 }

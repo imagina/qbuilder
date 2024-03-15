@@ -1,7 +1,8 @@
-import Vue, {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstance} from "vue";
-import service from '@imagina/qbuilder/_components/layoutLibraryPanel/services'
-import {Layout} from '@imagina/qbuilder/_components/layoutList/interface'
-import {Block} from '@imagina/qbuilder/_components/blocksPanel/interface'
+import { computed, reactive, onMounted, toRefs } from 'vue';
+import service from 'src/modules/qbuilder/_components/layoutLibraryPanel/services';
+import { Layout } from 'src/modules/qbuilder/_components/layoutList/interface';
+import { Block } from 'src/modules/qbuilder/_components/blocksPanel/interface';
+import { clone, store as globalStore, uid } from 'src/plugins/utils';
 
 interface StateProps {
   layoutLibrary: Layout[],
@@ -10,24 +11,23 @@ interface StateProps {
 }
 
 export default function controller(props: any, emit: any) {
-  const proxy = (getCurrentInstance() as { proxy: Vue }).proxy as Vue
 
   // Refs
-  const refs = {}
+  const refs = {};
 
   // States
   const state = reactive<StateProps>({
     layoutLibrary: [],
     layoutTypeSelected: '',
     loading: false
-  })
+  });
 
   // Computed
   const computeds = {
     //Return the existing blocks to list
     layoutTypes: computed(() => {
-      const configs = methods.builderConfig()
-      const response: {title: string, entityType: string}[] = [];
+      const configs = methods.builderConfig();
+      const response: { title: string, entityType: string }[] = [];
 
       // loop each module configs
       Object.keys(configs).forEach(moduleName => {
@@ -37,73 +37,68 @@ export default function controller(props: any, emit: any) {
           response.push({
             title: `${moduleEntityConfig.entity.label} (${moduleName})`,
             entityType: moduleEntityConfig.entity.value
-          })
-        })
-      })
+          });
+        });
+      });
       // Response
-      return response
+      return response;
     }),
     // return the blocks by selected type
     layoutsBySelectedType: computed(() => {
-      return state.layoutLibrary.filter(layout => layout.entityType.includes(state.layoutTypeSelected))
-    }),
-  }
+      return state.layoutLibrary.filter(layout => layout.entityType.includes(state.layoutTypeSelected));
+    })
+  };
 
   // Methods
   const methods = {
     //Get principal data of the component
     getData: async () => {
-      state.loading = true
+      state.loading = true;
       try {
         //Get all data of Layout Library
-        state.layoutLibrary = await service.getLayoutsLibrary(true, { include: 'files' })
+        state.layoutLibrary = await service.getLayoutsLibrary(true, { include: 'files' });
         //Set the default block type
-        state.layoutTypeSelected = computeds.layoutTypes.value[0].entityType
+        state.layoutTypeSelected = computeds.layoutTypes.value[0].entityType;
       } catch (e) {
-        console.error("Failed Load Library: ",e)
+        console.error('Failed Load Library: ', e);
       }
 
 
-      state.loading = false
+      state.loading = false;
     },
     //Get the configs from builder.layout
     builderConfig() {
-      let config = proxy.$store.getters['qsiteApp/getConfigApp']('builder.layout', true)
-      let response = {}
+      let config = globalStore.getters['qsiteApp/getConfigApp']('builder.layout', true);
+      let response = {};
 
       //Filter only items with values
       Object.keys(config).forEach(moduleName => {
-        if (config[moduleName]) response[moduleName] = config[moduleName]
-      })
-      return response
+        if (config[moduleName]) response[moduleName] = config[moduleName];
+      });
+      return response;
     },
     //Trigger to select Layout
     selectedLayout(layout) {
       let newLayout = {
         blocks: [] as Block[]
-      } as Layout
+      } as Layout;
 
-      if(layout) {
-        newLayout = proxy.$clone(layout)
+      if (layout) {
+        newLayout = clone(layout);
         //@ts-ignore
-        newLayout.systemName = proxy.$uid();
+        newLayout.systemName = uid();
         delete newLayout.default;
-        delete newLayout.id
+        delete newLayout.id;
       }
 
       emit('creating', newLayout);
-    },
-  }
+    }
+  };
 
   // Mounted
   onMounted(() => {
-    methods.getData()
-  })
+    methods.getData();
+  });
 
-  // Watch
-  // watch(key, (newField, oldField): void => {
-  //
-  // }, {deep: true})
-
-  return {...refs, ...(toRefs(state)), ...computeds, ...methods}
+  return { ...refs, ...(toRefs(state)), ...computeds, ...methods };
 }

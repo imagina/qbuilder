@@ -3,7 +3,7 @@
     <!---Component CRUD Slided -->
     <div class="text-right q-mb-md">
       <!--Crud Layouts-->
-      <crud :crud-data="import('@imagina/qbuilder/_crud/layouts')" type="onlyUpdate" ref="crudLayout"
+      <crud :crud-data="import('src/modules/qbuilder/_crud/layouts')" type="onlyUpdate" ref="crudLayout"
             @createdData="(layout) => handleCreateLayout(layout, true)"
             @updated="refreshApiData({crudAction : 'updated'})"
             @deleted="refreshApiData({crudAction : 'deleted'})"
@@ -35,7 +35,7 @@
       </div>
 
       <!--Over panels-->
-      <q-dialog v-model="showBlocksPanel" position="left" content-class="builder-panel-dialog" square>
+      <q-dialog v-model="showBlocksPanel" position="left" class="builder-panel-dialog" square>
         <blocks-panel @created="block => handleChangesBlock({block, refresh: true, crudAction: 'blockCreated'})"
                       class="full-height" v-bind="infoToCreateBlock" />
       </q-dialog>
@@ -43,12 +43,12 @@
       <block-form ref="refBlockForm" @updated="block => handleChangesBlock({block, update: true, refresh: true})" />
       <!--block attrs from panels-->
       <q-dialog v-model="showBlockAttributesForm" :title="$tr('ibuilder.cms.label.editBlockAttributes')"
-                position="left" content-class="builder-panel-dialog" square persistent>
-        <block-attributes-form ref="blockAttributesForm" @input="response => handleChangesBlock(response)"
+                position="left" class="builder-panel-dialog" square persistent full-width full-height>
+        <block-attributes-form ref="blockAttributesForm" @update-block="response => handleChangesBlock(response)"
                                @cancel="() => handleChangesBlock({cancel: true})" />
       </q-dialog>
       <!--Layout panel-->
-      <q-dialog v-model="showLayoutPanel" position="left" content-class="builder-panel-dialog" square>
+      <q-dialog v-model="showLayoutPanel" position="left" class="builder-panel-dialog" square>
         <layout-library-panel @creating="handleCreateLayout" class="full-height" />
       </q-dialog>
     </div>
@@ -243,7 +243,7 @@ export default defineComponent({
     height: calc(100vh - 64px);
   }
 
-  .preview-content, #rightContent {
+  .preview-panels, #rightContent {
     height: 100vh;
     max-height: 100vh;
   }
@@ -264,6 +264,26 @@ export default defineComponent({
     &__box {
       background-color: white;
     }
+  }
+}
+
+.builder-panel-dialog {
+  .q-dialog__inner {
+    padding: 0;
+    max-height: 100vh;
+    max-width: 100vw;
+
+    & > div {
+      &:first-child {
+        max-height: 100vh;
+        height: 100vh !important;
+      }
+    }
+  }
+
+  #blockAttributesForm {
+    width: 100vw !important;
+    max-width: 100vw;
   }
 }
 </style>

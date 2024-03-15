@@ -1,9 +1,9 @@
-import baseService from '@imagina/qcrud/_services/baseService'
+import baseService from 'src/modules/qcrud/_services/baseService';
 
 export default {
   getLayouts(refresh = false, params = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      const requestParams = {refresh, params}
+      const requestParams = { refresh, params };
       //Request
       baseService.index('apiRoutes.qbuilder.layouts', requestParams).then(response => {
         resolve({
@@ -16,8 +16,8 @@ export default {
               attributes: Array.isArray(block.attributes) ? {} : block.attributes
             }))
           }))
-        })
-      }).catch(error => reject(error))
-    })
+        });
+      }).catch(error => reject(error));
+    });
   }
-}
+};

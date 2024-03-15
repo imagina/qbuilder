@@ -9,7 +9,7 @@ import blockForm from 'src/modules/qbuilder/_components/blockContentForm/index.v
 import blockAttributesForm from 'src/modules/qbuilder/_components/blockAttributesForm/index.vue';
 import { Block, ModuleBlockConfig, PivotBlock } from 'src/modules/qbuilder/_components/blocksPanel/interface';
 import { Layout } from 'src/modules/qbuilder/_components/layoutList/interface';
-import { i18n, clone, store as globalStore, array, uid, alert, router } from 'src/plugins/utils'
+import { i18n, clone, store as globalStore, array, uid, alert, router } from 'src/plugins/utils';
 
 interface PropInfoToCreateBlock {
   index: number,
@@ -274,6 +274,7 @@ export default function editorController() {
       if (state.view == 'block') {
         if (wasDeleted) store.viewBlockSelected = null;
         if (cancel) setTimeout(() => methods.previewBlock(), 500);
+        if (update) store.viewBlockSelected = block
       }
 
       if (block) {

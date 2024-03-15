@@ -1,5 +1,6 @@
 <template>
   <div id="blockAttributesForm" class="bg-white">
+    <!--Header-->
     <div class="drawer-title row justify-between q-py-md q-px-md bg-primary text-white">
       <h2 class="col-11 text-center text-subtitle1 text-weight-bold">{{ $tr('ibuilder.cms.blockEdit') }} - ID:
         {{ block.id }}</h2>
@@ -14,8 +15,8 @@
           <div id="componentsNameContent" class="q-pt-xl" :style="`width: 30%`">
             <q-tabs v-model="selectedComponentKey" vertical active-bg-color="primary" inline-label active-color="white"
                     indicator-color="primary" class="scroll-content" content-class="alternating-colors"
-                    @input="handleAllowEditIndicator">
-              <q-tab v-for="(component, keyItem) in componentsConfig" :key="keyItem" :name="component.componentKey"
+                    @update:model-value="handleAllowEditIndicator">
+              <q-tab v-for="(component, keyItem) in componentConfigs" :key="keyItem" :name="component.componentKey"
                      content-class="full-width" no-caps>
                 <div class="full-width row justify-between items-center">
                   {{ component.title }}
@@ -29,7 +30,7 @@
             <!--Tabs-->
             <q-tabs v-model="tabName" inline-label no-caps indicator-color="transparent" class="full-width"
                     :active-bg-color="tabColor" active-color="white" :content-class="`text-${tabColor} bg-grey-2`"
-                    @input="handleAllowEditIndicator">
+                    @update:model-value="handleAllowEditIndicator">
               <q-tab name="attributes" :label="$tr('ibuilder.cms.label.attributes')" />
               <q-tab name="content" :label="$tr('ibuilder.cms.label.content')" />
             </q-tabs>
@@ -42,14 +43,14 @@
                   <!--Empty Result-->
                   <not-result v-if="!hasFields(attributesForm)" class="q-mt-xl" />
 
-                  <dynamic-form v-model="formAttributes" @input="mergeDataForm" :blocks="attributesForm"
+                  <dynamic-form v-else v-model="formAttributes" @update:modelValue="mergeDataForm" :blocks="attributesForm"
                                 formType="collapsible" no-actions />
                 </q-tab-panel>
                 <q-tab-panel name="content" class="q-pa-none">
                   <!--Empty Result-->
                   <not-result v-if="!hasFields(contentForm)" class="q-mt-xl" />
 
-                  <dynamic-form v-model="formContent" @input="mergeDataForm" :blocks="contentForm"
+                  <dynamic-form v-model="formContent" @update:modelValue="mergeDataForm" :blocks="contentForm"
                                 formType="grid" no-actions />
                 </q-tab-panel>
               </q-tab-panels>
@@ -93,6 +94,7 @@ import iframePost from 'src/modules/qsite/_components/v3/iframePost/index.vue';
 export default defineComponent({
   props: {},
   components: { iframePost },
+  emits: ['updateBlock','cancel'],
   setup(props, { emit }) {
     return controller(props, emit);
   }

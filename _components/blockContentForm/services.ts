@@ -1,11 +1,5 @@
-import {getCurrentInstance} from "vue"
-import baseService from '@imagina/qcrud/_services/baseService'
-import {ModulesData, Block} from '@imagina/qbuilder/_components/blocksPanel/interface'
-
-interface ResponseBlock {
-  data: Block[]
-}
-
+import baseService from 'src/modules/qcrud/_services/baseService';
+import { Block } from 'src/modules/qbuilder/_components/blocksPanel/interface';
 
 export default {
   createBlock(data: any, params = {}): Promise<Block> {
@@ -13,11 +7,11 @@ export default {
       //Params
       let requestParams = {
         ...params
-      }
+      };
       //Request
       baseService.create('apiRoutes.qbuilder.blocks', data, requestParams).then(response => {
-        resolve(response.data)
-      }).catch(error => reject(error))
-    })
+        resolve(response.data);
+      }).catch(error => reject(error));
+    });
   }
-}
+};

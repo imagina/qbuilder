@@ -4,34 +4,35 @@
     <div class="flex q-gutter-xs justify-between">
       <q-btn @click="$emit('create')" outline rounded class="q-mb-sm text-capitalize heigth-button" color="primary"
              no-caps>
-        <q-icon size="xs" left name="fa-solid fa-plus"/>
+        <q-icon size="xs" left name="fa-solid fa-plus" />
         <div class="text-center text-weight-bold">
           {{ $tr('ibuilder.cms.newBlock') }}
         </div>
       </q-btn>
       <q-btn @click="refreshBlocks" outline rounded class="q-mb-sm" size="sm" color="primary"
-             no-caps icon="fa-light fa-rotate-right"/>
+             no-caps icon="fa-light fa-rotate-right" />
     </div>
 
-    <q-separator spaced/>
-    <recursive-item id="recursiveItemContent" :translatable="false" :menu="mapBlocks" right-icon/>
-    <inner-loading :visible="loading"/>
+    <q-separator spaced />
+    <recursive-item id="recursiveItemContent" :translatable="false" :menu="mapBlocks" right-icon />
+    <inner-loading :visible="loading" />
   </div>
 </template>
 <script>
-import {defineComponent} from 'vue'
-import controller from '@imagina/qbuilder/_components/blockList/controller'
-import recursiveItem from '@imagina/qsite/_components/v3/recursiveItem'
+import { defineComponent } from 'vue';
+import controller from 'src/modules/qbuilder/_components/blockList/controller';
+import recursiveItem from 'src/modules/qsite/_components/v3/recursiveItem';
 
 export default defineComponent({
   props: {},
   components: {
     recursiveItem
   },
-  setup(props, {emit}) {
-    return controller(props, emit)
+  emits: ['refresh', 'selected'],
+  setup(props, { emit }) {
+    return controller(props, emit);
   }
-})
+});
 </script>
 <style lang="scss">
 #builderBlockList {
@@ -78,12 +79,11 @@ export default defineComponent({
 
     .item-is-active {
       background: $blue-8;
-    }
 
-    .q-item__label, .q-icon {
-      color: white;
+      .q-item__label, .q-icon {
+        color: white;
+      }
     }
-
   }
 }
 

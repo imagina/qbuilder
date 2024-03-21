@@ -113,7 +113,12 @@ export default function controller(props: any, emit: any) {
     },
     // Statr to edit the block attributes
     edit: (block) => {
-      state.block = proxy.$clone(block);
+      const mapBlock = {
+        ...block,
+        attributes: Array.isArray(block.attributes) ? {} : block.attributes
+      };
+
+      state.block = proxy.$clone(mapBlock);
       methods.setVModels()
       methods.previewBlock()//Call update preview
     },

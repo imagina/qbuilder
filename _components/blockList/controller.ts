@@ -62,11 +62,7 @@ export default function layoutController(props: any, emit: any) {
       return new Promise(resolve => {
         //Request
         service.getLocalBlocks(true).then(response => {
-          state.blocks = response.map(block => ({
-            ...block,
-            entity: Array.isArray(block.entity) ? {} : block.entity,
-            attributes: Array.isArray(block.attributes) ? {} : block.attributes
-          }))
+          state.blocks = response
           //Every time the service is called, the blocks will be remapped
           state.mapBlocks = methods.orderedItems()
           state.loading = false

@@ -21,7 +21,12 @@ export default {
       }
       //Request
       baseService.index('apiRoutes.qbuilder.blocks', requestParams).then(response => {
-        resolve(response.data)
+        const result: Block[] = response.data.map(block => ({
+          ...block,
+          entity: Array.isArray(block.entity) ? {} : block.entity,
+          attributes: Array.isArray(block.attributes) ? {} : block.attributes
+        }))
+        resolve(result)
       }).catch(error => reject(error))
     })
   },

@@ -70,7 +70,12 @@ export default function controller(props: any, emit: any) {
     },
     // Statr to edit the block attributes
     edit: (block) => {
-      state.block = clone(block);
+      const mapBlock = {
+        ...block,
+        attributes: Array.isArray(block.attributes) ? {} : block.attributes
+      };
+
+      state.block = clone(mapBlock);
       methods.getComponentsConfig(block.component?.systemName);
       methods.setVModels();
       methods.previewBlock();//Call update preview

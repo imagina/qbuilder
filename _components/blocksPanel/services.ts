@@ -22,7 +22,13 @@ export default {
       };
       //Request
       baseService.index('apiRoutes.qbuilder.blocks', requestParams).then(response => {
-        resolve(response.data);
+        const result: Block[] = response.data.map(block => ({
+          ...block,
+          entity: Array.isArray(block.entity) ? {} : block.entity,
+          attributes: Array.isArray(block.attributes) ? {} : block.attributes
+        }));
+
+        resolve(result);
       }).catch(error => reject(error));
     });
   },
@@ -32,7 +38,6 @@ export default {
       if (!baseUrl) return resolve([]);
       let requestParams = {
         params: {
-          refresh,
           filter: { allTranslations: true },
           include: 'fields,files',
           ...params
@@ -41,7 +46,7 @@ export default {
 
       //Request
       //@ts-ignore
-      axios.get<ResponseBlock>(`${baseUrl}/api${config('apiRoutes.qbuilder.blocks')}`, requestParams).then((response: { data: ResponseBlock}) => {
+      axios.get<ResponseBlock>(`${baseUrl}/api${config('apiRoutes.qbuilder.blocks')}`, requestParams).then((response: { data: ResponseBlock }) => {
         resolve(response.data.data);
       }).catch((error: any) => reject(error));
     });

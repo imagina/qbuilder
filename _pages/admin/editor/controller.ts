@@ -156,27 +156,31 @@ export default function editorController() {
       //Instance the request params
       const requestParams = { filter: { allTranslations: true, configNameByModule: 'blocks' } };
 
-      //Get configs
-      const config = await service.getModuleBlocks(true, requestParams);
-
-      //Map blockConfigs to get an array with all blocks
-      const response: ModuleBlockConfig[] = [];
-      const blockConfigsByModule = Object.values(config).filter(item => item);
-      blockConfigsByModule.forEach(configModule => {
-        Object.values(configModule).forEach(blockConfig => {
-          //Added blockConfig to all configs like child
-          if (blockConfig.systemName !== store.mainBlockSystemName) {
-            blockConfig.childBlocks = {
-              mainblock: store.mainBlockSystemName,
-              ...(blockConfig.childBlocks || {})
-            };
-          }
-          //Save data of modules
-          response.push(blockConfig);
+      try {
+        //Get configs
+        const config = await service.getModuleBlocks(true, requestParams);
+        //Map blockConfigs to get an array with all blocks
+        const response: ModuleBlockConfig[] = [];
+        const blockConfigsByModule = Object.values(config).filter(item => item);
+        blockConfigsByModule.forEach(configModule => {
+          Object.values(configModule).forEach(blockConfig => {
+            //Added blockConfig to all configs like child
+            if (blockConfig.systemName !== store.mainBlockSystemName) {
+              blockConfig.childBlocks = {
+                mainblock: store.mainBlockSystemName,
+                ...(blockConfig.childBlocks || {})
+              };
+            }
+            //Save data of modules
+            response.push(blockConfig);
+          });
         });
-      });
 
-      store.blockConfigs = response;
+        store.blockConfigs = response;
+      } catch (e) {
+        console.error(e);
+        alert.error(this.$tr('isite.cms.message.errorRequest'));
+      }
       state.loading = false;
     },
     // Open the preview
@@ -236,8 +240,7 @@ export default function editorController() {
       const result: PivotBlockCustom[] = blocks.map(block => {
         let response: PivotBlockCustom = {
           ...block.pivot,
-          gridLabel: `${block.id} | ${block.internalTitle}`,
-          systemName: block.systemName
+          gridLabel: `${block.id} | ${block.internalTitle}`
         };
 
         if (configBlocks.includes(block?.component?.systemName) && !block?.children?.length) response.children = [];
@@ -327,18 +330,19 @@ export default function editorController() {
             child.layouts = child.layouts || {};
             child.layouts[layout.id] = child.layouts[layout.id] || {};
             //Check if the parent has childs
-            if (child.pivot?.parentSystemName === block.systemName) {
+            if (child.pivot?.parentSystemName === block.pivot?.systemName) {
               child.layouts[layout.id].parentSystemName = newSystemName;
             }
           });
 
           //Changes principal values in block
           block.entity = {} as any;
-          block.systemName = newSystemName;
+          block.systemName = uid();
           delete block.id;
           block.layouts = block.layouts || {};
           block.layouts[layout.id] = {
             ...(block.layouts[layout.id] ?? {}),
+            systemName: newSystemName,
             gridPosition: block.pivot.gridPosition,
             sortOrder: block.pivot.sortOrder
           };
@@ -455,9 +459,7 @@ export default function editorController() {
       if (!!singleBlock) {
         singleBlock.pivot = {
           ...singleBlock.pivot,
-          gridPosition: pivot.gridPosition,
-          parentSystemName: pivot.parentSystemName,
-          sortOrder: pivot.sortOrder
+          ...pivot
         };
 
         mapPivotBlocks.push(singleBlock);

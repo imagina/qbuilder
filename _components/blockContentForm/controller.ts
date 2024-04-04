@@ -145,6 +145,7 @@ export default function controller(props: any, emit: any) {
       if(!!state.layoutId) {
         response.layouts = {};
         response.layouts[state.layoutId] = {
+          systemName: proxy.$uid() as string,
           gridPosition: "col-md-12",
           sortOrder: state.indexBlock,
           parentSystemName: state.parentSystemName ?? null

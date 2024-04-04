@@ -108,6 +108,7 @@ export default function controller(props: any, emit: any) {
         layoutId : props.layoutId,
         blockId: block.id,
         sortOrder: props.index,
+        systemName: proxy.$uid() as string,
         parentSystemName: props.parentSystemName,
         gridPosition: 'col-12'
       }

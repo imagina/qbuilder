@@ -30,6 +30,7 @@ export interface PivotBlock {
   layoutId: number | null;
   parentSystemName: string | null;
   sortOrder: number;
+  systemName: string;
 }
 
 export interface Attributes {

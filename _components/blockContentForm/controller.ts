@@ -144,6 +144,7 @@ export default function controller(props: any, emit: any) {
       if (!!state.layoutId) {
         response.layouts = {};
         response.layouts[state.layoutId] = {
+          systemName: uid(),
           gridPosition: 'col-md-12',
           sortOrder: state.indexBlock,
           parentSystemName: state.parentSystemName ?? null

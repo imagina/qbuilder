@@ -6,6 +6,7 @@ import {
   Block,
   ModuleBlockConfig
 } from 'src/modules/qbuilder/_components/blocksPanel/interface';
+import { uid } from 'src/plugins/utils';
 
 interface StateProps {
   localBlocks: Block[],
@@ -100,6 +101,7 @@ export default function controller(props: any, emit: any) {
         layoutId: props.layoutId,
         blockId: block.id,
         sortOrder: props.index,
+        systemName: uid(),
         parentSystemName: props.parentSystemName,
         gridPosition: 'col-12'
       };

@@ -108,7 +108,7 @@ export default function editorController ()
           color: 'red',
           action: (data) => {
             //Find block data
-            const blockData = state.blocks.find(block => block.id === data.blockId)
+            const blockData = state.blocks.find(block => block.pivot.id === data.blockId)
             if(blockData) methods.alertDeleteBlock(blockData)
           }
         },
@@ -260,8 +260,7 @@ export default function editorController ()
       {
         let response: PivotBlockCustom = {
           ...block.pivot,
-          gridLabel: `${block.id} | ${block.internalTitle}`,
-          systemName: block.systemName
+          gridLabel: `${block.id} | ${block.internalTitle}`
         }
 
         if (configBlocks.includes(block?.component?.systemName) && !block?.children?.length) response.children = [];
@@ -361,7 +360,7 @@ export default function editorController ()
             child.layouts = child.layouts || {};
             child.layouts[layout.id] = child.layouts[layout.id] || {};
             //Check if the parent has childs
-            if (child.pivot?.parentSystemName === block.systemName)
+            if (child.pivot?.parentSystemName === block.pivot?.systemName)
             {
               child.layouts[layout.id].parentSystemName = newSystemName;
             }
@@ -369,11 +368,12 @@ export default function editorController ()
 
           //Changes principal values in block
           block.entity = {} as any
-          block.systemName = newSystemName
+          block.systemName = proxy.$uid() as string
           delete block.id
           block.layouts = block.layouts || {};
           block.layouts[layout.id] = {
             ...(block.layouts[layout.id] ?? {}),
+            systemName: newSystemName,
             gridPosition: block.pivot.gridPosition,
             sortOrder: block.pivot.sortOrder
           }
@@ -508,9 +508,7 @@ export default function editorController ()
       if(!!singleBlock) {
         singleBlock.pivot = {
           ...singleBlock.pivot,
-          gridPosition: pivot.gridPosition,
-          parentSystemName: pivot.parentSystemName,
-          sortOrder: pivot.sortOrder
+          ...pivot
         }
 
         mapPivotBlocks.push(singleBlock)

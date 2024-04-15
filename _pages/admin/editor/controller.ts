@@ -108,8 +108,8 @@ export default function editorController ()
           color: 'red',
           action: (data) => {
             //Find block data
-            const blockData = state.blocks.find(block => block.pivot.id === data.blockId)
-            if(blockData) methods.alertDeleteBlock(blockData)
+            const blockData = state.blocks.find(block => block.pivot.id === data.id)
+            //if(blockData) methods.alertDeleteBlock(blockData)
           }
         },
         blockContent: {

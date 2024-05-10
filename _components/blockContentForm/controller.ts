@@ -58,13 +58,6 @@ export default function controller(props: any, emit: any) {
           name: 'main',
           title: i18n.tr('ibuilder.cms.label.system'),
           fields: {
-            helpText: {
-              type: 'banner',
-              colClass: 'col-12',
-              props: {
-                message: i18n.tr('ibuilder.cms.label.bannerMessage')
-              }
-            },
             internalTitle: {
               isTranslatable: true,
               type: 'input',
@@ -305,7 +298,7 @@ export default function controller(props: any, emit: any) {
     //Save data
     async submitData() {
       const requestData = computeds.getBlockRequestData.value;
-      const keysNotToSnakeCase = [...(Object.keys(requestData.attributes) ?? []), 'component', 'entity', 'attributes'];
+      const keysNotToSnakeCase = [...(Object.keys(requestData.attributes) ?? []), ...(storeEditor.ignoreConfigKeys ?? []), 'component', 'entity', 'attributes'];
       //Request params
       const requestParams = { notToSnakeCase: keysNotToSnakeCase };
 

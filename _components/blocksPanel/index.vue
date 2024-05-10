@@ -40,7 +40,7 @@
             <q-item v-else v-for="(block, blockKey) in blocksBySelectedType.library" :key="`libraryKey${blockKey}`"
                     clickable class="bg-trans-item" v-ripple @click="selectBlock(block)">
               <q-item-section class="relative-position q-ma-sm image-section selectable">
-                <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle" />
+                <img :src="block.mediaFiles.internalimage.url" :alt="block.internalTitle" />
                 <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle }}</span>
               </q-item-section>
             </q-item>
@@ -64,7 +64,7 @@
             <q-item v-else v-for="(block, blockKey) in blocksBySelectedType.local" :key="`localKey${blockKey}`"
                     :clickable="!layoutId" @click="selectBlock(block)" class="bg-trans-item" v-ripple>
               <q-item-section class="relative-position q-ma-sm image-section selectable">
-                <img :src="block.mediaFiles.blockbgimage.path" :alt="block.internalTitle" />
+                <img :src="block.mediaFiles.internalimage.url" :alt="block.internalTitle" />
                 <span class="ellipsis-2-lines full-width title-item q-py-xs">{{ block.internalTitle }}</span>
                 <q-menu v-if="!!layoutId" anchor="top right" self="top end">
                   <q-list style="min-width: 100px" dense bordered>

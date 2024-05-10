@@ -30,7 +30,7 @@ export default defineComponent({
   components: {
     recursiveItem
   },
-  emits: ['refresh', 'selected'],
+  emits: ['refresh', 'selected', 'create'],
   setup(props, { emit }) {
     return controller(props, emit);
   }

@@ -14,7 +14,7 @@
         <div class="row">
           <div id="componentsNameContent" class="q-pt-xl" :style="`width: 30%`">
             <q-tabs v-model="selectedComponentKey" vertical active-bg-color="primary" inline-label active-color="white"
-                    indicator-color="primary" class="scroll-content" content-class="alternating-colors"
+                    indicator-color="primary" class="scroll-content" content-class="alternating-colors" @click="() => setVModels()"
                     @update:model-value="handleAllowEditIndicator">
               <q-tab v-for="(component, keyItem) in componentConfigs" :key="keyItem" :name="component.componentKey"
                      content-class="full-width" no-caps>

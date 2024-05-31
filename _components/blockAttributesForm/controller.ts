@@ -82,10 +82,8 @@ export default function controller(props: any, emit: any) {
     },
     //Set v-model states
     setVModels: () => {
-      nextTick(() => {
-        state.formAttributes = state.block.attributes[state.selectedComponentKey];
-        state.formContent = state.block;
-      });
+      state.formAttributes = state.block.attributes[state.selectedComponentKey];
+      state.formContent = state.block;
     },
     // Returns the block configs of the block and its child blocks
     getComponentsConfig: (systemNameComponent: string) => {
@@ -219,7 +217,6 @@ export default function controller(props: any, emit: any) {
   });
 
   // Watch
-  watch(() => state.selectedComponentKey, methods.setVModels);
 
   return { ...refs, ...(toRefs(state)), ...computeds, ...methods };
 }

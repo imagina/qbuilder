@@ -261,6 +261,23 @@ export default function controller(props: any, emit: any) {
               message: "Configura aquí el contenido del componente..."
             }
           },
+          useViewParams: {
+            type: 'select',
+            require: true,
+            colClass: 'col-12',
+            fakeFieldName: 'entity',
+            vIf: state.configBlock.useViewParams ? true : false,
+            props: {
+              label: `${proxy.$tr('ibuilder.cms.useViewParams')}*`,
+              rules: [
+                val => !!val || proxy.$tr('isite.cms.message.fieldRequired')
+              ],
+              options: [
+                {label: proxy.$tr('isite.cms.label.yes'), value: '1'},
+                {label: proxy.$tr('isite.cms.label.no'), value: '0'}
+              ]
+            }
+          },
           type: {
             type: "select",
             require: true,
@@ -278,6 +295,7 @@ export default function controller(props: any, emit: any) {
             type: "select",
             require: true,
             fakeFieldName: 'entity',
+            colClass: "col-12",
             vIf: !!loadOptions,
             props: {
               label: `${proxy.$tr('isite.cms.label.record')}*`,
@@ -299,7 +317,7 @@ export default function controller(props: any, emit: any) {
                 val => !!val || proxy.$tr('isite.cms.message.fieldRequired')
               ]
             }
-          },
+          }
         }
       }
     },
@@ -331,10 +349,10 @@ export default function controller(props: any, emit: any) {
           if(pivotData) {
             data.pivot = pivotData.pivot
           }
-          
+
           delete data.layouts
         }
-        
+
         emit('created', data)
       }).catch(error => {
         state.loading = false

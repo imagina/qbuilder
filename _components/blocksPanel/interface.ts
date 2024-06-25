@@ -300,6 +300,7 @@ export interface ModuleBlockConfig {
     childBlocks?: ChildBlockConfig;
     allowChildren?: boolean;
     attributes: ModuleBlockConfigAttributes;
+    useViewParams?: boolean
 }
 
 export interface ChildBlockConfig {

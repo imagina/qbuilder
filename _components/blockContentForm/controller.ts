@@ -253,6 +253,23 @@ export default function controller(props: any, emit: any) {
               message: 'Configura aquí el contenido del componente...'
             }
           },
+          useViewParams: {
+            type: 'select',
+            require: true,
+            colClass: 'col-12',
+            fakeFieldName: 'entity',
+            vIf: state.configBlock.useViewParams ? true : false,
+            props: {
+              label: `${i18n.tr('ibuilder.cms.useViewParams')}*`,
+              rules: [
+                val => !!val || i18n.tr('isite.cms.message.fieldRequired')
+              ],
+              options: [
+                {label: i18n.tr('isite.cms.label.yes'), value: '1'},
+                {label: i18n.tr('isite.cms.label.no'), value: '0'}
+              ]
+            }
+          },
           type: {
             type: 'select',
             require: true,
@@ -270,6 +287,7 @@ export default function controller(props: any, emit: any) {
             type: 'select',
             require: true,
             fakeFieldName: 'entity',
+            colClass: 'col-12',
             vIf: !!loadOptions,
             props: {
               label: `${i18n.tr('isite.cms.label.record')}*`,

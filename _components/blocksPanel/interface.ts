@@ -301,6 +301,7 @@ export interface ModuleBlockConfig {
   allowChildren?: boolean;
   attributes: ModuleBlockConfigAttributes;
   componentKey?: string;
+  useViewParams?: boolean;
 }
 
 export interface ChildBlockConfig {

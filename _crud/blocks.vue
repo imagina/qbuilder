@@ -12,11 +12,7 @@ export default {
         crudId: this.crudId,
         apiRoute: 'apiRoutes.qbuilder.blocks',
         permission: 'ibuilder.blocks',
-        extraFormFields: 'ibuilder.crud-fields.blocks',
-        create: {
-          title: this.$tr('ibuilder.cms.newBlock'),
-          to: {name: 'qbuilder.admin.blocks.create'}
-        },
+        create: false,
         read: {
           columns: [
             {name: 'id', label: this.$tr('isite.cms.form.id'), field: 'id', style: 'width: 50px'},
@@ -33,10 +29,6 @@ export default {
             },
             {name: 'actions', label: this.$tr('isite.cms.form.actions'), align: 'left'},
           ]
-        },
-        update: {
-          title: this.$tr('isite.cms.updateBlock'),
-          to: 'qbuilder.admin.blocks.update'
         },
         delete: true,
         formLeft: {}

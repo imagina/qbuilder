@@ -2,12 +2,14 @@ import Vue, {computed, reactive, ref, onMounted, toRefs, watch, getCurrentInstan
 import service from '@imagina/qbuilder/_components/dynamicFormAttributes/services'
 import builderService from '@imagina/qbuilder/services'
 import {Block} from '@imagina/qbuilder/_components/blocksPanel/interface'
+import store from "@imagina/qbuilder/store"
 
 interface StateProps {
   block: Block,
   formBlock: any,
   loading: boolean,
-  show: boolean
+  show: boolean,
+  fields: any[]
 }
 
 export default function controller(props: any, emit: any) {
@@ -21,7 +23,8 @@ export default function controller(props: any, emit: any) {
     block: {} as Block,
     show: false,
     formBlock: {},
-    loading: false
+    loading: false,
+    fields: []
   })
 
   // Computed
@@ -50,6 +53,30 @@ export default function controller(props: any, emit: any) {
 
   // Methods
   const methods = {
+    init() {
+      if (store.blockConfigs.length) {
+        methods.getData()
+      }
+    },
+    getConfigBlocks: async () => {
+      state.loading = true
+
+      //Instance the request params
+      const requestParams = {filter: {allTranslations: true, configNameByModule: 'blocks'}}
+
+      try {
+        //Get configs
+        const moduleConfigs = await builderService.getModuleBlocks(true, requestParams)
+        builderService.getConfigBlocks(moduleConfigs)
+      } catch (error) {
+        //@ts-ignore
+        proxy.$apiResponse.handleError(error, () => {
+          console.error("[Ibuilder Get Configs]: ", error)
+        })
+      }
+
+      state.loading = false
+    },
     async getData() {
       if (props.idBlock && state.show) {
         state.loading = true
@@ -58,7 +85,9 @@ export default function controller(props: any, emit: any) {
           const block = await service.getOneBlock(true, props.idBlock)
           state.block = proxy.$clone(block)
           state.formBlock = proxy.$clone(block)
+          state.fields = methods.getFormContentFields(block.component?.systemName)
         } catch (error) {
+          //@ts-ignore
           proxy.$apiResponse.handleError(error, () => {
             console.error("[Ibuilder Get Data]: ", error)
           })
@@ -90,23 +119,65 @@ export default function controller(props: any, emit: any) {
     },
     closeModal() {
       state.show = false
-      state.block = {};
+      state.block = {} as Block;
       state.formBlock = {};
       state.loading = false;
+      state.fields = []
+    },
+    getFormContentFields(systemName: string) {
+      const response: any[] = []
+      const configs = store.blockConfigs;
+      const principal = configs.find(c => c.systemName == systemName);
+
+      if (principal) {
+        if (principal.contentFields) {
+          const fields = methods.addFakeFieldName(principal.contentFields, 'componentAttributes')
+          response.push({name: principal.systemName, title: principal.title, fields})
+        }
+        //@ts-ignore
+        Object.entries(principal.childBlocks).forEach(child => {
+          const [name, systemName] = child
+          const block = configs.find(c => c.systemName == systemName)
+
+          if (block && block?.contentFields) {
+            const fields = methods.addFakeFieldName(block.contentFields, name)
+            response.push({name: block.systemName, title: block.title, fields})
+          }
+        })
+      }
+      return response;
+    },
+    addFakeFieldName(fields, name) {
+      const tmpField = {};
+      //Set fakeFieldName
+      for (const [fieldName, field] of Object.entries(fields)) {
+        tmpField[fieldName] = {
+          //@ts-ignore
+          ...field,
+          ...(field?.type !== 'media' ? {fakeFieldName: name} : {fieldItemId: props.idBlock})
+        }
+      }
+
+      return tmpField
     },
   }
 
   // Mounted
   onMounted(() => {
+    methods.getConfigBlocks()
   })
 
   watch(() => props.value, (newValue) => {
     state.show = proxy.$clone(newValue);
-    methods.getData()
+    methods.init()
   })
 
   watch(() => state.show, (newValue) => {
     emit('input', newValue)
+  })
+
+  watch(() => store.blockConfigs, (newValue) => {
+    methods.init();
   })
 
   return {...refs, ...(toRefs(state)), ...computeds, ...methods}

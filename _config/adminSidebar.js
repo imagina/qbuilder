@@ -1,7 +1,14 @@
 const pages = config('pages') // Get Pages from config
 
-//Blog
+//Builder
 export default [
-  pages.qbuilder.blocks,
-  pages.qbuilder.editor
+  {
+    title: 'ibuilder.cms.sidebar.adminGroup',
+    icon: 'fa-light fa-puzzle',
+    children: [
+      pages.qbuilder.blocks,
+      pages.qbuilder.editor,
+    ]
+  }
 ]
+

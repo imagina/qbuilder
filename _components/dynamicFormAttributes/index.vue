@@ -1,5 +1,5 @@
 <template>
-  <master-modal v-model="show" custom-position v-bind="modalProps">
+  <master-modal v-model="show" custom-position v-bind="modalProps" @hide="closeModal">
     <dynamic-form v-model="formBlock" formType="collapsible" :blocks="fields"
                   no-actions no-reset-with-blocks-update/>
   </master-modal>
@@ -12,8 +12,7 @@ export default defineComponent({
   props: {
     value: {default: false},
     title: {default: ''},
-    idBlock: {default: null},
-    fields: {default: () => []}
+    idBlock: {default: null}
   },
   components: {},
   setup(props, {emit}) {

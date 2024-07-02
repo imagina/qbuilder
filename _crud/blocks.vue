@@ -1,11 +1,19 @@
-<template></template>
+<template>
+  <attributes-form v-model="showModal" :id-block="idBlock"
+                   :title="$tr('ibuilder.cms.blockEdit')"/>
+</template>
 <script>
+import attributesForm from '@imagina/qbuilder/_components/dynamicFormAttributes/index.vue'
+
 export default {
   data() {
     return {
-      crudId: this.$uid()
+      crudId: this.$uid(),
+      showModal: false,
+      idBlock: null,
     }
   },
+  components: {attributesForm},
   computed: {
     crudData() {
       return {
@@ -31,6 +39,9 @@ export default {
           ]
         },
         delete: true,
+        update: {
+          method: (item) => this.openModal(item.id)
+        },
         formLeft: {}
       }
     },
@@ -39,5 +50,13 @@ export default {
       return this.$store.state.qcrudComponent.component[this.crudId] || {}
     }
   },
+  methods: {
+    openModal(id) {
+      if(!id) return
+
+      this.idBlock = id;
+      this.showModal = true;
+    }
+  }
 }
 </script>

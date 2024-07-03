@@ -15,7 +15,7 @@ export default {
   },
   blocks: {
     permission: 'ibuilder.blocks.manage',
-    activated: false,
+    activated: true,
     path: '/builder/blocks',
     name: 'qbuilder.admin.blocks.index',
     crud: import('@imagina/qbuilder/_crud/blocks'),

@@ -1,6 +1,13 @@
 import pages from 'src/setup/pages' // Get Pages from config
 
-//Blog
+//Builder
 export default [
-  pages.qbuilder.editor,
+  {
+    title: 'ibuilder.cms.sidebar.adminGroup',
+    icon: 'fa-light fa-object-group',
+    children: [
+      pages.qbuilder.blocks,
+      pages.qbuilder.editor,
+    ]
+  }
 ]

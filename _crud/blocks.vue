@@ -1,32 +1,35 @@
-<template></template>
+<template>
+  <attributes-form v-model="showModal" :id-block="idBlock" :title="$tr('ibuilder.cms.blockEdit')"/>
+</template>
 <script>
+import attributesForm from '../_components/dynamicFormAttributes/index.vue'
+
 export default {
   data() {
     return {
-      crudId: this.$uid()
+      crudId: this.$uid(),
+      showModal: false,
+      idBlock: null,
     }
   },
+  components: {attributesForm},
   computed: {
     crudData() {
       return {
         crudId: this.crudId,
         apiRoute: 'apiRoutes.qbuilder.blocks',
         permission: 'ibuilder.blocks',
-        extraFormFields: 'ibuilder.crud-fields.blocks',
-        create: {
-          title: this.$tr('ibuilder.cms.newBlock'),
-          to: {name: 'qbuilder.admin.blocks.create'}
-        },
+        create: false,
         read: {
           columns: [
             {name: 'id', label: this.$tr('isite.cms.form.id'), field: 'id', style: 'width: 50px'},
             {name: 'title', label: this.$tr('isite.cms.form.title'), field: 'internalTitle', align: 'left'},
-            {name: 'systemName', label: this.$tr('isite.cms.form.systemName'), field: 'systemName', align: 'left'},
-            {name: 'status', label: this.$tr('isite.cms.form.status'), field: 'status', align: 'left'},
             {
               name: 'componentName', label: this.$tr('isite.cms.label.component'), field: 'component', align: 'left',
               format: val => val.systemName || "-"
             },
+            {name: 'systemName', label: this.$tr('isite.cms.form.systemName'), field: 'systemName', align: 'left'},
+            {name: 'status', label: this.$tr('isite.cms.form.status'), field: 'status', align: 'left'},
             {
               name: 'created_at', label: this.$tr('isite.cms.form.createdAt'), field: 'createdAt', align: 'left',
               format: val => val ? this.$trd(val) : '-',
@@ -35,8 +38,7 @@ export default {
           ]
         },
         update: {
-          title: this.$tr('isite.cms.updateBlock'),
-          to: 'qbuilder.admin.blocks.update'
+          method: (item) => this.openModal(item.id)
         },
         delete: true,
         formLeft: {}
@@ -47,5 +49,13 @@ export default {
       return this.$store.state.qcrudComponent.component[this.crudId] || {}
     }
   },
+  methods: {
+    openModal(id) {
+      if (!id) return
+
+      this.idBlock = id;
+      this.showModal = true;
+    }
+  }
 }
 </script>

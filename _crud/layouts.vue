@@ -125,7 +125,7 @@ export default {
     typeOptions() {
       if (!this.crudInfo.entityType) return []
       let moduleBuilderConfig = Object.values(this.builderConfig).flat().find(item => item.entity.value == this.crudInfo.entityType)
-      return moduleBuilderConfig.types
+      return moduleBuilderConfig?.types || []
     }
   }
 }

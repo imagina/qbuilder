@@ -47,7 +47,7 @@ export default {
             },
             required: true,
             props: {
-              label: this.$tr('iqreable.cms.form.entityType'),
+              label: this.$tr('ibuilder.cms.form.entityType'),
               options: this.entityTypeOptions
             }
           },

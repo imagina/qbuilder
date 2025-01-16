@@ -117,7 +117,8 @@ export default function editorController ()
           icon: 'fa-regular fa-book',
           action: (data) =>
           {
-            const updateData = state.blocks.find(block => block.id === data.blockId)
+            const blockId = parseInt(data.blockId)
+            const updateData = state.blocks.find(block => block.id === blockId)
             if(updateData) refs.refBlockForm.value?.updateData(updateData)
           }
         },
@@ -126,8 +127,9 @@ export default function editorController ()
           icon: 'fa-regular fa-palette',
           action: (data) =>
           {
+            const blockId = parseInt(data.blockId)
             state.showBlockAttributesForm = true
-            const updateData = state.blocks.find(block => block.id === data.blockId)
+            const updateData = state.blocks.find(block => block.id === blockId)
             if(updateData) setTimeout(() => refs.blockAttributesForm?.value?.edit(updateData), 500)
           }
         }

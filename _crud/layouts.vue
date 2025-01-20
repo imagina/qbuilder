@@ -8,7 +8,6 @@ export default {
   },
   computed: {
     crudData() {
-      console.log(this.crudInfo, this.typeOptions)
       return {
         crudId: this.crudId,
         apiRoute: 'apiRoutes.qbuilder.layouts',

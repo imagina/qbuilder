@@ -8,6 +8,7 @@ export default {
   },
   computed: {
     crudData() {
+      console.log(this.crudInfo, this.typeOptions)
       return {
         crudId: this.crudId,
         apiRoute: 'apiRoutes.qbuilder.layouts',
@@ -65,6 +66,32 @@ export default {
                 {label: 'General', value: 'general'},
                 ...this.typeOptions
               ]
+            }
+          },
+          headerLaoyutId: {
+            type: 'select',
+            isFakeField: true,
+            props: {
+              label: this.$tr('ibuilder.cms.form.header'),
+              vIf: !["Modules\\Ibuilder\\Entities\\Layout"].includes(this.crudInfo.entityType)
+            },
+            loadOptions: {
+              apiRoute: 'apiRoutes.qbuilder.layouts',
+              select: {label: 'title', id: 'id'},
+              requestParams: {filter: {type: 'header'}}
+            }
+          },
+          footerLaoyutId: {
+            type: 'select',
+            isFakeField: true,
+            props: {
+              label: this.$tr('ibuilder.cms.form.footer'),
+              vIf: !["Modules\\Ibuilder\\Entities\\Layout"].includes(this.crudInfo.entityType)
+            },
+            loadOptions: {
+              apiRoute: 'apiRoutes.qbuilder.layouts',
+              select: {label: 'title', id: 'id'},
+              requestParams: {filter: {type: 'footer'}}
             }
           },
           default: {

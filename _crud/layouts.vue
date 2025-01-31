@@ -67,7 +67,7 @@ export default {
               ]
             }
           },
-          headerLaoyutId: {
+          headerLayoutId: {
             type: 'select',
             isFakeField: true,
             props: {
@@ -80,7 +80,7 @@ export default {
               requestParams: {filter: {type: 'header'}}
             }
           },
-          footerLaoyutId: {
+          footerLayoutId: {
             type: 'select',
             isFakeField: true,
             props: {

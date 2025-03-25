@@ -108,6 +108,18 @@ export default {
               ]
             },
           },
+          mediasSingle: {
+            value: {},
+            type: 'media',
+            colClass: 'col-12',
+            fieldItemId: this.crudInfo.id || null,
+            props: {
+              label: this.$tr('isite.cms.message.preview'),
+              zone: 'internalimage',
+              entity: 'Modules\\Ibuilder\\Entities\\Layout',
+              entityId: null
+            }
+          },
         },
         handleFormUpdates: (formData, changedFields, formType) => {
           return new Promise(resolve => {

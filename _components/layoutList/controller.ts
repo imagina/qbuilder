@@ -54,8 +54,7 @@ export default function layoutController(props: any, emit: any) {
       state.loading = true;
       return new Promise(resolve => {
         const params = {
-          filter: { allTranslations: true },
-          include: 'blocks.fields'
+          filter: { allTranslations: true }
         };
         //Request
         service.getLayouts(true, params).then(response => {
@@ -83,12 +82,7 @@ export default function layoutController(props: any, emit: any) {
         store.layoutSelected = firstLayout;
         emit('selected', clone(firstLayout));
       } else if (store.layoutSelected && store.layoutSelected.id) {
-        const layoutSelected = state.layouts.find(layout => layout.id === store.layoutSelected?.id);
-
-        if (emitSelected && !!layoutSelected) {
-          store.layoutSelected = clone(layoutSelected);
-          emit('selected', clone(layoutSelected));
-        }
+        await methods.setLayout(store.layoutSelected.id);
       }
 
       emit('refresh', false);
@@ -143,17 +137,9 @@ export default function layoutController(props: any, emit: any) {
     //Define the action that will have coda children in recursiveItem
     selectLayout(layoutSelected: MapLayoutChildren): Promise<Boolean> {
       return new Promise(resolve => {
-        // internal method to select the layout
-        const setLayout = () => {
-          const layout = state.layouts.find(i => i.id === layoutSelected.id);
-          if (!layout) return resolve(true);
-          store.layoutSelected = clone(layout);
-          emit('selected', clone(layout));
-          resolve(true);
-        };
-
-        if (!store.layoutSelected) setLayout(); // Set layoutSelected by firt time
-        else if (store.layoutSelected.id !== layoutSelected.id) { // Change the layout selected
+        const layoutId = layoutSelected.id;
+        if (!store.layoutSelected) methods.setLayout(layoutId); // Set layoutSelected by firt time
+        else if (store.layoutSelected.id !== layoutId) { // Change the layout selected
           alert.warning({
             mode: 'modal',
             title: i18n.tr('ibuilder.cms.label.sureChangeLayout'),
@@ -163,12 +149,39 @@ export default function layoutController(props: any, emit: any) {
               {
                 label: i18n.tr('isite.cms.label.accept'),
                 color: 'green',
-                handler: setLayout
+                handler: () => methods.setLayout(layoutId)
               }
             ]
           });
         }
       });
+    },
+    setLayout(id: number) {
+      emit('refresh', true);
+      // internal method to select the layout
+      return new Promise(resolve => {
+        const params = {
+          filter: { allTranslations: true },
+          include: 'blocks'
+        };
+
+        service.getOneLayout(id, true, params)
+          .then(layout => {
+            if (!layout) return resolve(true);
+
+            store.layoutSelected = clone(layout);
+            emit('selected', clone(layout));
+            resolve(true);
+            emit('refresh', false);
+          })
+          .catch(error => {
+            console.error(error);
+            alert.error(i18n.tr('isite.cms.message.errorRequest'));
+            emit('refresh', false);
+          });
+      })
+
+
     },
     //Warning to Refresh Layout
     handleRefresh() {

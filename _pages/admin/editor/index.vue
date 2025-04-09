@@ -8,6 +8,12 @@
             @updated="refreshApiData({crudAction : 'updated'})"
             @deleted="refreshApiData({crudAction : 'deleted'})"
       />
+      <!--Crud Layouts Demo-->
+      <crud :crud-data="import('src/modules/qbuilder/_crud/layoutsDemo')" type="onlyUpdate" ref="crudLayoutDemo"
+            @createdData="(layout) => handleCreateLayout(layout, true)"
+            @updated="refreshApiData({crudAction : 'updated'})"
+            @deleted="refreshApiData({crudAction : 'deleted'})"
+      />
     </div>
     <!--Panels-->
     <div class="preview-panels relative-position" :style="`width: ${store.panelWidth}`">
@@ -99,6 +105,10 @@
               <q-btn size="xs" padding="sm" class="q-mr-sm" unelevated outline
                      @click="crudLayout.update(store.layoutSelected)" icon="fa-light fa-edit" round color="cyan">
                 <q-tooltip>{{ $tr('isite.cms.label.edit') }}</q-tooltip>
+              </q-btn>
+              <q-btn size="xs" padding="sm" class="q-mr-sm" unelevated outline
+                     @click="crudLayoutDemo.update(store.layoutSelected)" icon="fa-light fa-swatchbook" round color="cyan">
+                <q-tooltip>Demo (weygo)</q-tooltip>
               </q-btn>
               <q-btn outline rounded color="green" no-caps @click="savePivotBlocks"
                      padding="xs md">

@@ -67,32 +67,6 @@ export default {
               ]
             }
           },
-          headerLayoutId: {
-            type: 'select',
-            isFakeField: true,
-            props: {
-              label: this.$tr('ibuilder.cms.form.header'),
-              vIf: !["Modules\\Ibuilder\\Entities\\Layout"].includes(this.crudInfo.entityType)
-            },
-            loadOptions: {
-              apiRoute: 'apiRoutes.qbuilder.layouts',
-              select: {label: 'title', id: 'id'},
-              requestParams: {filter: {type: 'header'}}
-            }
-          },
-          footerLayoutId: {
-            type: 'select',
-            isFakeField: true,
-            props: {
-              label: this.$tr('ibuilder.cms.form.footer'),
-              vIf: !["Modules\\Ibuilder\\Entities\\Layout"].includes(this.crudInfo.entityType)
-            },
-            loadOptions: {
-              apiRoute: 'apiRoutes.qbuilder.layouts',
-              select: {label: 'title', id: 'id'},
-              requestParams: {filter: {type: 'footer'}}
-            }
-          },
           default: {
             value: '0',
             type: 'select',

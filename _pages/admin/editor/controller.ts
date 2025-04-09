@@ -52,6 +52,7 @@ export default function editorController() {
   const refs = {
     refIframePost: ref<InstanceType<typeof iframePost>>(),
     crudLayout: ref(null),
+    crudLayoutDemo: ref(null),
     refLayoutList: ref<InstanceType<typeof layoutList>>(),
     refBlockList: ref<InstanceType<typeof blockList>>(),
     handleGrid: ref<InstanceType<typeof handleGrid>>(),

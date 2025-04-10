@@ -106,7 +106,7 @@
                      @click="crudLayout.update(store.layoutSelected)" icon="fa-light fa-edit" round color="cyan">
                 <q-tooltip>{{ $tr('isite.cms.label.edit') }}</q-tooltip>
               </q-btn>
-              <q-btn size="xs" padding="sm" class="q-mr-sm" unelevated outline
+              <q-btn size="xs" padding="sm" class="q-mr-sm" unelevated outline v-if="store.layoutSelected.type == 'home'"
                      @click="crudLayoutDemo.update(store.layoutSelected)" icon="fa-light fa-swatchbook" round color="cyan">
                 <q-tooltip>Demo (weygo)</q-tooltip>
               </q-btn>

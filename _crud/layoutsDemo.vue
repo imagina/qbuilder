@@ -26,8 +26,7 @@ export default {
             type: 'select',
             isFakeField: true,
             props: {
-              label: this.$tr('ibuilder.cms.form.header'),
-              vIf: !['Modules\\Ibuilder\\Entities\\Layout'].includes(this.crudInfo.entityType)
+              label: this.$tr('ibuilder.cms.form.header')
             },
             loadOptions: {
               apiRoute: 'apiRoutes.qbuilder.layouts',
@@ -39,8 +38,7 @@ export default {
             type: 'select',
             isFakeField: true,
             props: {
-              label: this.$tr('ibuilder.cms.form.footer'),
-              vIf: !['Modules\\Ibuilder\\Entities\\Layout'].includes(this.crudInfo.entityType)
+              label: this.$tr('ibuilder.cms.form.footer')
             },
             loadOptions: {
               apiRoute: 'apiRoutes.qbuilder.layouts',
@@ -48,52 +46,11 @@ export default {
               requestParams: { filter: { type: 'footer' } }
             }
           },
-          brandPrimary: {
-            value: null,
-            type: 'inputColor',
-            isFakeField: true,
-            colClass: 'col-12 col-md-6',
-            props: {
-              label: 'Brand Primary',
-              vIf: this.crudInfo.type == 'home'
-            }
-          },
-          brandSecondary: {
-            value: null,
-            type: 'inputColor',
-            isFakeField: true,
-            colClass: 'col-12 col-md-6',
-            props: {
-              label: 'Brand Secondary',
-              vIf: this.crudInfo.type == 'home'
-            }
-          },
-          brandTertiary: {
-            value: null,
-            type: 'inputColor',
-            isFakeField: true,
-            colClass: 'col-12 col-md-6',
-            props: {
-              label: 'Brand Tertiary',
-              vIf: this.crudInfo.type == 'home'
-            }
-          },
-          brandQuaternary: {
-            value: null,
-            type: 'inputColor',
-            isFakeField: true,
-            colClass: 'col-12 col-md-6',
-            props: {
-              label: 'Brand Quaternary',
-              vIf: this.crudInfo.type == 'home'
-            }
-          },
           pageUsLayoutId: {
             type: 'select',
             isFakeField: true,
             props: {
-              label: 'Page (Nosotros)',
-              vIf: this.crudInfo.type == 'home'
+              label: 'Page (Nosotros)'
             },
             loadOptions: {
               apiRoute: 'apiRoutes.qbuilder.layouts',
@@ -110,8 +67,7 @@ export default {
             type: 'select',
             isFakeField: true,
             props: {
-              label: 'Page (Contacto)',
-              vIf: this.crudInfo.type == 'home'
+              label: 'Page (Contacto)'
             },
             loadOptions: {
               apiRoute: 'apiRoutes.qbuilder.layouts',
@@ -128,8 +84,7 @@ export default {
             type: 'select',
             isFakeField: true,
             props: {
-              label: 'Page (Default)',
-              vIf: this.crudInfo.type == 'home'
+              label: 'Page (Default)'
             },
             loadOptions: {
               apiRoute: 'apiRoutes.qbuilder.layouts',
@@ -146,8 +101,7 @@ export default {
             type: 'select',
             isFakeField: true,
             props: {
-              label: 'Blog (Show)',
-              vIf: this.crudInfo.type == 'home'
+              label: 'Blog (Show)'
             },
             loadOptions: {
               apiRoute: 'apiRoutes.qbuilder.layouts',
@@ -164,8 +118,7 @@ export default {
             type: 'select',
             isFakeField: true,
             props: {
-              label: 'Blog (Index)',
-              vIf: this.crudInfo.type == 'home'
+              label: 'Blog (Index)'
             },
             loadOptions: {
               apiRoute: 'apiRoutes.qbuilder.layouts',
@@ -177,7 +130,65 @@ export default {
                 }
               }
             }
-          }
+          },
+          brandPrimary: {
+            value: null,
+            type: 'inputColor',
+            isFakeField: true,
+            colClass: 'col-12 col-md-6',
+            props: {
+              label: 'Brand Primary'
+            }
+          },
+          brandSecondary: {
+            value: null,
+            type: 'inputColor',
+            isFakeField: true,
+            colClass: 'col-12 col-md-6',
+            props: {
+              label: 'Brand Secondary'
+            }
+          },
+          brandTertiary: {
+            value: null,
+            type: 'inputColor',
+            isFakeField: true,
+            colClass: 'col-12 col-md-6',
+            props: {
+              label: 'Brand Tertiary'
+            }
+          },
+          brandQuaternary: {
+            value: null,
+            type: 'inputColor',
+            isFakeField: true,
+            colClass: 'col-12 col-md-6',
+            props: {
+              label: 'Brand Quaternary'
+            }
+          },
+          customCss: {
+            value: null,
+            type: 'input',
+            isFakeField: true,
+            colClass: 'col-12 col-md-12',
+            props: {
+              label: 'Custom Css',
+              type: 'textarea',
+              rows: 12,
+            },
+          },
+          customJs: {
+            value: null,
+            type: 'input',
+            isFakeField: true,
+            colClass: 'col-12 col-md-12',
+            props: {
+              label: 'Custom Js',
+              type: 'textarea',
+              rows: 12,
+            },
+          },
         },
         handleFormUpdates: (formData, changedFields, formType) => {
           return new Promise(resolve => {

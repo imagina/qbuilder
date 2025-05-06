@@ -35,7 +35,10 @@ export default {
               format: val => val ? this.$trd(val) : '-',
             },
             {name: 'actions', label: this.$tr('isite.cms.form.actions'), align: 'left'},
-          ]
+          ],
+          requestParams: {
+            filter: {withContentEditable: 1}
+          }
         },
         update: {
           method: (item) => this.openModal(item.id)

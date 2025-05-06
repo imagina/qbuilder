@@ -70,6 +70,19 @@ export default function controller(props: any, emit: any) {
                 ]
               }
             },
+            systemName: {
+              type: 'select',
+              required: true,
+              fakeFieldName: 'component',
+              colClass: 'col-12',
+              props: {
+                label: i18n.tr('isite.cms.label.block') + '*',
+                options: Object.values(storeEditor.blockConfigs).filter(item => !item.internal).map(item => {
+                  return { label: item.title, value: item.systemName };
+                }),
+                readonly: true
+              }
+            },
             status: {
               value: '1',
               type: 'select',
@@ -83,17 +96,17 @@ export default function controller(props: any, emit: any) {
                 ]
               }
             },
-            systemName: {
+            withContentEditable: {
+              value: '0',
               type: 'select',
-              required: true,
-              fakeFieldName: 'component',
               colClass: 'col-6',
+              required: true,
               props: {
-                label: i18n.tr('isite.cms.label.block') + '*',
-                options: Object.values(storeEditor.blockConfigs).filter(item => !item.internal).map(item => {
-                  return { label: item.title, value: item.systemName };
-                }),
-                readonly: true
+                label: `With Content Editable`,
+                options: [
+                  { label: i18n.tr('isite.cms.label.yes'), value: '1' },
+                  { label: i18n.tr('isite.cms.label.no'), value: '0' }
+                ]
               }
             },
             mediasSingle: {

@@ -49,7 +49,7 @@
       <block-form ref="refBlockForm" @updated="block => handleChangesBlock({block, update: true, refresh: true})" />
       <!--block attrs from panels-->
       <q-dialog v-model="showBlockAttributesForm" :title="$tr('ibuilder.cms.label.editBlockAttributes')"
-                position="left" class="builder-panel-dialog" square persistent full-width full-height>
+                position="left" class="builder-panel-dialog" square persistent full-width full-height allow-focus-outside>
         <block-attributes-form ref="blockAttributesForm" @update-block="response => handleChangesBlock(response)"
                                @cancel="() => handleChangesBlock({cancel: true})" />
       </q-dialog>

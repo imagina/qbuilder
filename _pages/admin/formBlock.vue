@@ -305,7 +305,7 @@ export default {
               props: {
                 label: this.$tr('isite.cms.message.preview'),
                 zone: 'internalimage',
-                entity: "Modules\\Ibuilder\\Entities\\Block",
+                entity: "Modules\\Ibuilder\\Models\\Block",
                 entityId: null
               }
             }
@@ -518,7 +518,7 @@ export default {
                 props: {
                   label: this.$tr('isite.cms.label.backgroundImage'),
                   zone: 'blockbgimage',
-                  entity: "Modules\\Ibuilder\\Entities\\Block",
+                  entity: "Modules\\Ibuilder\\Models\\Block",
                   entityId: null
                 }
               }

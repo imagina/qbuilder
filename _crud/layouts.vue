@@ -90,7 +90,7 @@ export default {
             props: {
               label: this.$tr('isite.cms.message.preview'),
               zone: 'internalimage',
-              entity: 'Modules\\Ibuilder\\Entities\\Layout',
+              entity: 'Modules\\Ibuilder\\Models\\Layout',
               entityId: null
             }
           },

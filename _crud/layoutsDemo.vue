@@ -57,7 +57,7 @@ export default {
               select: { label: 'title', id: 'id' },
               requestParams: {
                 filter: {
-                  entityType: 'Modules\\Page\\Entities\\Page',
+                  entityType: 'Modules\\Ipage\\Models\\Page',
                   type: 'us'
                 }
               }
@@ -74,7 +74,7 @@ export default {
               select: { label: 'title', id: 'id' },
               requestParams: {
                 filter: {
-                  entityType: 'Modules\\Page\\Entities\\Page',
+                  entityType: 'Modules\\Ipage\\Models\\Page',
                   type: 'contact'
                 }
               }
@@ -91,7 +91,7 @@ export default {
               select: { label: 'title', id: 'id' },
               requestParams: {
                 filter: {
-                  entityType: 'Modules\\Page\\Entities\\Page',
+                  entityType: 'Modules\\Ipage\\Models\\Page',
                   type: 'general'
                 }
               }
@@ -108,7 +108,7 @@ export default {
               select: { label: 'title', id: 'id' },
               requestParams: {
                 filter: {
-                  entityType: 'Modules\\Iblog\\Entities\\Post',
+                  entityType: 'Modules\\Iblog\\Models\\Post',
                   type: 'general'
                 }
               }
@@ -125,7 +125,7 @@ export default {
               select: { label: 'title', id: 'id' },
               requestParams: {
                 filter: {
-                  entityType: 'Modules\\Iblog\\Entities\\Category',
+                  entityType: 'Modules\\Iblog\\Models\\Category',
                   type: 'general'
                 }
               }
